@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "betterloadingscreen",
+  "name": "Better Loading Screen",
+  "description": "Simple mod that shows you the state FML is at while loading minecraft",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["AlexIIL"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
