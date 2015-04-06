@@ -12,7 +12,7 @@ import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
 
-@Mod(modid = "betterloadingscreen", guiFactory = "alexiil.mods.load.gui.ConfigGuiFactory")
+@Mod(modid = "betterloadingscreen", guiFactory = "alexiil.mods.load.ConfigGuiFactory", useMetadata = true, dependencies = "required-after:alexiillib")
 public class BetterLoadingScreen extends AlexIILMod {
 
     @Mod.Instance
