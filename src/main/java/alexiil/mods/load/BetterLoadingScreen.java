@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
@@ -16,6 +18,18 @@ import com.google.common.eventbus.EventBus;
 public class BetterLoadingScreen extends AlexIILMod {
     @Mod.Instance(Lib.Mod.ID)
     public static BetterLoadingScreen instance;
+
+    @Override
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        super.preInit(event);
+    }
+
+    @Override
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        super.postInit(event);
+    }
 
     @EventHandler
     public void construct(FMLConstructionEvent event) {
