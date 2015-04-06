@@ -8,11 +8,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
 
 @Mod(modid = "betterloadingscreen", guiFactory = "alexiil.mods.load.gui.ConfigGuiFactory")
-public class BetterLoadingScreen {
+public class BetterLoadingScreen extends AlexIILMod {
+
+    @Mod.Instance
+    public static BetterLoadingScreen instance;
+
     @EventHandler
     public void construct(FMLConstructionEvent event) {
         for (ModContainer mod : Loader.instance().getActiveModList()) {
@@ -33,5 +38,25 @@ public class BetterLoadingScreen {
                 }
             }
         }
+    }
+
+    @Override
+    public String getCommitHash() {
+        return Lib.Mod.COMMIT_HASH;
+    }
+
+    @Override
+    public int getBuildType() {
+        return Lib.Mod.buildType();
+    }
+
+    @Override
+    public String getUser() {
+        return "AlexIIL";
+    }
+
+    @Override
+    public String getRepo() {
+        return "BetterLoadingScreen";
     }
 }
