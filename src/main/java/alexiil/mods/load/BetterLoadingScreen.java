@@ -12,10 +12,9 @@ import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
 
-@Mod(modid = "betterloadingscreen", guiFactory = "alexiil.mods.load.ConfigGuiFactory", useMetadata = true, dependencies = "required-after:alexiillib")
+@Mod(modid = Lib.Mod.ID, guiFactory = "alexiil.mods.load.ConfigGuiFactory", useMetadata = true, dependencies = "required-after:alexiillib")
 public class BetterLoadingScreen extends AlexIILMod {
-
-    @Mod.Instance
+    @Mod.Instance(Lib.Mod.ID)
     public static BetterLoadingScreen instance;
 
     @EventHandler
