@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -16,7 +17,7 @@ import com.google.common.eventbus.EventBus;
 
 @Mod(modid = Lib.Mod.ID, guiFactory = "alexiil.mods.load.ConfigGuiFactory", useMetadata = true, dependencies = "required-after:alexiillib")
 public class BetterLoadingScreen extends AlexIILMod {
-    @Mod.Instance(Lib.Mod.ID)
+    @Instance(Lib.Mod.ID)
     public static BetterLoadingScreen instance;
 
     @Override
