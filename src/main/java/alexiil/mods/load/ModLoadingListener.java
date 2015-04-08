@@ -3,6 +3,7 @@ package alexiil.mods.load;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ModContainer;
@@ -18,12 +19,19 @@ import com.google.common.eventbus.Subscribe;
 public class ModLoadingListener {
     private enum State {
         CONSTRUCT("Construction"), PRE_INIT("Pre Initialization"), INIT("Initialization"), POST_INIT("Post Initialization"), LOAD_COMPLETE(
-                "Completed"), FINAL_LOADING("Reloading Resource Packs");
+                "Completed"), FINAL_LOADING("Reloading Resource Packs", true);
 
         final String displayName;
+        /** If this state is only called once. This is false for all except for FINAL_LOADING */
+        final boolean isLoneState;
+
+        State(String name, boolean mods) {
+            displayName = name;
+            isLoneState = mods;
+        }
 
         State(String name) {
-            displayName = name;
+            this(name, false);
         }
     }
 
@@ -45,7 +53,7 @@ public class ModLoadingListener {
         public ModStage getNext() {
             int ind = index + 1;
             State s = state;
-            if (ind == listeners.size()) {
+            if (ind == listeners.size() || s.isLoneState) {
                 ind = 0;
                 int ord = s.ordinal() + 1;
                 if (ord == State.values().length)
@@ -56,7 +64,7 @@ public class ModLoadingListener {
         }
 
         public String getDisplayText() {
-            if (state == State.FINAL_LOADING)
+            if (state.isLoneState)
                 return state.displayName;
             return state.displayName + ": loading " + listeners.get(index).mod.getName();
         }
@@ -111,27 +119,19 @@ public class ModLoadingListener {
 
     @SubscribeEvent
     public void guiOpen(GuiOpenEvent event) {
-        if (frame != null)
-            frame.dispose();
+        if (event.gui != null && event.gui instanceof GuiMainMenu)
+            ProgressDisplayer.close();
     }
 
     private static void doProgress(State state, ModLoadingListener mod) {
-        if (frame == null && !hasFailed) {
-            frame = LoadingFrame.openWindow();
-            if (frame == null) {
-                hasFailed = true;
-                System.out.println("Could not open the JFrame");
-            }
-        }
-        if (frame != null) {
-            if (stage == null)
+        if (stage == null)
+            if (mod == null)
+                stage = new ModStage(state, 0);
+            else
                 stage = new ModStage(state, listeners.indexOf(mod));
-            stage = stage.getNext();
-            if (stage != null && frame != null) {
-                frame.setMessage(stage.getDisplayText());
-                frame.setProgress(stage.getProgress());
-                frame.repaint();
-            }
+        stage = stage.getNext();
+        if (stage != null) {
+            ProgressDisplayer.displayProgress(stage.getDisplayText(), stage.getProgress() / 100F);
         }
     }
 }
