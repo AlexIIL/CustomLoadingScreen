@@ -2,6 +2,9 @@ package alexiil.mods.load;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -11,6 +14,10 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
@@ -24,6 +31,7 @@ public class BetterLoadingScreen extends AlexIILMod {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
+        MinecraftForge.EVENT_BUS.register(instance);
     }
 
     @Override
@@ -52,6 +60,19 @@ public class BetterLoadingScreen extends AlexIILMod {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void guiOpen(GuiOpenEvent event) {
+        if (event.gui != null && event.gui instanceof GuiMainMenu)
+            ProgressDisplayer.close();
+    }
+
+    @EventHandler
+    @SideOnly(Side.SERVER)
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        ProgressDisplayer.close();
     }
 
     @Override
