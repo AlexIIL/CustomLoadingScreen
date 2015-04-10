@@ -65,7 +65,7 @@ public class ProgressDisplayer {
     private static IDisplayer displayer;
     private static int clientState = -1;
     public static Configuration cfg;
-    public static boolean connectExternally;
+    public static boolean playSound;
 
     public static boolean isClient() {
         if (clientState != -1)
@@ -90,6 +90,9 @@ public class ProgressDisplayer {
             comment += "compatible, so if you do have nay strange crash reports or compatability issues, try setting this to false";
             useMinecraft = cfg.getBoolean("useMinecraft", "general", true, comment);
         }
+
+        playSound = cfg.getBoolean("playSound", "general", true, "Play a sound after minecraft has finished starting up");
+
         if (useMinecraft)
             displayer = new MinecraftDisplayerWrapper();
         else if (!GraphicsEnvironment.isHeadless())
@@ -109,7 +112,7 @@ public class ProgressDisplayer {
             return;
         displayer.close();
         displayer = null;
-        if (isClient()) {
+        if (isClient() && playSound) {
             new Thread() {
                 @Override
                 public void run() {
