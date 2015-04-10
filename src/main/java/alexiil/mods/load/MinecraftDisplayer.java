@@ -1,15 +1,16 @@
 package alexiil.mods.load;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundEventAccessorComposite;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
@@ -21,16 +22,37 @@ import org.lwjgl.opengl.GL11;
 import alexiil.mods.load.ProgressDisplayer.IDisplayer;
 
 public class MinecraftDisplayer implements IDisplayer {
-    private String locationProgressBar = "betterloadingscreen/textures/progressBars.png";
+    private static String sound;
+    private static String defaultSound = "random.levelup";
+    private String locationProgressBar = "textures/gui/icons.png";
     private TextureManager textureManager = null;
     private FontRenderer fontRenderer = null;
     private ScaledResolution resolution = null;
     private Framebuffer framebuffer = null;
     private Minecraft mc = null;
-    private boolean callAgain = false;
+    private boolean callAgain = false, isOpen = true;
     private double startTexLocation = 74;
     private String lastText;
     private float lastPercent;
+    private int startTextLocation = 30;
+    private int startBarLocation = 40;
+
+    public static void playFinishedSound() {
+        SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
+        ResourceLocation location = new ResourceLocation(sound);
+        SoundEventAccessorComposite snd = soundHandler.getSound(location);
+        if (snd == null) {
+            System.out.println("The sound given (" + sound + ") did not give a valid sound!");
+            location = new ResourceLocation(defaultSound);
+            snd = soundHandler.getSound(location);
+        }
+        if (snd == null) {
+            System.out.println("Default sound did not give a valid sound!");
+            return;
+        }
+        ISound sound = PositionedSoundRecord.create(location);
+        soundHandler.playSound(sound);
+    }
 
     // Minecraft's display hasn't been created yet, so don't bother trying to open anything now
     @Override
@@ -38,16 +60,25 @@ public class MinecraftDisplayer implements IDisplayer {
         String comment =
                 "The type of progress bar to display. Use either 0, 1 or 2. (0 is the experiance bar, 1 is the boss health bar, and 2 is the horse jump bar)";
         Property prop = cfg.get("general", "progressType", 1, comment, 0, 2);
-        startTexLocation = prop.getInt() * 10;
+        startTexLocation = prop.getInt() * 10 + 64;
 
-        comment =
-                "The location of the progress bar. You can chnage this to a different one, or a different resource pack. Note that this WILL crash minecraft, or not work if this is set incorrectly";
-        prop = cfg.get("general", "progressBarLocation", "betterloadingscreen/textures/progressBars.png", comment);
-        locationProgressBar = prop.getString();
+        String comment2 =
+                "The yPosition of the text, added to the centre (so, a value of 0 means its right in the middle of the screen, and negative numbers are higher up the screen). Default is 30";
+        prop = cfg.get("general", "yPosText", 30, comment2, -500, 500);
+        startTextLocation = prop.getInt();
+
+        String comment3 =
+                "The yPosition of the bar, added to the centre (so, a value of 0 means its right in the middle of the screen, and negative numbers are higher up the screen). Default is 40";
+        prop = cfg.get("general", "yPosBar", 50, comment3, -500, 500);
+        startBarLocation = prop.getInt();
+
+        String comment4 = "What sound to play when loading is complete. Default is the dispenser open (" + defaultSound + ")";
+        sound = cfg.getString("sound", "general", defaultSound, comment4);
     }
 
     public void reDisplayProgress() {
-        displayProgress(lastText, lastPercent);
+        if (isOpen)
+            displayProgress(lastText, lastPercent);
     }
 
     @Override
@@ -65,8 +96,8 @@ public class MinecraftDisplayer implements IDisplayer {
         int centerX = resolution.getScaledWidth() / 2;
         int centerY = resolution.getScaledHeight() / 2;
 
-        drawCenteredString(text, centerX, centerY + 30);
-        drawCenteredString((int) (percent * 100) + "%", centerX, centerY + 40);
+        drawCenteredString(text, centerX, centerY + startTextLocation);
+        drawCenteredString((int) (percent * 100) + "%", centerX, centerY + startTextLocation + 10);
 
         GL11.glColor4f(1, 1, 1, 1);
 
@@ -74,8 +105,8 @@ public class MinecraftDisplayer implements IDisplayer {
 
         double texWidth = 182;
         double startX = centerX - texWidth / 2;
-        drawTexturedModalRect(startX, centerY + 50, 0, startTexLocation, texWidth, 5);
-        drawTexturedModalRect(startX, centerY + 50, 0, startTexLocation + 5, percent * texWidth, 5);
+        drawTexturedModalRect(startX, centerY + startBarLocation, 0, startTexLocation, texWidth, 5);
+        drawTexturedModalRect(startX, centerY + startBarLocation, 0, startTexLocation + 5, percent * texWidth, 5);
 
         sf = 1 / sf;
         GL11.glScalef(sf, sf, sf);
@@ -110,6 +141,7 @@ public class MinecraftDisplayer implements IDisplayer {
         if (textureManager == null) {
             textureManager = mc.renderEngine = new TextureManager(mc.getResourceManager());
             mc.refreshResources();
+            textureManager.onResourceManagerReload(mc.getResourceManager());
             mc.fontRendererObj = new FontRenderer(mc.gameSettings, new ResourceLocation("textures/font/ascii.png"), textureManager, false);
             if (mc.gameSettings.language != null) {
                 LanguageManager lm = mc.getLanguageManager();
@@ -119,21 +151,6 @@ public class MinecraftDisplayer implements IDisplayer {
             mc.fontRendererObj.onResourceManagerReload(mc.getResourceManager());
             callAgain = true;
         }
-        if (mc.getResourceManager() != null) {
-            // Simplest way to get minecraft to redisplay this window after displaying its own screen
-            ((IReloadableResourceManager) mc.getResourceManager()).registerReloadListener(new IResourceManagerReloadListener() {
-                @Override
-                public void onResourceManagerReload(IResourceManager resourceManager) {
-                    StackTraceElement[] steArr = Thread.currentThread().getStackTrace();
-                    System.out.println("START!");
-                    for (StackTraceElement ste : steArr)
-                        System.out.println(ste.getClassName());
-                    System.out.println();System.out.println();System.out.println();System.out.println();System.out.println();
-                    if (steArr[1].getClassName().equals("net.minecraft.client.Minecraft"))
-                        MinecraftDisplayer.this.reDisplayProgress();
-                }
-            });
-        }
         if (fontRenderer != mc.fontRendererObj)
             fontRenderer = mc.fontRendererObj;
         if (textureManager != mc.renderEngine)
@@ -141,7 +158,8 @@ public class MinecraftDisplayer implements IDisplayer {
 
         resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
         int scaleFactor = resolution.getScaleFactor();
-        Framebuffer framebuffer = new Framebuffer(resolution.getScaledWidth() * scaleFactor, resolution.getScaledHeight() * scaleFactor, true);
+        if (framebuffer == null)
+            framebuffer = new Framebuffer(resolution.getScaledWidth() * scaleFactor, resolution.getScaledHeight() * scaleFactor, true);
         framebuffer.bindFramebuffer(false);
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.loadIdentity();
@@ -185,5 +203,7 @@ public class MinecraftDisplayer implements IDisplayer {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        isOpen = false;
+    }
 }

@@ -18,14 +18,14 @@ public class ProgressDisplayer {
     }
 
     public static class FrameDisplayer implements IDisplayer {
-        private LoadingFrame frame = null;
+        public LoadingFrame frame = null;
 
         @Override
         public void open(Configuration cfg) {
             frame = LoadingFrame.openWindow();
             if (frame != null) {
                 frame.setMessage("Minecraft Forge Starting");
-                frame.setProgressIncrementing(0, 20, 10000);
+                frame.setProgress(0);
             }
         }
 
@@ -63,14 +63,22 @@ public class ProgressDisplayer {
     }
 
     private static IDisplayer displayer;
+    private static int clientState = -1;
+    public static Configuration cfg;
+    public static boolean connectExternally;
 
-    private static boolean isClient() {
-        try {
-            Class.forName("net.minecraftforge.fml.client.FMLClientHandler");
-            return true;
+    public static boolean isClient() {
+        if (clientState != -1)
+            return clientState == 1;
+        StackTraceElement[] steArr = Thread.currentThread().getStackTrace();
+        for (StackTraceElement ste : steArr) {
+            if (ste.getClassName().startsWith("net.minecraftforge.fml.relauncher.ServerLaunchWrapper")) {
+                clientState = 0;
+                return false;
+            }
         }
-        catch (Throwable t) {}
-        return false;
+        clientState = 1;
+        return true;
     }
 
     public static void start() {
@@ -101,5 +109,21 @@ public class ProgressDisplayer {
             return;
         displayer.close();
         displayer = null;
+        if (isClient()) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e) {}
+                    MinecraftDisplayerWrapper.playFinishedSound();
+                }
+            }.start();;
+        }
+    }
+
+    public static void minecraftDisplayFirstProgress() {
+        displayProgress(Translation.translate("betterloadingscreen.state.minecraft_init", "Minecraft Initializing"), 0F);
     }
 }

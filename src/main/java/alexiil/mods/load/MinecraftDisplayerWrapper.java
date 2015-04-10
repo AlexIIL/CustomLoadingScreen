@@ -15,15 +15,28 @@ public class MinecraftDisplayerWrapper implements IDisplayer {
     @Override
     public void displayProgress(String text, float percent) {
         if (mcDisp == null) {
-            mcDisp = new MinecraftDisplayer();
-            mcDisp.open(cfg);
+            try {
+                mcDisp = new MinecraftDisplayer();
+                mcDisp.open(cfg);
+            }
+            catch (Throwable t) {
+                System.out.println("Failed to load Minecraft Displayer!");
+                t.printStackTrace();
+                mcDisp = null;
+            }
             cfg.save();
         }
-        mcDisp.displayProgress(text, percent);
+        if (mcDisp != null)
+            mcDisp.displayProgress(text, percent);
     }
 
     @Override
     public void close() {
-        mcDisp.close();
+        if (mcDisp != null)
+            mcDisp.close();
+    }
+
+    public static void playFinishedSound() {
+        MinecraftDisplayer.playFinishedSound();
     }
 }

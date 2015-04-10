@@ -1,0 +1,8 @@
+betterloadingscreen.state.minecraft_init=Инициализация ресурсов Minecraft
+betterloadingscreen.state.construction=Сборка
+betterloadingscreen.state.pre_initialization=Пре-Инициализация
+betterloadingscreen.state.initialization=Инициализация
+betterloadingscreen.state.post_initialization=Пост-Инициализация
+betterloadingscreen.state.completed=Завершено
+betterloadingscreen.state.reloading_resource_packs=Перезагружаем наборы ресурсов
+betterloadingscreen.loading=Загружаем
