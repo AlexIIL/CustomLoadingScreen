@@ -12,7 +12,7 @@ public class ProgressDisplayer {
     public interface IDisplayer {
         void open(Configuration cfg);
 
-        void displayProgress(String text, float percent);
+        void displayProgress(String text, double percent);
 
         void close();
     }
@@ -30,11 +30,11 @@ public class ProgressDisplayer {
         }
 
         @Override
-        public void displayProgress(String text, float percent) {
+        public void displayProgress(String text, double percent) {
             if (frame == null)
                 return;
             frame.setMessage(text);
-            frame.setProgress(percent * 100F);
+            frame.setProgress(percent * 100D);
             frame.repaint();
         }
 
@@ -54,7 +54,7 @@ public class ProgressDisplayer {
         }
 
         @Override
-        public void displayProgress(String text, float percent) {
+        public void displayProgress(String text, double percent) {
             log.info(text + " (" + (int) (percent * 100) + "%)");
         }
 
@@ -103,7 +103,7 @@ public class ProgressDisplayer {
         cfg.save();
     }
 
-    public static void displayProgress(String text, float percent) {
+    public static void displayProgress(String text, double percent) {
         displayer.displayProgress(text, percent);
     }
 

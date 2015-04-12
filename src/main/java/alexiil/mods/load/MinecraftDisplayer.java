@@ -33,7 +33,7 @@ public class MinecraftDisplayer implements IDisplayer {
     private boolean callAgain = false, isOpen = true;
     private double startTexLocation = 74;
     private String lastText;
-    private float lastPercent;
+    private double lastPercent;
     private int startTextLocation = 30;
     private int startBarLocation = 40;
 
@@ -82,7 +82,7 @@ public class MinecraftDisplayer implements IDisplayer {
     }
 
     @Override
-    public void displayProgress(String text, float percent) {
+    public void displayProgress(String text, double percent) {
         lastText = text;
         lastPercent = percent;
 

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import com.google.common.eventbus.Subscribe;
 
 public class ModLoadingListener {
-    private enum State {
+    public enum State {
         CONSTRUCT("Construction"), PRE_INIT("Pre Initialization"), INIT("Initialization"), POST_INIT("Post Initialization"), LOAD_COMPLETE(
                 "Completed"), FINAL_LOADING("Reloading Resource Packs", true);
 
@@ -32,7 +32,7 @@ public class ModLoadingListener {
         }
     }
 
-    private static class ModStage {
+    public static class ModStage {
         public final State state;
 
         @Override
@@ -66,11 +66,11 @@ public class ModLoadingListener {
             return state.displayName + ": loading " + listeners.get(index).mod.getName();
         }
 
-        public int getProgress() {
-            int values = 100 / State.values().length;
-            int part = (int) (state.ordinal() * values);
-            int size = listeners.size();
-            int percent = values * index / size;
+        public double getProgress() {
+            double values = 100 / (float) State.values().length;
+            double part = state.ordinal() * values;
+            double size = listeners.size();
+            double percent = values * index / size;
             return part + percent;
         }
     }
@@ -121,7 +121,7 @@ public class ModLoadingListener {
                     stage = new ModStage(state, listeners.indexOf(mod));
             stage = stage.getNext();
             if (stage != null) {
-                ProgressDisplayer.displayProgress(stage.getDisplayText(), stage.getProgress() / 100F);
+                ProgressDisplayer.displayProgress(stage.getDisplayText(), stage.getProgress() / 100D);
             }
         }
         catch (Throwable t) {

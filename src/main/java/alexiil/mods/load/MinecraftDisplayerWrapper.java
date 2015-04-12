@@ -13,7 +13,7 @@ public class MinecraftDisplayerWrapper implements IDisplayer {
     }
 
     @Override
-    public void displayProgress(String text, float percent) {
+    public void displayProgress(String text, double percent) {
         if (mcDisp == null) {
             try {
                 mcDisp = new MinecraftDisplayer();
