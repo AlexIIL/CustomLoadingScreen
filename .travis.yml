@@ -1,1 +1,9 @@
 language: java
+install: git submodule init
+ git submodule update
+ cd AlexIILLib
+  ./gradlew setupCIWorkspace
+  ./gradlew build
+ cd ..
+ ./gradlew setupCIWorkspace
+script: ./gradlew build
