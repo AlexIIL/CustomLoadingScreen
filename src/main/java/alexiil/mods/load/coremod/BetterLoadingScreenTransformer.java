@@ -64,7 +64,26 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             }
             if (m.name.equals(minecraftStartGame)) {
                 for (int i = 0; i < m.instructions.size(); i++) {
+                    /* LiteLoader disabling -NOTE TO ANYONE FROM LITELOADER OR ANYONE ELSE: I am disabling liteloader's
+                     * overlay simply because otherwise it switches between liteloader's bar and mine. I can safely
+                     * assume that people won't wont LiteLoader's as they are using my mod, which is just a progress
+                     * bar, they can disable this behaviour by removing my mod (as all my mod does is just add a loading
+                     * bar) */
                     AbstractInsnNode node = m.instructions.get(i);
+                    if (node instanceof MethodInsnNode) {
+                        MethodInsnNode method = (MethodInsnNode) node;
+                        if (method.owner.equals("com/mumfrey/liteloader/client/gui/startup/LoadingBar")) {
+                            m.instructions.remove(method);
+                            continue;
+                        }
+                        else if (method.owner.startsWith("com/mumfrey")) {
+                            System.out.println("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
+                        }
+                        else
+                            System.out.println("Started with \"" + method.owner + "\"");
+                    }
+
+                    // LiteLoader removing end
                     if (node instanceof MethodInsnNode) {
                         MethodInsnNode method = (MethodInsnNode) node;
                         if (method.owner.equals(Type.getInternalName(FMLClientHandler.class)) && method.name.equals("instance")) {

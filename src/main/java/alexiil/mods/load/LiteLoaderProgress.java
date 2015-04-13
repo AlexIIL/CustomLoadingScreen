@@ -11,6 +11,13 @@ public class LiteLoaderProgress extends LoadingBar {
     private int totalLiteProgress = 0;
     private int liteProgress = 0;
 
+    public LiteLoaderProgress() {
+        super();
+    }
+
+    @Override
+    protected void _incrementProgress() {}
+
     @Override
     protected void _dispose() {}
 
