@@ -12,15 +12,37 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
 import alexiil.mods.load.ProgressDisplayer;
 
-public class BetterLoadingScreenTransformer implements IClassTransformer {
+public class BetterLoadingScreenTransformer implements IClassTransformer, Opcodes {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("net.minecraft.client.Minecraft"))
             return transformMinecraft(basicClass, transformedName == name);
+        if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
+            return transformObjectFactoryClient(basicClass);
         return basicClass;
+    }
+
+    private byte[] transformObjectFactoryClient(byte[] before) {
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        for (MethodNode m : classNode.methods) {
+            if (m.name.equals("preBeginGame")) {
+                m.instructions.clear();
+                m.instructions.add(new TypeInsnNode(NEW, "alexiil/mods/load/LiteLoaderProgress"));
+                m.instructions.add(new MethodInsnNode(INVOKESPECIAL, "alexiil/mods/load/LiteLoaderProgress", "<init>", "()V", false));
+                m.instructions.add(new InsnNode(RETURN));
+            }
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        return cw.toByteArray();
     }
 
     private byte[] transformMinecraft(byte[] before, boolean dev) {

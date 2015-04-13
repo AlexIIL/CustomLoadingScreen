@@ -15,24 +15,43 @@ import com.google.common.eventbus.Subscribe;
 
 public class ModLoadingListener {
     public enum State {
-        CONSTRUCT("Construction"), PRE_INIT("Pre Initialization"), INIT("Initialization"), POST_INIT("Post Initialization"), LOAD_COMPLETE(
-                "Completed"), FINAL_LOADING("Reloading Resource Packs", true);
+        CONSTRUCT("construction"), PRE_INIT("pre_initialization"), LITE_LOADER_INIT("lite", true, true), INIT("initialization"), POST_INIT(
+                "post_initialization"), LOAD_COMPLETE("completed"), FINAL_LOADING("reloading_resource_packs", true, false);
 
-        final String displayName;
+        private String translatedName = null;
+        final String name;
         /** If this state is only called once. This is false for all except for FINAL_LOADING */
         final boolean isLoneState;
+        /** If this is true, then ModStage.getNext will skip this, but it will still be included in the percentage
+         * calculation */
+        final boolean shouldSkip;
 
-        State(String name, boolean mods) {
-            displayName = name;
+        State(String name, boolean mods, boolean skip) {
             isLoneState = mods;
+            this.name = name;
+            shouldSkip = skip;
         }
 
         State(String name) {
-            this(name, false);
+            this(name, false, false);
+        }
+
+        public String translate() {
+            if (translatedName != null)
+                return translatedName;
+            String failure = name.replaceAll("\\_", " ");
+            String[] split = failure.split(" ");
+            failure = "";
+            for (int i = 0; i < split.length; i++) {
+                failure += i == 0 ? "" : " ";
+                failure += split[i].substring(0, 1).toUpperCase().concat(split[i].substring(1));
+            }
+            translatedName = Translation.translate("betterloadingscreen.state." + name, failure);
+            return translatedName;
         }
     }
 
-    public static class ModStage {
+    private static class ModStage {
         public final State state;
 
         @Override
@@ -56,21 +75,24 @@ public class ModLoadingListener {
                 if (ord == State.values().length)
                     return null;
                 s = State.values()[ord];
+                if (s.shouldSkip)
+                    return new ModStage(s, ind).getNext();
             }
             return new ModStage(s, ind);
         }
 
         public String getDisplayText() {
             if (state.isLoneState)
-                return state.displayName;
-            return state.displayName + ": loading " + listeners.get(index).mod.getName();
+                return state.translate();
+            return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " "
+                    + listeners.get(index).mod.getName();
         }
 
-        public double getProgress() {
-            double values = 100 / (float) State.values().length;
-            double part = state.ordinal() * values;
-            double size = listeners.size();
-            double percent = values * index / size;
+        public float getProgress() {
+            float values = 100 / (float) State.values().length;
+            float part = state.ordinal() * values;
+            float size = listeners.size();
+            float percent = values * index / size;
             return part + percent;
         }
     }
