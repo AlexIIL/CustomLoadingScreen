@@ -4,6 +4,10 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.FMLFileResourcePack;
+import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ModMetadata;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +70,8 @@ public class ProgressDisplayer {
     private static int clientState = -1;
     public static Configuration cfg;
     public static boolean playSound;
+    public static File coreModLocation;
+    public static ModContainer modContainer;
 
     public static boolean isClient() {
         if (clientState != -1)
@@ -81,8 +87,41 @@ public class ProgressDisplayer {
         return true;
     }
 
-    public static void start() {
-        Configuration cfg = new Configuration(new File("./config/betterloadingscreen.cfg"));
+    public static void start(File coremodLocation) {
+        coreModLocation = coremodLocation;
+        if (coreModLocation == null)
+            coreModLocation = new File("./../bin/");
+        // Assume this is a dev environment, and that the build dir is in bin, and the test dir has the same parent as
+        // the bin dir...
+        ModMetadata md = new ModMetadata();
+        md.name = Lib.Mod.NAME;
+        md.modId = Lib.Mod.ID;
+        modContainer = new DummyModContainer(md) {
+            @Override
+            public Class<?> getCustomResourcePackClass() {
+                return FMLFileResourcePack.class;
+            }
+
+            @Override
+            public File getSource() {
+                return coreModLocation;
+            }
+
+            @Override
+            public String getModId() {
+                return Lib.Mod.ID;
+            }
+        };
+
+        File fileOld = new File("./config/betterloadingscreen.cfg");
+        File fileNew = new File("./config/BetterLoadingScreen/config.cfg");
+
+        Configuration cfg;
+        if (fileOld.exists())
+            cfg = new Configuration(fileOld);
+        else
+            cfg = new Configuration(fileNew);
+
         boolean useMinecraft = isClient();
         if (useMinecraft) {
             String comment =

@@ -11,11 +11,6 @@ import alexiil.mods.load.Translation;
 @IFMLLoadingPlugin.TransformerExclusions({ "alexiil.mods.load.coremod" })
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE - 80)
 public class LoadingScreenLoadPlugin implements IFMLLoadingPlugin {
-    // The only reason this coremod exists is this static method: its the first time our code is called
-    static {
-        ProgressDisplayer.start();
-    }
-
     @Override
     public String[] getASMTransformerClass() {
         return new String[] { "alexiil.mods.load.coremod.BetterLoadingScreenTransformer" };
@@ -33,7 +28,9 @@ public class LoadingScreenLoadPlugin implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        Translation.addTranslations((File) data.get("coremodLocation"));
+        File coremodLocation = (File) data.get("coremodLocation");
+        Translation.addTranslations(coremodLocation);
+        ProgressDisplayer.start(coremodLocation);
     }
 
     @Override

@@ -1,5 +1,12 @@
 package alexiil.mods.load;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -11,31 +18,35 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLFileResourcePack;
+import net.minecraftforge.fml.client.FMLFolderResourcePack;
 
 import org.lwjgl.opengl.GL11;
 
 import alexiil.mods.load.ProgressDisplayer.IDisplayer;
+import alexiil.mods.load.json.Area;
+import alexiil.mods.load.json.EPosition;
+import alexiil.mods.load.json.EType;
+import alexiil.mods.load.json.ImageRender;
+import alexiil.mods.load.json.JsonConfig;
 
 public class MinecraftDisplayer implements IDisplayer {
     private static String sound;
     private static String defaultSound = "random.levelup";
-    private String locationProgressBar = "textures/gui/icons.png";
+    private ImageRender[] images;
     private TextureManager textureManager = null;
+    private Map<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
     private FontRenderer fontRenderer = null;
     private ScaledResolution resolution = null;
-    private Framebuffer framebuffer = null;
     private Minecraft mc = null;
     private boolean callAgain = false, isOpen = true;
-    private double startTexLocation = 74;
     private String lastText;
     private double lastPercent;
-    private int startTextLocation = 30;
-    private int startBarLocation = 40;
+    private IResourcePack myPack;
 
     public static void playFinishedSound() {
         SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
@@ -54,26 +65,83 @@ public class MinecraftDisplayer implements IDisplayer {
         soundHandler.playSound(sound);
     }
 
-    // Minecraft's display hasn't been created yet, so don't bother trying to open anything now
+    @SuppressWarnings("unchecked")
+    private List<IResourcePack> getOnlyList() {
+        Field[] flds = mc.getClass().getDeclaredFields();
+        for (Field f : flds) {
+            if (f.getType().equals(List.class) && !Modifier.isStatic(f.getModifiers())) {
+                f.setAccessible(true);
+                try {
+                    return (List<IResourcePack>) f.get(mc);
+                }
+                catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    // Because of the wrapper, we can actually use this to create stuffs that we need
     @Override
     public void open(Configuration cfg) {
-        String comment =
-                "The type of progress bar to display. Use either 0, 1 or 2. (0 is the experiance bar, 1 is the boss health bar, and 2 is the horse jump bar)";
-        Property prop = cfg.get("general", "progressType", 1, comment, 0, 2);
-        startTexLocation = prop.getInt() * 10 + 64;
-
-        String comment2 =
-                "The yPosition of the text, added to the centre (so, a value of 0 means its right in the middle of the screen, and negative numbers are higher up the screen). Default is 30";
-        prop = cfg.get("general", "yPosText", 30, comment2, -500, 500);
-        startTextLocation = prop.getInt();
-
-        String comment3 =
-                "The yPosition of the bar, added to the centre (so, a value of 0 means its right in the middle of the screen, and negative numbers are higher up the screen). Default is 40";
-        prop = cfg.get("general", "yPosBar", 50, comment3, -500, 500);
-        startBarLocation = prop.getInt();
-
-        String comment4 = "What sound to play when loading is complete. Default is the dispenser open (" + defaultSound + ")";
+        mc = Minecraft.getMinecraft();
+        // Open the normal config
+        String comment4 = "What sound to play when loading is complete. Default is the level up sound (" + defaultSound + ")";
         sound = cfg.getString("sound", "general", defaultSound, comment4);
+
+        // Add ourselves as a resource pack
+        if (!ProgressDisplayer.coreModLocation.isDirectory())
+            myPack = new FMLFileResourcePack(ProgressDisplayer.modContainer);
+        else
+            myPack = new FMLFolderResourcePack(ProgressDisplayer.modContainer);
+        getOnlyList().add(myPack);
+        mc.refreshResources();
+
+        // Open the special config directory
+        File configDir = new File("./config/BetterLoadingScreen");
+        if (!configDir.exists())
+            configDir.mkdirs();
+
+        // Image Config
+        images = new ImageRender[5];
+        String progress = "betterloadingscreen:textures/progressBars.png";
+        String title = "textures/gui/title/mojang.png";
+        String font = "textures/font/ascii.png";
+        images[0] = new ImageRender(title, EPosition.CENTER, EType.STATIC, new Area(0, 0, 256, 256), new Area(0, 0, 256, 256));
+        images[1] = new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_STATUS, null, new Area(0, -30, 0, 0), "000000", null);
+        images[2] = new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, -40, 0, 0), "000000", null);
+        images[3] = new ImageRender(progress, EPosition.CENTER, EType.STATIC, new Area(0, 10, 182, 5), new Area(0, -50, 182, 5));
+        images[4] = new ImageRender(progress, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 15, 182, 5), new Area(0, -50, 182, 5));
+
+        ImageRender[] defaultImageRender = images;
+
+        File imagesFile = new File(configDir, "images.json");
+        JsonConfig<ImageRender[]> imagesConfig = new JsonConfig<ImageRender[]>(imagesFile, ImageRender[].class, images);
+        images = imagesConfig.load();
+
+        // Preset one is the default one
+        definePreset(configDir, "preset one", defaultImageRender);
+
+        // Preset two uses something akin to minecraft's loading screen when loading a world
+        ImageRender[] presetData = new ImageRender[4];
+        presetData[0] =
+                new ImageRender("textures/gui/options_background.png", EPosition.CENTER, EType.STATIC, new Area(0, 0, 65536, 65536), new Area(0, 0,
+                    8192, 8192), "404040", null);
+        presetData[1] = new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_STATUS, null, new Area(0, 0, 0, 0), "FFFFFF", null);
+        presetData[2] = new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, -10, 0, 0), "FFFFFF", null);
+        presetData[3] =
+                new ImageRender(font, EPosition.BOTTOM_CENTER, EType.STATIC_TEXT, null, new Area(0, 10, 0, 0), "FFDD49",
+                    "Better Loading Screen by AlexIIL");
+        definePreset(configDir, "preset two", presetData);
+
+        // Preset three uses... idk, TODO: Preset 3 etc
+    }
+
+    private void definePreset(File configDir, String name, ImageRender... images) {
+        File presetFile = new File(configDir, name + ".json");
+        JsonConfig<ImageRender[]> presetConfig = new JsonConfig<ImageRender[]>(presetFile, ImageRender[].class, images);
+        presetConfig.createNew();
     }
 
     public void reDisplayProgress() {
@@ -86,31 +154,16 @@ public class MinecraftDisplayer implements IDisplayer {
         lastText = text;
         lastPercent = percent;
 
-        mc = Minecraft.getMinecraft();
         resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
         preDisplayScreen();
-        float sf = resolution.getScaleFactor();
-        GL11.glScalef(sf, sf, sf);
 
-        int centerX = resolution.getScaledWidth() / 2;
-        int centerY = resolution.getScaledHeight() / 2;
+        for (ImageRender image : images)
+            if (image != null)
+                drawImageRender(image, text, percent);
 
-        drawCenteredString(text, centerX, centerY + startTextLocation);
-        drawCenteredString((int) (percent * 100) + "%", centerX, centerY + startTextLocation + 10);
-
-        GL11.glColor4f(1, 1, 1, 1);
-
-        textureManager.bindTexture(new ResourceLocation(locationProgressBar));
-
-        double texWidth = 182;
-        double startX = centerX - texWidth / 2;
-        drawTexturedModalRect(startX, centerY + startBarLocation, 0, startTexLocation, texWidth, 5);
-        drawTexturedModalRect(startX, centerY + startBarLocation, 0, startTexLocation + 5, percent * texWidth, 5);
-
-        sf = 1 / sf;
-        GL11.glScalef(sf, sf, sf);
         postDisplayScreen();
+
         if (callAgain) {
             // For some reason, calling this again makes pre-init render properly. I have no idea why, it just does
             callAgain = false;
@@ -118,23 +171,80 @@ public class MinecraftDisplayer implements IDisplayer {
         }
     }
 
-    // Taken from net.minecraft.client.gui.Gui
-    public void drawTexturedModalRect(double x, double y, double u, double z, double width, double height) {
-        float f = 0.00390625F;
-        float f1 = 0.00390625F;
+    private FontRenderer fontRenderer(String fontTexture) {
+        if (fontRenderers.containsKey(fontTexture))
+            return fontRenderers.get(fontTexture);
+        FontRenderer font = new FontRenderer(mc.gameSettings, new ResourceLocation(fontTexture), textureManager, false);
+        font.onResourceManagerReload(mc.getResourceManager());
+        mc.refreshResources();
+        font.onResourceManagerReload(mc.getResourceManager());
+        fontRenderers.put(fontTexture, font);
+        return font;
+    }
+
+    public void drawImageRender(ImageRender render, String text, double percent) {
+        int startX = render.transformX(resolution.getScaledWidth());
+        int startY = render.transformY(resolution.getScaledHeight());
+        GlStateManager.color(render.getRed(), render.getGreen(), render.getBlue());
+        switch (render.type) {
+            case DYNAMIC_PERCENTAGE: {
+                ResourceLocation res = new ResourceLocation(render.resourceLocation);
+                textureManager.bindTexture(res);
+                double alteredWidth = render.position.width * percent;
+                drawRect(startX, startY, alteredWidth, render.position.height, render.texture.x, render.texture.y, alteredWidth,
+                    render.texture.height);
+                break;
+            }
+            case DYNAMIC_TEXT_PERCENTAGE: {
+                FontRenderer font = fontRenderer(render.resourceLocation);
+                String percentage = (int) (percent * 100) + "%";
+                int width = font.getStringWidth(percentage);
+                startX = render.positionType.transformX(render.position.x, resolution.getScaledWidth() - width);
+                startY = render.positionType.transformY(render.position.y, resolution.getScaledHeight() - font.FONT_HEIGHT);
+                drawString(font, percentage, startX, startY, render.getColour());
+                break;
+            }
+            case DYNAMIC_TEXT_STATUS: {
+                FontRenderer font = fontRenderer(render.resourceLocation);
+                int width = font.getStringWidth(text);
+                startX = render.positionType.transformX(render.position.x, resolution.getScaledWidth() - width);
+                startY = render.positionType.transformY(render.position.y, resolution.getScaledHeight() - font.FONT_HEIGHT);
+                drawString(font, text, startX, startY, render.getColour());
+                break;
+            }
+            case STATIC_TEXT: {
+                FontRenderer font = fontRenderer(render.resourceLocation);
+                int width = font.getStringWidth(render.text);
+                int startX1 = render.positionType.transformX(render.position.x, resolution.getScaledWidth() - width);
+                int startY1 = render.positionType.transformY(render.position.y, resolution.getScaledHeight() - font.FONT_HEIGHT);
+                drawString(font, render.text, startX1, startY1, render.getColour());
+                break;
+            }
+            default: {// Assume STATIC
+                ResourceLocation res = new ResourceLocation(render.resourceLocation);
+                textureManager.bindTexture(res);
+                drawRect(startX, startY, render.position.width, render.position.height, render.texture.x, render.texture.y, render.texture.width,
+                    render.texture.height);
+                break;
+            }
+        }
+    }
+
+    public void drawString(FontRenderer font, String text, int x, int y, int colour) {
+        font.drawString(text, x, y, colour);
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
+    public void drawRect(double x, double y, double drawnWidth, double drawnHeight, double u, double v, double uWidth, double vHeight) {
+        float f = 1 / 256F;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer wr = tessellator.getWorldRenderer();
         wr.startDrawingQuads();
-        wr.addVertexWithUV(x, y + height, 0, u * f, (z + height) * f1);
-        wr.addVertexWithUV(x + width, y + height, 0, (u + width) * f, (z + height) * f1);
-        wr.addVertexWithUV(x + width, y, 0, (u + width) * f, z * f1);
-        wr.addVertexWithUV(x, y, 0, u * f, z * f1);
+        wr.addVertexWithUV(x, y + drawnHeight, 0, u * f, (v + vHeight) * f);
+        wr.addVertexWithUV(x + drawnWidth, y + drawnHeight, 0, (u + uWidth) * f, (v + vHeight) * f);
+        wr.addVertexWithUV(x + drawnWidth, y, 0, (u + uWidth) * f, v * f);
+        wr.addVertexWithUV(x, y, 0, u * f, v * f);
         tessellator.draw();
-    }
-
-    private void drawCenteredString(String string, int xCenter, int yPos) {
-        int width = fontRenderer.getStringWidth(string);
-        fontRenderer.drawString(string, xCenter - width / 2, yPos, 0);
     }
 
     private void preDisplayScreen() {
@@ -157,10 +267,7 @@ public class MinecraftDisplayer implements IDisplayer {
             textureManager = mc.renderEngine;
 
         resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-        int scaleFactor = resolution.getScaleFactor();
-        if (framebuffer == null)
-            framebuffer = new Framebuffer(resolution.getScaledWidth() * scaleFactor, resolution.getScaledHeight() * scaleFactor, true);
-        framebuffer.bindFramebuffer(false);
+
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.loadIdentity();
         GlStateManager.ortho(0.0D, (double) resolution.getScaledWidth(), (double) resolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
@@ -172,38 +279,22 @@ public class MinecraftDisplayer implements IDisplayer {
         GlStateManager.disableDepth();
         GlStateManager.enableTexture2D();
 
-        // This also means that you can override the mojang image :P
-        textureManager.bindTexture(new ResourceLocation("textures/gui/title/mojang.png"));
+        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clearColor(1, 1, 1, 1);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.startDrawingQuads();
-        worldrenderer.setColorOpaque_I(16777215);
-        worldrenderer.addVertexWithUV(0.0D, (double) mc.displayHeight, 0.0D, 0.0D, 0.0D);
-        worldrenderer.addVertexWithUV((double) mc.displayWidth, (double) mc.displayHeight, 0.0D, 0.0D, 0.0D);
-        worldrenderer.addVertexWithUV((double) mc.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
-        worldrenderer.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-        tessellator.draw();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        worldrenderer.setColorOpaque_I(16777215);
-        short short1 = 256;
-        short short2 = 256;
-        mc.scaledTessellator((resolution.getScaledWidth() - short1) / 2, (resolution.getScaledHeight() - short2) / 2, 0, 0, short1, short2);
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        framebuffer.unbindFramebuffer();
-        framebuffer.framebufferRender(resolution.getScaledWidth() * scaleFactor, resolution.getScaledHeight() * scaleFactor);
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
+        GlStateManager.color(1, 1, 1, 1);
     }
 
     private void postDisplayScreen() {
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         mc.updateDisplay();
     }
 
     @Override
     public void close() {
         isOpen = false;
+        getOnlyList().remove(myPack);
     }
 }

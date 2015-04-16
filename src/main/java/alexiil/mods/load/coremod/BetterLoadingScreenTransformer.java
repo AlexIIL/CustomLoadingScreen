@@ -79,8 +79,6 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                         else if (method.owner.startsWith("com/mumfrey")) {
                             System.out.println("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
                         }
-                        else
-                            System.out.println("Started with \"" + method.owner + "\"");
                     }
 
                     // LiteLoader removing end
