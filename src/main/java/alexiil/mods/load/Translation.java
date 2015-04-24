@@ -67,7 +67,7 @@ public class Translation {
                     try {
                         modJar.close();
                     }
-                    catch (IOException e) {}
+                    catch (IOException ignored) {}
             }
         }
 
@@ -77,7 +77,7 @@ public class Translation {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(options));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals("lang")) {
@@ -85,7 +85,7 @@ public class Translation {
                 }
             }
         }
-        catch (IOException e) {
+        catch (IOException ignored) {
 
         }
         finally {
@@ -125,10 +125,9 @@ public class Translation {
     }
 
     private Translation(BufferedReader loadFrom) throws IOException {
-        BufferedReader reader = loadFrom;
         try {
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = loadFrom.readLine()) != null) {
                 String[] splitter = line.split("=");
                 if (splitter.length != 2) {
                     System.out.println("Found an invalid line (" + line + ")");
@@ -139,8 +138,8 @@ public class Translation {
             }
         }
         finally {
-            if (reader != null)
-                reader.close();
+            if (loadFrom != null)
+                loadFrom.close();
         }
     }
 

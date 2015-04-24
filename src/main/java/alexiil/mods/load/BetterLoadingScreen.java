@@ -33,6 +33,12 @@ public class BetterLoadingScreen extends AlexIILMod {
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
         MinecraftForge.EVENT_BUS.register(instance);
+        try {
+            Thread.sleep(19000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

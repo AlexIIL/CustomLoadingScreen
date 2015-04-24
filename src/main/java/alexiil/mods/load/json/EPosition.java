@@ -7,28 +7,26 @@ public enum EPosition {
     private final int x;
     private final int y;
 
-    private EPosition(int x, int y) {
+    EPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    private int transform(int switcher, int coord, int screenThing) {
-        switch (switcher) {
-            case -1:
-                return coord;
-            case 0:
-                return screenThing / 2 - coord;
-            case 1:
-                return screenThing - coord;
-        }
-        throw new Error("switcher (" + switcher + ") != -1, 0 or 1 (" + this.toString() + ")");
+    public String getFunctionX(String width, String argument) {
+        if (x == -1)
+            return argument;
+        else if (x == 0)
+            return "(" + width + " / 2) - (" + argument + ")";
+        else
+            return width + " - (" + argument + ")";
     }
 
-    public int transformX(int x, int screenWidth) {
-        return transform(this.x, x, screenWidth);
-    }
-
-    public int transformY(int y, int screenHeight) {
-        return transform(this.y, y, screenHeight);
+    public String getFunctionY(String height, String argument) {
+        if (y == -1)
+            return argument;
+        else if (y == 0)
+            return "(" + height + " / 2) - (" + argument + ")";
+        else
+            return height + " - (" + argument + ")";
     }
 }

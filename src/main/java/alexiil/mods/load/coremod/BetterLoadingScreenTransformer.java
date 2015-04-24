@@ -20,7 +20,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("net.minecraft.client.Minecraft"))
-            return transformMinecraft(basicClass, transformedName == name);
+            return transformMinecraft(basicClass, transformedName.equals(name));
         if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
             return transformObjectFactoryClient(basicClass);
         return basicClass;
@@ -62,6 +62,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                 // just return from the method, as if nothing happened
                 break;
             }
+            boolean hasFoundOnce = false;
             if (m.name.equals(minecraftStartGame)) {
                 for (int i = 0; i < m.instructions.size(); i++) {
                     /* LiteLoader disabling -NOTE TO ANYONE FROM LITELOADER OR ANYONE ELSE: I am disabling liteloader's
@@ -80,17 +81,33 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                             System.out.println("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
                         }
                     }
-
                     // LiteLoader removing end
+
+                    String progressDisplayer = Type.getInternalName(ProgressDisplayer.class);
+
                     if (node instanceof MethodInsnNode) {
                         MethodInsnNode method = (MethodInsnNode) node;
                         if (method.owner.equals(Type.getInternalName(FMLClientHandler.class)) && method.name.equals("instance")) {
-                            MethodInsnNode newOne =
-                                    new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
-                                            "minecraftDisplayFirstProgress", "()V", false);
-                            m.instructions.insertBefore(method, newOne);
-                            hasFoundStartGame = true;
-                            break;
+                            if (!hasFoundOnce) {
+                                MethodInsnNode newOne =
+                                    new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayFirstProgress", "()V", false);
+                                m.instructions.insertBefore(method, newOne);
+
+                                MethodInsnNode newTwo =
+                                    new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayAfterForge", "()V", false);
+                                m.instructions.insert(method.getNext().getNext().getNext().getNext().getNext().getNext(), newTwo);
+                                hasFoundStartGame = true;
+                                hasFoundOnce = true;
+                            }
+                            else {
+                                // Pause when minecraft inits its render global
+                                MethodInsnNode pause = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "pause", "()V", false);
+                                m.instructions.insertBefore(getPrevious(method, 35), pause);
+
+                                MethodInsnNode resume = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "resume", "()V", false);
+                                m.instructions.insertBefore(getPrevious(method, 33), resume);
+                                break;
+                            }
                         }
                     }
                 }
@@ -115,5 +132,13 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         classNode.accept(cw);
         System.out.println("Transformed Minecraft");
         return cw.toByteArray();
+    }
+
+    private AbstractInsnNode getPrevious(AbstractInsnNode node, int num) {
+        while (num > 0) {
+            node = node.getPrevious();
+            num--;
+        }
+        return node;
     }
 }

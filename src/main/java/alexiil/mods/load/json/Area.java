@@ -1,16 +1,13 @@
 package alexiil.mods.load.json;
 
 public class Area {
-    public final int x;
-    public final int y;
-    public final int width;
-    public final int height;
+    public final String x, y, width, height;
 
-    public Area(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    public Area(double x, double y, double width, double height) {
+        this.x = Double.toString(x);
+        this.y = Double.toString(y);
+        this.width = Double.toString(width);
+        this.height = Double.toString(height);
     }
 
     @Override
