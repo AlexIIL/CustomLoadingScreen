@@ -41,18 +41,20 @@ printMessage "Building AlexIILLib..."
 tryExecute "./gradlew build"
 cd ..
 printMessage "Setting Up Better Loading Screen..."
-if [ $1 = "build" ]; then
+if [ "$1" = "build" ]; then
     tryExecute "./gradlew setupCIWorkspace"
     printMessage "Building Better Loading Screen..."
     tryExecute "./gradlew build"
-    printMessage "Setting up Version Info..."
-    tryExecute "git clone https://github.com/AlexIIL/VersionInfo.git"
-    printMessage "Building version Info..."
-    cd VersionInfo
-    tryExecute "./gradlew build"
-    cd build/libs
-    printMessage "Running Version Info..."
-    tryExecute "java -jar VersionInfo.jar AlexIIL BetterLoadingScreen"
+    if [ "$2" = "version" ]; then
+        printMessage "Setting up Version Info..."
+        git clone https://github.com/AlexIIL/VersionInfo.git
+        printMessage "Building version Info..."
+        cd VersionInfo
+        tryExecute "./gradlew build"
+        cd build/libs
+        printMessage "Running Version Info..."
+        tryExecute "java -jar VersionInfo.jar AlexIIL BetterLoadingScreen"
+    fi
     printMessage "Build Complete!"
 else
     tryExecute "./gradlew setupDecompWorkspace"
