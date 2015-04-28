@@ -26,10 +26,13 @@ import alexiil.mods.load.json.ConfigBase;
 import alexiil.mods.load.json.EPosition;
 import alexiil.mods.load.json.EType;
 import alexiil.mods.load.json.ImageRender;
+import alexiil.mods.load.json.JsonAction;
 import alexiil.mods.load.json.JsonConfig;
+import alexiil.mods.load.json.JsonFactory;
 import alexiil.mods.load.json.JsonFunction;
 import alexiil.mods.load.json.JsonInstruction;
 import alexiil.mods.load.json.JsonRenderingPart;
+import alexiil.mods.load.json.JsonVariable;
 import alexiil.mods.load.render.RenderingStatus.ProgressPair;
 
 public class MinecraftDisplayer implements IDisplayer {
@@ -153,8 +156,8 @@ public class MinecraftDisplayer implements IDisplayer {
         // Preset 3 uses rotating cakes. And non rotating cakes.
 
         String cakeIcon = "textures/items/cake.png";
+        String cakseSide = "textures/blocks/cake_side.png";
         String cakeInner = "textures/blocks/cake_inner.png";
-        String cakeSide = "textures/blocks/cake_side.png";
 
         JsonRenderingPart[] parts = new JsonRenderingPart[8];
         // Rotating Cakes:
@@ -187,15 +190,15 @@ public class MinecraftDisplayer implements IDisplayer {
 
         // Cake Bar
         parts[6] =
-            new JsonRenderingPart(new ImageRender(cakeInner, EPosition.CENTER, EType.STATIC, new Area(0, 0, 1024, 256), new Area(0, 0, 256, 64)),
+            new JsonRenderingPart(new ImageRender(cakseSide, EPosition.CENTER, EType.STATIC, new Area(0, 0, 1024, 256), new Area(0, 0, 256, 64)),
                 new JsonInstruction[0], "true");
         parts[7] =
-            new JsonRenderingPart(new ImageRender(cakeSide, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 0, 1024, 256), new Area(0, 0,
+            new JsonRenderingPart(new ImageRender(cakeInner, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 0, 1024, 256), new Area(0, 0,
                 256, 64)), new JsonInstruction[0], "true");
 
         JsonFunction[] functions = new JsonFunction[] { new JsonFunction("cake_rotation", "seconds * seconds * 50") };
 
-        presetData = new ConfigBase(parts, functions, null);
+        presetData = new ConfigBase(parts, functions, new JsonFactory[0], new JsonAction[0], new JsonVariable[0]);
 
         definePreset(configDir, "preset-CAKE", presetData);
 

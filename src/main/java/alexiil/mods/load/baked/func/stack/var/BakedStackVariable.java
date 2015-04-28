@@ -15,6 +15,8 @@ public class BakedStackVariable extends BakedStackFunction {
         boolean key = status.tempVariables.containsKey(name);
         if (key)
             stack.push(status.tempVariables.get(name));
+        else if (status.definedVariables.containsKey(name))
+            stack.push(status.definedVariables.get(name));
         else
             throw new StackFunctionException("The specified variable (" + name + ") did not have an allocation on the map!");
     }

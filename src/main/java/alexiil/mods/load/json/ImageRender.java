@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import alexiil.mods.load.baked.BakedAnimatedRender;
 import alexiil.mods.load.baked.BakedColourSimple;
 import alexiil.mods.load.baked.BakedInstruction;
 import alexiil.mods.load.baked.BakedPositionFunctional;
@@ -11,18 +12,20 @@ import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.BakedTextRenderStatic;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
-import alexiil.mods.load.render.BakedImageRender;
+import alexiil.mods.load.baked.render.BakedImageRender;
+import alexiil.mods.load.baked.render.BakedPanoramaRender;
 
 public class ImageRender {
-    public final String resourceLocation;
-    public final EPosition positionType;// Baked
-    public final EPosition offsetPos;// Baked
+    public final String resourceLocation;// Never going to be Baked
+    public final EPosition positionType;
+    public final EPosition offsetPos;
     public final EType type;
     public final Area texture;
-    public final Area position;// Baked
-    public final String colour;// Baked
+    public final Area position;
+    public final String colour;
     public final String text;
     public final boolean animated;
+    public final String frame;
 
     public ImageRender(String resource, EPosition positionType, EPosition offsetPos, EType type, Area texture, Area position, String colour,
             String text) {
@@ -35,6 +38,7 @@ public class ImageRender {
         this.colour = colour;
         this.text = text;
         this.animated = false;
+        this.frame = "0";
     }
 
     public ImageRender(String resourceLocation, EPosition positionType, EType type, Area texture, Area position, String colour, String text) {
@@ -79,7 +83,8 @@ public class ImageRender {
             case DYNAMIC_PERCENTAGE: {
                 String width = "percentage * (" + position.width + ")";
                 String uWidth = "percentage * (" + texture.width + ")";
-                return imageRender(position.x, position.y, width, position.height, texture.x, texture.y, uWidth, texture.height, functions);
+                return imageRender(position.x, position.y, width, position.height, texture.x, texture.y, uWidth, texture.height, functions, false,
+                    "0");
             }
             case DYNAMIC_TEXT_PERCENTAGE: {
                 return textRender("(percentage * 100) integer + '%'", position.x, position.y, colour, functions);
@@ -87,15 +92,12 @@ public class ImageRender {
             case DYNAMIC_TEXT_STATUS: {
                 return textRender("status", position.x, position.y, colour, functions);
             }
+            case DYNAMIC_PANORAMA: {
+                return panoramaRender(functions);
+            }
             case STATIC: {
-                if (animated) {
-                    // TODO: work out animation
-                    return null;
-                }
-                else {
-                    return imageRender(position.x, position.y, position.width, position.height, texture.x, texture.y, texture.width, texture.height,
-                        functions);
-                }
+                return imageRender(position.x, position.y, position.width, position.height, texture.x, texture.y, texture.width, texture.height,
+                    functions, animated, frame);
             }
             case STATIC_TEXT: {
                 return textRender(text, position.x, position.y, colour, functions);
@@ -107,7 +109,7 @@ public class ImageRender {
     }
 
     private BakedImageRender imageRender(String x, String y, String width, String height, String u, String v, String uWidth, String vHeight,
-            Map<String, IBakedFunction<?>> functions) {
+            Map<String, IBakedFunction<?>> functions, boolean animated, String frame) {
         IBakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(x, functions);
         IBakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(y, functions);
         IBakedFunction<Double> widthFunc = FunctionBaker.bakeFunctionDouble(width, functions);
@@ -117,7 +119,12 @@ public class ImageRender {
         IBakedFunction<Double> vFunc = FunctionBaker.bakeFunctionDouble(v, functions);
         IBakedFunction<Double> uWidthFunc = FunctionBaker.bakeFunctionDouble(uWidth, functions);
         IBakedFunction<Double> vHeightFunc = FunctionBaker.bakeFunctionDouble(vHeight, functions);
-        return new BakedImageRender(resourceLocation, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc);
+        if (animated) {
+            IBakedFunction<Double> frameFunc = FunctionBaker.bakeFunctionDouble(frame, functions);
+            return new BakedAnimatedRender(resourceLocation, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc, frameFunc);
+        }
+        else
+            return new BakedImageRender(resourceLocation, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc);
     }
 
     private BakedTextRenderStatic textRender(String text, String x, String y, String colour, Map<String, IBakedFunction<?>> functions) {
@@ -126,6 +133,11 @@ public class ImageRender {
         IBakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(y, functions);
         IBakedFunction<Double> colourFunc = FunctionBaker.bakeFunctionDouble(colour);
         return new BakedTextRenderStatic(textFunc, xFunc, yFunc, colourFunc, resourceLocation);
+    }
+
+    private BakedPanoramaRender panoramaRender(Map<String, IBakedFunction<?>> functions) {
+        IBakedFunction<Double> blurMultiple = FunctionBaker.bakeFunctionDouble("1", functions);
+        return new BakedPanoramaRender(blurMultiple, resourceLocation);
     }
 
     public List<BakedInstruction> bakeInstructions(Map<String, IBakedFunction<?>> functions) {
@@ -151,6 +163,8 @@ public class ImageRender {
                 y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY("('textHeight':variable)", position.y));
                 break;
             }
+            case DYNAMIC_PANORAMA:
+                return list;
         }
 
         list.add(new BakedPositionFunctional(FunctionBaker.bakeFunctionDouble(x, functions), FunctionBaker.bakeFunctionDouble(y, functions),

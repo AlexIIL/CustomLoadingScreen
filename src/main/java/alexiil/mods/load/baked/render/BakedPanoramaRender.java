@@ -1,0 +1,113 @@
+package alexiil.mods.load.baked.render;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.util.glu.Project;
+
+import alexiil.mods.load.baked.BakedRender;
+import alexiil.mods.load.baked.func.FunctionException;
+import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.render.MinecraftDisplayerRenderer;
+import alexiil.mods.load.render.RenderingStatus;
+
+public class BakedPanoramaRender extends BakedRender {
+    /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */
+    private double panoramaTimer;
+
+    private final ResourceLocation[] titlePanoramaPaths;
+
+    public BakedPanoramaRender(IBakedFunction<Double> blurMultiple, String resourceLocation) {
+        String[] strings = new String[6];
+        for (int i = 0; i < 6; i++)
+            strings[i] = resourceLocation.replace("_x", "_" + i);
+        titlePanoramaPaths = new ResourceLocation[6];
+        for (int i = 0; i < 6; i++)
+            titlePanoramaPaths[i] = new ResourceLocation(strings[i]);
+    }
+
+    /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
+     * customizability added */
+    @Override
+    public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
+        panoramaTimer = status.getSeconds() * 20;
+        drawPanorama();
+    }
+
+    private void drawPanorama() {
+        Minecraft mc = Minecraft.getMinecraft();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.matrixMode(5889);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        Project.gluPerspective(120.0F, 1.0F, 0.05F, 10.0F);
+        GlStateManager.matrixMode(5888);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.disableAlpha();
+        byte b0 = 8;
+
+        for (int k = 0; k < b0 * b0; ++k) {
+            GlStateManager.pushMatrix();
+            float f1 = ((float) (k % b0) / (float) b0 - 0.5F) / 64.0F;
+            float f2 = ((float) (k / b0) / (float) b0 - 0.5F) / 64.0F;
+            float f3 = 0.0F;
+            GlStateManager.translate(f1, f2, f3);
+            GlStateManager.rotate(MathHelper.sin(((float) this.panoramaTimer) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-((float) this.panoramaTimer) * 0.1F, 0.0F, 1.0F, 0.0F);
+
+            for (int l = 0; l < 6; ++l) {
+                GlStateManager.pushMatrix();
+
+                if (l == 1) {
+                    GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+                }
+
+                if (l == 2) {
+                    GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                }
+
+                if (l == 3) {
+                    GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+                }
+
+                if (l == 4) {
+                    GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                }
+
+                if (l == 5) {
+                    GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+                }
+
+                mc.getTextureManager().bindTexture(titlePanoramaPaths[l]);
+                worldrenderer.startDrawingQuads();
+                worldrenderer.setColorRGBA_I(16777215, 255 / (k + 1));
+                float f4 = 0.0F;
+                worldrenderer.addVertexWithUV(-1.0D, -1.0D, 1.0D, (double) (0.0F + f4), (double) (0.0F + f4));
+                worldrenderer.addVertexWithUV(1.0D, -1.0D, 1.0D, (double) (1.0F - f4), (double) (0.0F + f4));
+                worldrenderer.addVertexWithUV(1.0D, 1.0D, 1.0D, (double) (1.0F - f4), (double) (1.0F - f4));
+                worldrenderer.addVertexWithUV(-1.0D, 1.0D, 1.0D, (double) (0.0F + f4), (double) (1.0F - f4));
+                tessellator.draw();
+                GlStateManager.popMatrix();
+            }
+
+            GlStateManager.popMatrix();
+            GlStateManager.colorMask(true, true, true, false);
+        }
+
+        worldrenderer.setTranslation(0.0D, 0.0D, 0.0D);
+        GlStateManager.colorMask(true, true, true, true);
+        GlStateManager.matrixMode(5889);
+        GlStateManager.popMatrix();
+        GlStateManager.matrixMode(5888);
+        GlStateManager.popMatrix();
+        GlStateManager.enableAlpha();
+    }
+}

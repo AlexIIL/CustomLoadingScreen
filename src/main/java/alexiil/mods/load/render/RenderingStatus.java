@@ -231,7 +231,7 @@ public class RenderingStatus {
     private int screenWidth, screenHeight;
     private double seconds = 0;
     /** A map to store location specific variables */
-    public final Map<String, Object> tempVariables = new HashMap<String, Object>();
+    public final Map<String, Object> tempVariables = new HashMap<String, Object>(), definedVariables = new HashMap<String, Object>();
 
     public RenderingStatus(int width, int height) {
         progressState = new ProgressState();

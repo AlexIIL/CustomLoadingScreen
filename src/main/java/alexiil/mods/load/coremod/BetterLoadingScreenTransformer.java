@@ -1,5 +1,9 @@
 package alexiil.mods.load.coremod;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -92,6 +96,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                                 MethodInsnNode newOne =
                                     new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayFirstProgress", "()V", false);
                                 m.instructions.insertBefore(method, newOne);
+                                i++;
 
                                 MethodInsnNode newTwo =
                                     new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayAfterForge", "()V", false);
@@ -102,10 +107,10 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                             else {
                                 // Pause when minecraft inits its render global
                                 MethodInsnNode pause = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "pause", "()V", false);
-                                m.instructions.insertBefore(getPrevious(method, 35), pause);
+                                m.instructions.insertBefore(getPrevious(method, 39), pause);
 
                                 MethodInsnNode resume = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "resume", "()V", false);
-                                m.instructions.insertBefore(getPrevious(method, 33), resume);
+                                m.instructions.insertBefore(getPrevious(method, 38), resume);
                                 break;
                             }
                         }
@@ -131,7 +136,24 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         System.out.println("Transformed Minecraft");
-        return cw.toByteArray();
+        byte[] bytes = cw.toByteArray();
+
+        // Export it :)
+
+        File folder = new File("./bls-asm");
+        folder.mkdir();
+        File fle = new File(folder, "Minecraft.class");
+        try {
+            FileOutputStream stream = new FileOutputStream(fle);
+            stream.write(bytes);
+            stream.flush();
+            stream.close();
+        }
+        catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return bytes;
     }
 
     private AbstractInsnNode getPrevious(AbstractInsnNode node, int num) {

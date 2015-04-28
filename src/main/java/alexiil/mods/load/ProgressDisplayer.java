@@ -174,6 +174,8 @@ public class ProgressDisplayer {
     public static ModContainer modContainer;
 
     public static boolean isClient() {
+        if (clientState < 1000)
+            return true;
         // TODO: fix this! its broken :/
         if (clientState != -1)
             return clientState == 1;
@@ -214,14 +216,8 @@ public class ProgressDisplayer {
             }
         };
 
-        File fileOld = new File("./config/betterloadingscreen.cfg");
-        File fileNew = new File("./config/BetterLoadingScreen/config.cfg");
-
-        Configuration cfg;
-        if (fileOld.exists())
-            cfg = new Configuration(fileOld);
-        else
-            cfg = new Configuration(fileNew);
+        Configuration cfg = new Configuration(new File("./config/BetterLoadingScreen/config.cfg"));
+        cfg.load();
 
         boolean useMinecraft = isClient();
         if (useMinecraft) {

@@ -14,6 +14,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.SharedDrawable;
 
+import alexiil.mods.load.baked.BakedAction;
+import alexiil.mods.load.baked.BakedConfig;
 import alexiil.mods.load.baked.BakedInstruction;
 import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.func.FunctionException;
@@ -23,8 +25,9 @@ import com.google.common.base.Throwables;
 
 public class MinecraftDisplayerRenderer {
     private final MinecraftDisplayer displayer;
-    private final TextureAnimator animator;
+    public final TextureAnimator animator;
     private final BakedRenderingPart[] renderingParts;
+    private final BakedAction[] actions;
     private long lastTime;
     private Minecraft mc;
     private Map<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
@@ -37,72 +40,99 @@ public class MinecraftDisplayerRenderer {
         this.animator = animator;
         mc = Minecraft.getMinecraft();
         textureManager = mc.renderEngine;
+        BakedConfig bcfg = config.bake();
+        renderingParts = bcfg.renderingParts;
+        actions = bcfg.actions;
+
         lastTime = System.currentTimeMillis();
-        renderingParts = config.bake();
     }
 
     // Called 60 times per second to render the progress
     public void tick() throws FunctionException {
         long now = System.currentTimeMillis();
-        ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-        displayer.status().tick(displayer.getText(), displayer.getProgress(), resolution, (now - lastTime) / 1000D);
+        try {
+            ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            displayer.status().tick(displayer.getText(), displayer.getProgress(), resolution, (now - lastTime) / 1000D);
 
-        if (textureManager == null) {
-            textureManager = mc.renderEngine = new TextureManager(mc.getResourceManager());
-            mc.refreshResources();
-            textureManager.onResourceManagerReload(mc.getResourceManager());
-        }
-        if (textureManager != mc.renderEngine)
-            textureManager = mc.renderEngine;
-
-        if (first) {
-            first = false;
-            try {
-                drawable = new SharedDrawable(Display.getDrawable());
-                drawable.makeCurrent();
+            if (textureManager == null) {
+                textureManager = mc.renderEngine = new TextureManager(mc.getResourceManager());
+                mc.refreshResources();
+                textureManager.onResourceManagerReload(mc.getResourceManager());
             }
-            catch (Throwable t) {
-                throw Throwables.propagate(t);
-            }
-        }
+            if (textureManager != mc.renderEngine)
+                textureManager = mc.renderEngine;
 
-        // Pre render stuffs
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, (double) resolution.getScaledWidth(), (double) resolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-        GlStateManager.loadIdentity();
-        GlStateManager.translate(0.0F, 0.0F, -2000.0F);
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        GlStateManager.disableDepth();
-        GlStateManager.enableTexture2D();
-
-        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GlStateManager.clearColor(1, 1, 1, 1);
-
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-
-        GlStateManager.color(1, 1, 1, 1);
-
-        // Actual rendering
-        for (BakedRenderingPart brp : renderingParts) {
-            if (brp.shouldRender.call(displayer.status())) {
-                GlStateManager.pushMatrix();
-                brp.render.populateVariableMap(displayer.status(), this);
-                for (BakedInstruction insn : brp.instructions) {
-                    insn.render(displayer.status());
+            if (first) {
+                try {
+                    drawable = new SharedDrawable(Display.getDrawable());
+                    drawable.makeCurrent();
                 }
-                brp.render.render(displayer.status(), this);
-                GlStateManager.popMatrix();
+                catch (Throwable t) {
+                    throw Throwables.propagate(t);
+                }
+                first = false;
+            }
+
+            // Pre render stuffs
+            GlStateManager.matrixMode(GL11.GL_PROJECTION);
+            GlStateManager.loadIdentity();
+            GlStateManager.ortho(0.0D, (double) resolution.getScaledWidth(), (double) resolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
+            GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+            GlStateManager.loadIdentity();
+            GlStateManager.translate(0.0F, 0.0F, -2000.0F);
+            GlStateManager.disableLighting();
+            GlStateManager.disableFog();
+            GlStateManager.disableDepth();
+            GlStateManager.enableTexture2D();
+
+            GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+            GlStateManager.clearColor(1, 1, 1, 1);
+
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+
+            GlStateManager.color(1, 1, 1, 1);
+
+            // Actual rendering
+            for (BakedRenderingPart brp : renderingParts) {
+                if (brp.shouldRender.call(displayer.status())) {
+                    GlStateManager.pushMatrix();
+                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
+                    GlStateManager.pushMatrix();
+                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+                    brp.render.populateVariableMap(displayer.status(), this);
+                    for (BakedInstruction insn : brp.instructions) {
+                        insn.render(displayer.status());
+                    }
+                    brp.render.render(displayer.status(), this);
+                    GlStateManager.popMatrix();
+                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
+                    GlStateManager.popMatrix();
+                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+                }
+            }
+
+            // Post render stuffs
+            mc.updateDisplay();
+
+            // Action stuffs
+            for (BakedAction ba : actions) {
+                ba.tickAction(displayer.status());
             }
         }
-
-        // Post render stuffs
-        mc.updateDisplay();
-
-        lastTime = now;
+        catch (Throwable t) {
+            if (t instanceof FunctionException) {
+                lastTime = now;
+                throw (FunctionException) t;
+            }
+            t.printStackTrace();
+        }
+        finally {
+            lastTime = now;
+        }
     }
 
     public FontRenderer fontRenderer(String fontTexture) {
@@ -117,6 +147,7 @@ public class MinecraftDisplayerRenderer {
     }
 
     public void close() {
+        GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.color(1, 1, 1, 1);

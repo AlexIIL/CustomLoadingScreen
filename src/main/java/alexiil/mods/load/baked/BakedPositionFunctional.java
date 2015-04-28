@@ -17,6 +17,9 @@ public class BakedPositionFunctional extends BakedInstruction {
 
     @Override
     public void render(RenderingStatus status) throws FunctionException {
-        GL11.glTranslated(x.call(status), y.call(status), z.call(status));
+        double x = this.x.call(status);
+        double y = this.y.call(status);
+        double z = this.z.call(status);
+        GL11.glTranslated(x, y, z);
     }
 }

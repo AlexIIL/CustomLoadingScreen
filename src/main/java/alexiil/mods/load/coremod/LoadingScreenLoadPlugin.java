@@ -6,6 +6,7 @@ import java.util.Map;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import alexiil.mods.load.ProgressDisplayer;
 import alexiil.mods.load.Translation;
+import alexiil.mods.test.TestModExporter;
 
 @IFMLLoadingPlugin.MCVersion("1.8")
 @IFMLLoadingPlugin.TransformerExclusions({ "alexiil.mods.load.coremod" })
@@ -31,6 +32,9 @@ public class LoadingScreenLoadPlugin implements IFMLLoadingPlugin {
         File coremodLocation = (File) data.get("coremodLocation");
         Translation.addTranslations(coremodLocation);
         ProgressDisplayer.start(coremodLocation);
+
+        // COMMENT THIS LINE OUT FOR RELEASE
+        TestModExporter.dumpMods();
     }
 
     @Override

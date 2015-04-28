@@ -30,8 +30,6 @@ public class BakedPostFixFunction<T> implements IBakedFunction<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T call(RenderingStatus status) throws FunctionException {
-        if (toExecute.isEmpty())
-            return null;
         Deque<Object> stack = new ArrayDeque<Object>();
         int i = 0;
         try {
@@ -39,8 +37,9 @@ public class BakedPostFixFunction<T> implements IBakedFunction<T> {
                 IBakedStackFunction func = toExecute.get(i);
                 func.doOperation(stack, status);
             }
-            if (!stack.isEmpty())
+            if (!stack.isEmpty()) {
                 return (T) stack.pop();
+            }
             throw new StackFunctionException("Empty stack at the end of the function");
         }
         catch (StackFunctionException e) {

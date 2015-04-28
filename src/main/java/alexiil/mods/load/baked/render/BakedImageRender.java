@@ -1,4 +1,4 @@
-package alexiil.mods.load.render;
+package alexiil.mods.load.baked.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -7,9 +7,11 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.func.FunctionException;
 import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.render.MinecraftDisplayerRenderer;
+import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedImageRender extends BakedRender {
-    private final ResourceLocation res;
+    protected final ResourceLocation res;
     private final IBakedFunction<Double> x, y, width, height, u, uWidth, v, vHeight;
 
     public BakedImageRender(String resourceLocation, IBakedFunction<Double> x, IBakedFunction<Double> y, IBakedFunction<Double> width,
@@ -36,7 +38,7 @@ public class BakedImageRender extends BakedRender {
         double uWidth = this.uWidth.call(status);
         double v = this.v.call(status);
         double vHeight = this.vHeight.call(status);
-        Minecraft.getMinecraft().renderEngine.bindTexture(res);
+        bindTexture(status, renderer);
         drawRect(x, y, width, height, u, v, uWidth, vHeight);
     }
 
@@ -50,5 +52,9 @@ public class BakedImageRender extends BakedRender {
         wr.addVertexWithUV(x + drawnWidth, y, 0, (u + uWidth) * f, v * f);
         wr.addVertexWithUV(x, y, 0, u * f, v * f);
         tessellator.draw();
+    }
+
+    public void bindTexture(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
+        Minecraft.getMinecraft().renderEngine.bindTexture(res);
     }
 }

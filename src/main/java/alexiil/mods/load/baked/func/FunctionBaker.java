@@ -35,6 +35,7 @@ import alexiil.mods.load.baked.func.stack.var.BakedStackVariableStatus;
 
 public class FunctionBaker {
     private static final String VALID_CHARACHTERS = "abcdefghijklmnopqrstuvwxyz_'";
+    private static final String HEX_DIGITS = "0123456789abcdef";
 
     // ^ is mathematical power
     // <Double> ^ <Double> returns <Double>
@@ -64,6 +65,8 @@ public class FunctionBaker {
     // 1 = alphabetic char
     // 2 = operator
     private static int getType(String chr) {
+        if (chr.startsWith("0x"))
+            return 0;
         if (VALID_CHARACHTERS.contains(chr))
             return 1;
         if (OPERATORS.contains(chr))
@@ -151,7 +154,13 @@ public class FunctionBaker {
                         break;
                     }
                 }
-                int type = getType(atPos);
+                int type;
+                if (token.equals("0") && atPos.equals("x"))
+                    type = 0;
+                else if (token.startsWith("0x") && HEX_DIGITS.contains(atPos))
+                    type = 0;
+                else
+                    type = getType(atPos);
                 if (type != lastType) {
                     // lastType = type;
                     break;
@@ -165,7 +174,12 @@ public class FunctionBaker {
             lastType = getType(token.substring(0, 1));
             infix = infix.substring(token.length());
             if (lastType == 0) {// Number => should push itself onto the stack
-                list.add(new BakedStackValue<Double>(Double.valueOf(token)));
+                if (token.startsWith("0x")) {// Hex => should transform to normal int, then push itself
+                    int value = Integer.parseInt(token.substring(2), 16);
+                    list.add(new BakedStackValue<Double>((double) value));
+                }
+                else
+                    list.add(new BakedStackValue<Double>(Double.valueOf(token)));
             }
             else if (lastType == 1) {
                 if (token.equals("true")) {
