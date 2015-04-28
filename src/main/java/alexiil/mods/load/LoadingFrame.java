@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,50 +14,9 @@ import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class LoadingFrame extends JFrame {
-    private class ThreadIncrementer extends Thread {
-        private final AtomicBoolean shouldIncrement = new AtomicBoolean(true);
-        private final float from, to, diff;
-        private final long time;
-        private long timeLeft;
-
-        public ThreadIncrementer(float from, float to, long timeLeft) {
-            this.from = from;
-            this.to = to;
-            diff = to - from;
-            this.timeLeft = timeLeft;
-            this.time = timeLeft;
-        }
-
-        public void stopIncrementing() {
-            shouldIncrement.set(false);
-            incrementer = null;
-        }
-
-        @Override
-        public void run() {
-            while (timeLeft > 0 && shouldIncrement.get()) {
-                try {
-                    Thread.sleep(250);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                    break;
-                }
-                timeLeft -= 250;
-                long timeDiff = time - timeLeft;
-                double percent = timeDiff / (double) time;
-                setProgress(from + percent * diff);
-                repaint();
-            }
-            if (incrementer == this)
-                incrementer = null;
-        }
-    }
-
     private JPanel contentPane;
     private JLabel lblState;
     private JProgressBar progressBar;
-    private ThreadIncrementer incrementer;
 
     /** Launch the application. */
     public static LoadingFrame openWindow() {
@@ -120,13 +78,5 @@ public class LoadingFrame extends JFrame {
 
     public void setProgress(double percent) {
         progressBar.setValue((int) percent);
-    }
-
-    public void setProgressIncrementing(float from, float to, long howLongFor) {
-        if (incrementer != null) {
-            incrementer.stopIncrementing();
-        }
-        incrementer = new ThreadIncrementer(from, to, howLongFor);
-        incrementer.start();
     }
 }

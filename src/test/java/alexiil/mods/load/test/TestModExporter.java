@@ -1,4 +1,4 @@
-package alexiil.mods.test;
+package alexiil.mods.load.test;
 
 import java.io.File;
 import java.io.FileOutputStream;

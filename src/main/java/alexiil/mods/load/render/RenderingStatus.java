@@ -18,6 +18,10 @@ public class RenderingStatus {
          * ended. */
         private double end;
 
+        public static <T> FieldState<T> getEmptyState() {
+            return new FieldState<T>(null).end(0);
+        }
+
         /** Initialises a new changeable field state, that has not started yet (but we know it exists, so we can refer to
          * it and render it as an upcoming task). */
         public FieldState(T field) {
@@ -35,18 +39,20 @@ public class RenderingStatus {
          * 
          * @param now
          *            How long, in seconds, the loading screen has been ticking for */
-        public void start(double now) {
+        public FieldState<T> start(double now) {
             start = now;
+            return this;
         }
 
         /** Stops this field from ticking, and ends it. If this field has not been started yet then it starts it too.
          * 
          * @param now
          *            How long, in seconds, the loading screen has been ticking for */
-        public void end(double now) {
+        public FieldState<T> end(double now) {
             if (start == -1)
                 start = now;
             end = now;
+            return this;
         }
 
         /** How long ago, in seconds, this was created
@@ -119,6 +125,14 @@ public class RenderingStatus {
             history.add(new FieldState<T>(field));
         }
 
+        private FieldState<T> getChanged(int diff) {
+            if (current + diff < 0)
+                return FieldState.getEmptyState();
+            if (current + diff > history.size())
+                return FieldState.getEmptyState();
+            return history.get(current + diff);
+        }
+
         /** @return The currently active field */
         public T getCurrent() {
             return getCurrentDiff(0);
@@ -127,11 +141,19 @@ public class RenderingStatus {
         /** @return The field that is difference away from the currently active field. (negative numbers are fields that
          *         have stopped, positive numbers are fields that haven't started yet) */
         public T getCurrentDiff(int diff) {
-            if (current + diff < 0)
-                return null;
-            if (current + diff > history.size())
-                return null;
-            return history.get(current + diff).field;
+            return getChanged(diff).field;
+        }
+
+        public double getLength(int diff, double now) {
+            return getChanged(diff).getLength(now);
+        }
+
+        public double getStartDiff(int diff, double now) {
+            return getChanged(diff).getStartDiff(now);
+        }
+
+        public double getEndDiff(int diff, double now) {
+            return getChanged(diff).getEndDiff(now);
         }
 
         /** @return <code>True</code> if there are future fields waiting to be started */
@@ -194,6 +216,20 @@ public class RenderingStatus {
 
         public ProgressPair getCurrentProgress() {
             return progress.getCurrent();
+        }
+
+        // Meta
+
+        public double getLength(int diff, double now) {
+            return progress.getLength(diff, now);
+        }
+
+        public double getStartDiff(int diff, double now) {
+            return progress.getStartDiff(diff, now);
+        }
+
+        public double getEndDiff(int diff, double now) {
+            return progress.getEndDiff(diff, now);
         }
 
         // Children

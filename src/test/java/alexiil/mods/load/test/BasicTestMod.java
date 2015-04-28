@@ -1,4 +1,4 @@
-package alexiil.mods.test;
+package alexiil.mods.load.test;
 
 import net.minecraftforge.fml.common.Mod;
 
