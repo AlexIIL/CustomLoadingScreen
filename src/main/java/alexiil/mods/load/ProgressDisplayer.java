@@ -176,7 +176,7 @@ public class ProgressDisplayer {
     public static boolean isClient() {
         if (clientState < 1000)
             return true;
-        // TODO: fix this! its broken :/
+        // FIXME: isClient() is broken!
         if (clientState != -1)
             return clientState == 1;
         StackTraceElement[] steArr = Thread.currentThread().getStackTrace();
@@ -241,7 +241,7 @@ public class ProgressDisplayer {
 
         // if (System.console() != null)
         // displayers.add(new ConsoleDisplayer());
-        // TODO: fix console logging!
+        // FIXME: fix console logging!
 
         for (IDisplayer displayer : displayers)
             displayer.open(cfg);
@@ -254,10 +254,7 @@ public class ProgressDisplayer {
     }
 
     public static void close() {
-        for (IDisplayer displayer : displayers)
-            displayer.close();
-        displayers.clear();
-        if (isClient() && playSound) {
+        if (isClient() && playSound && displayers.size() != 0) {
             new Thread("BetterLoadingScreen|LoadedSound") {
                 @Override
                 public void run() {
@@ -267,8 +264,11 @@ public class ProgressDisplayer {
                     catch (InterruptedException ignored) {}
                     MinecraftDisplayerWrapper.playFinishedSound();
                 }
-            }.start();;
+            }.start();
         }
+        for (IDisplayer displayer : displayers)
+            displayer.close();
+        displayers.clear();
     }
 
     public static void minecraftDisplayFirstProgress() {

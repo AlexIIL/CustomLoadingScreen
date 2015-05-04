@@ -1,6 +1,7 @@
 package alexiil.mods.load.render;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -14,35 +15,40 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.SharedDrawable;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import alexiil.mods.load.baked.BakedAction;
 import alexiil.mods.load.baked.BakedConfig;
-import alexiil.mods.load.baked.BakedInstruction;
+import alexiil.mods.load.baked.BakedFactory;
 import alexiil.mods.load.baked.BakedRenderingPart;
+import alexiil.mods.load.baked.factory.FactoryElement;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.json.ConfigBase;
-
-import com.google.common.base.Throwables;
 
 public class MinecraftDisplayerRenderer {
     private final MinecraftDisplayer displayer;
     public final TextureAnimator animator;
+    public final List<FactoryElement> elements = Lists.newArrayList();
     private final BakedRenderingPart[] renderingParts;
     private final BakedAction[] actions;
+    private final BakedFactory[] factories;
     private long lastTime;
     private Minecraft mc;
-    private Map<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
+    private final Map<String, FontRenderer> fontRenderers = Maps.newHashMap();
     private TextureManager textureManager;
     private boolean first = true;
     private SharedDrawable drawable;
+    private final List<BakedRenderingPart> tempList = Lists.newArrayList();
 
-    public MinecraftDisplayerRenderer(MinecraftDisplayer disp, ConfigBase config, TextureAnimator animator) {
+    public MinecraftDisplayerRenderer(MinecraftDisplayer disp, BakedConfig config, TextureAnimator animator) {
         displayer = disp;
         this.animator = animator;
         mc = Minecraft.getMinecraft();
         textureManager = mc.renderEngine;
-        BakedConfig bcfg = config.bake();
-        renderingParts = bcfg.renderingParts;
-        actions = bcfg.actions;
+        renderingParts = config.renderingParts;
+        actions = config.actions;
+        factories = config.factories;
 
         lastTime = System.currentTimeMillis();
     }
@@ -52,7 +58,8 @@ public class MinecraftDisplayerRenderer {
         long now = System.currentTimeMillis();
         try {
             ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-            displayer.status().tick(displayer.getText(), displayer.getProgress(), resolution, (now - lastTime) / 1000D);
+            RenderingStatus status = displayer.status();
+            status.tick(displayer.getText(), displayer.getProgress(), resolution, (now - lastTime) / 1000D);
 
             if (textureManager == null) {
                 textureManager = mc.renderEngine = new TextureManager(mc.getResourceManager());
@@ -92,35 +99,43 @@ public class MinecraftDisplayerRenderer {
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
             GlStateManager.color(1, 1, 1, 1);
 
-            // Actual rendering
-            for (BakedRenderingPart brp : renderingParts) {
-                if (brp.shouldRender.call(displayer.status())) {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-                    brp.render.populateVariableMap(displayer.status(), this);
-                    for (BakedInstruction insn : brp.instructions) {
-                        insn.render(displayer.status());
-                    }
-                    brp.render.render(displayer.status(), this);
-                    GlStateManager.popMatrix();
-                    GlStateManager.matrixMode(GL11.GL_PROJECTION);
-                    GlStateManager.popMatrix();
-                    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-                }
+            // Factory logic
+            for (FactoryElement element : elements) {
+                element.tick(status, this);
+            }
+
+            for (BakedFactory bf : factories) {
+                bf.tick(status, this);
+            }
+
+            // Add all renders to the list
+            tempList.clear();
+            Collections.addAll(tempList, this.renderingParts);
+
+            for (FactoryElement fe : elements) {
+                tempList.add(fe.component);
+            }
+
+            // Actually render them
+            for (BakedRenderingPart brp : tempList) {
+                brp.tick(status, this);
             }
 
             // Post render stuffs
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 0);
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+            GlStateManager.color(1, 1, 1, 1);
             mc.updateDisplay();
 
             // Action stuffs
             for (BakedAction ba : actions) {
-                ba.tickAction(displayer.status());
+                ba.tick(status, this);
             }
         }
         catch (Throwable t) {
@@ -147,7 +162,8 @@ public class MinecraftDisplayerRenderer {
     }
 
     public void close() {
-        GlStateManager.disableBlend();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.color(1, 1, 1, 1);

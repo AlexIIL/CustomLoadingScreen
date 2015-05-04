@@ -14,7 +14,6 @@ import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class LoadingFrame extends JFrame {
-    private JPanel contentPane;
     private JLabel lblState;
     private JProgressBar progressBar;
 
@@ -51,7 +50,7 @@ public class LoadingFrame extends JFrame {
         setTitle("Minecraft Loading");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setBounds(100, 100, 450, 85);
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout(0, 0));

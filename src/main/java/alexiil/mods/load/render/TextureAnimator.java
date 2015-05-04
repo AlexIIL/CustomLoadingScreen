@@ -16,10 +16,11 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import alexiil.mods.load.json.ConfigBase;
-import alexiil.mods.load.json.JsonRenderingPart;
 
 import com.google.common.collect.ImmutableList;
+
+import alexiil.mods.load.baked.BakedConfig;
+import alexiil.mods.load.baked.BakedRenderingPart;
 
 public class TextureAnimator {
     public class AnimatedTexture {
@@ -101,22 +102,47 @@ public class TextureAnimator {
     private static final int TEXTURE_MILLI_SECONDS = 16384;// 2 ^ 14
     /** The cap before starting to delete older textures, in pixels. If the given texture has more total pixels than this
      * number, older textures will be deleted quicker. Default is a 256x texture at 60fps, for 10 seconds */
-    private static final int TEXTURE_PIXEL_CAP = 256 * 256 * 24 * 10;
+    private static final int TEXTURE_PIXEL_CAP = 256 * 256 * 60 * 10;
     /** The minimum number of pixels that are needed to actually use automatic texture deletion, and postpone uploading
      * until later. Default is a 32x image, at 20fps for 10 seconds. */
-    private static final int TEXTURE_PIXEL_MIN = 32 * 32 * 10 * 10;
+    private static final int TEXTURE_PIXEL_MIN = 32 * 32 * 20 * 10;
     /** The number of frames to upload ahead of time */
     private static final int TEXTURE_UPLOAD_AHEAD = 10;
 
     private Map<String, AnimatedTexture> animatedTextures = new HashMap<String, AnimatedTexture>();
     private long now = System.currentTimeMillis();
 
-    public TextureAnimator(ConfigBase images) {
-        Minecraft mc = Minecraft.getMinecraft();
-        for (JsonRenderingPart render : images.render) {
-            if (render.element.animated) {
+    public static boolean isAnimated(String resourceLocation) {
+        ResourceLocation location = new ResourceLocation(resourceLocation);
+        try {
+            IResource res = Minecraft.getMinecraft().getResourceManager().getResource(location);
+            final InputStream stream = res.getInputStream();
+            for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(stream))) {
                 try {
-                    IResource res = mc.getResourceManager().getResource(new ResourceLocation(render.element.resourceLocation));
+                    reader.setInput(stream);
+                    boolean animated = reader.getNumImages(true) > 1;
+                    reader.dispose();
+                    return animated;
+                }
+                catch (IOException ignored) {}
+                finally {
+                    reader.dispose();
+                }
+            }
+        }
+        catch (IOException ignored) {}
+        return false;
+    }
+
+    public TextureAnimator(BakedConfig images) {
+        Minecraft mc = Minecraft.getMinecraft();
+        for (BakedRenderingPart render : images.renderingParts) {
+            String imageLocation = "";
+            boolean animated = false;
+            String resource = render.render.getLocation();
+            if (isAnimated(resource)) {
+                try {
+                    IResource res = mc.getResourceManager().getResource(new ResourceLocation(resource));
                     final InputStream stream = res.getInputStream();
                     BufferedImage[] frames = null;
                     for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(stream))) {
@@ -128,7 +154,7 @@ public class TextureAnimator {
                                 frames[i] = reader.read(i);
                                 size += frames[i].getHeight() * frames[i].getWidth();
                             }
-                            animatedTextures.put(render.element.resourceLocation, new AnimatedTexture(frames, size));
+                            animatedTextures.put(resource, new AnimatedTexture(frames, size));
                             reader.dispose();
                             break;
                         }

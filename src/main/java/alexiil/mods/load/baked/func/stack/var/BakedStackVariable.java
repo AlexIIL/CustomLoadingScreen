@@ -7,7 +7,6 @@ import alexiil.mods.load.baked.func.stack.StackFunctionException;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedStackVariable extends BakedStackFunction {
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void doOperation(Deque stack, RenderingStatus status) throws StackFunctionException {

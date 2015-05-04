@@ -2,24 +2,26 @@ package alexiil.mods.load.json;
 
 import java.util.Map;
 
-import alexiil.mods.load.baked.BakedColourFunctional;
-import alexiil.mods.load.baked.BakedInstruction;
-import alexiil.mods.load.baked.BakedPositionFunctional;
-import alexiil.mods.load.baked.BakedRotationFunctional;
-import alexiil.mods.load.baked.BakedScaleFunctional;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.insn.BakedColourFunctional;
+import alexiil.mods.load.baked.insn.BakedInstruction;
+import alexiil.mods.load.baked.insn.BakedPositionFunctional;
+import alexiil.mods.load.baked.insn.BakedRotationFunctional;
+import alexiil.mods.load.baked.insn.BakedScaleFunctional;
 
-public class JsonInstruction {
+public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInstruction> {
     public final String function;
     public final String[] arguments;
 
     public JsonInstruction(String func, String[] args) {
+        super("");
         this.function = func;
         this.arguments = args;
     }
 
-    public BakedInstruction bake(Map<String, IBakedFunction<?>> functions) {
+    // TODO: Convert JsonInstruction to use parents for rotation, scaling, colour and position
+    public BakedInstruction actuallyBake(Map<String, IBakedFunction<?>> functions) {
         if (function.equalsIgnoreCase("rotate")) {
             IBakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
             IBakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
@@ -58,6 +60,12 @@ public class JsonInstruction {
                 z = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
             return new BakedPositionFunctional(x, y, z);
         }
+        return null;
+    }
+
+    @Override
+    protected JsonInstruction actuallyConsolidate() {
+        // TODO Auto-generated method stub
         return null;
     }
 }

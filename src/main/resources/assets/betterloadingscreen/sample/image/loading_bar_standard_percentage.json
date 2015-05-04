@@ -1,0 +1,11 @@
+{
+  "resourceLocation":"betterloadingscreen:textures/progressBars.png",
+  "positionType":"CENTER",
+  "offsetPos":"CENTER_LEFT",
+  "position":{
+    "x":"0",
+    "y":"0",
+    "width":"percentage * 182",
+    "height":"5"
+  }
+}

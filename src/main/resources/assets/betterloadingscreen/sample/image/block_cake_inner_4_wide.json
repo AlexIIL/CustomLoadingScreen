@@ -1,0 +1,11 @@
+{
+  "parent":"sample/block_4_wide",
+  "offsetPos":"CENTER_LEFT",
+  "resourceLocation":"textures/blocks/cake_inner.png",
+  "position": {
+    "x": "0",
+    "y": "0",
+    "width": "percentage * 256",
+    "height": "64"
+  }
+}

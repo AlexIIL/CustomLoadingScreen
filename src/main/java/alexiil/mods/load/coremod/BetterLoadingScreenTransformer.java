@@ -23,11 +23,13 @@ import alexiil.mods.load.ProgressDisplayer;
 public class BetterLoadingScreenTransformer implements IClassTransformer, Opcodes {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("alexiil.mods.load.BLSLog"))
+            return basicClass;
         if (transformedName.equals("net.minecraft.client.Minecraft"))
             return transformMinecraft(basicClass, transformedName.equals(name));
         if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
             return transformObjectFactoryClient(basicClass);
-        return basicClass;
+        return LogHelperTransformer.transform(transformedName, basicClass);
     }
 
     private byte[] transformObjectFactoryClient(byte[] before) {

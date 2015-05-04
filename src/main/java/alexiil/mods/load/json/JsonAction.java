@@ -4,11 +4,12 @@ import java.util.Map;
 
 import alexiil.mods.load.baked.BakedAction;
 import alexiil.mods.load.baked.action.ActionSound;
-import alexiil.mods.load.baked.func.BakedFunctionConstant;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.func.var.BakedFunctionConstant;
 
-public class JsonAction {
+public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
+    @Deprecated
     public enum EType {
         SOUND;
     }
@@ -19,13 +20,16 @@ public class JsonAction {
     public final String[] arguments;
 
     public JsonAction(EType type, String conditionStart, String conditionEnd, String[] arguments) {
+        super("");
         this.type = type;
         this.conditionStart = conditionStart;
         this.conditionEnd = conditionEnd;
         this.arguments = arguments;
     }
 
-    public BakedAction bake(Map<String, IBakedFunction<?>> functions) {
+    // TODO: Convert JsonAction to use parents instead of an enumeration
+    @Override
+    protected BakedAction actuallyBake(Map<String, IBakedFunction<?>> functions) {
         switch (type) {
             case SOUND: {
                 IBakedFunction<Boolean> start = FunctionBaker.bakeFunctionBoolean(conditionStart, functions);
@@ -40,5 +44,10 @@ public class JsonAction {
             }
         }
         return null;
+    }
+
+    @Override
+    protected JsonAction actuallyConsolidate() {
+        return this;
     }
 }

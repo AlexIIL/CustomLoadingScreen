@@ -57,7 +57,7 @@ public class RenderingStatus {
 
         /** How long ago, in seconds, this was created
          * 
-         * @param now */
+         * @param now  How long, in seconds, the loading screen has been ticking for*/
         private double getLength(double now) {
             return end == -1 ? now - start : end - start;
         }
@@ -93,8 +93,7 @@ public class RenderingStatus {
         }
 
         /** End the current field immediately.
-         * 
-         * @param field
+         *
          * @param now
          *            How long, in seconds, the loading screen has been ticking for. */
         public void endCurrent(double now) {
@@ -119,8 +118,7 @@ public class RenderingStatus {
         /** Adds a field as something to be started in the future. NOTE: this adds it to the last field to be started, so
          * you cannot call this out of order.
          * 
-         * @param field
-         * @param now */
+         * @param field */
         public void addFuture(T field) {
             history.add(new FieldState<T>(field));
         }

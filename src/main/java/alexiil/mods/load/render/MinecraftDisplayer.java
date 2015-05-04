@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,30 +19,32 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.client.FMLFolderResourcePack;
+
+import com.google.common.collect.Maps;
+
+import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.ProgressDisplayer;
 import alexiil.mods.load.ProgressDisplayer.IDisplayer;
+import alexiil.mods.load.baked.BakedConfig;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.json.Area;
-import alexiil.mods.load.json.ConfigBase;
-import alexiil.mods.load.json.EPosition;
-import alexiil.mods.load.json.EType;
-import alexiil.mods.load.json.ImageRender;
-import alexiil.mods.load.json.JsonAction;
+import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.func.var.BakedFunctionConstant;
+import alexiil.mods.load.baked.func.var.BakedVariablePercentage;
+import alexiil.mods.load.baked.func.var.BakedVariableScreenHeight;
+import alexiil.mods.load.baked.func.var.BakedVariableScreenWidth;
+import alexiil.mods.load.baked.func.var.BakedVariableSeconds;
+import alexiil.mods.load.baked.func.var.BakedVariableStatus;
 import alexiil.mods.load.json.JsonConfig;
-import alexiil.mods.load.json.JsonFactory;
-import alexiil.mods.load.json.JsonFunction;
-import alexiil.mods.load.json.JsonInstruction;
-import alexiil.mods.load.json.JsonRenderingPart;
-import alexiil.mods.load.json.JsonVariable;
+import alexiil.mods.load.json.JsonConfigLoader;
 import alexiil.mods.load.render.RenderingStatus.ProgressPair;
 
 public class MinecraftDisplayer implements IDisplayer {
     // private static Logger log = LogManager.getLogger("BetterLoadingScreen");
     private static String sound;
     private static String defaultSound = "random.levelup";
-    private ConfigBase toDisplay;
+    private JsonConfig toDisplay;
     // private TextureManager textureManager = null;
-    // private Map<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
+    // private Map<String, FontRenderer> fontRenderers = Maps.newHashMap();
     // private FontRenderer fontRenderer = null;
     // private ScaledResolution resolution = null;
     private Minecraft mc = null;
@@ -57,12 +60,12 @@ public class MinecraftDisplayer implements IDisplayer {
         ResourceLocation location = new ResourceLocation(sound);
         SoundEventAccessorComposite snd = soundHandler.getSound(location);
         if (snd == null) {
-            System.out.println("The sound given (" + sound + ") did not give a valid sound!");
+            BLSLog.warn("The sound given (" + sound + ") did not give a valid sound!");
             location = new ResourceLocation(defaultSound);
             snd = soundHandler.getSound(location);
         }
         if (snd == null) {
-            System.out.println("Default sound did not give a valid sound!");
+            BLSLog.warn("Default sound did not give a valid sound!");
             return;
         }
         ISound sound = PositionedSoundRecord.create(location);
@@ -84,6 +87,21 @@ public class MinecraftDisplayer implements IDisplayer {
             }
         }
         return null;
+    }
+
+    private static Map<String, IBakedFunction<?>> getDefaultMap() {
+        Map<String, IBakedFunction<?>> functions = Maps.newHashMap();
+
+        functions.put("true", new BakedFunctionConstant<Boolean>(true));
+        functions.put("false", new BakedFunctionConstant<Boolean>(false));
+
+        functions.put("status", new BakedVariableStatus());
+        functions.put("percentage", new BakedVariablePercentage());
+        functions.put("screenwidth", new BakedVariableScreenWidth());
+        functions.put("screenheight", new BakedVariableScreenHeight());
+        functions.put("seconds", new BakedVariableSeconds());
+
+        return functions;
     }
 
     // Because of the wrapper, we can actually use this to create stuffs that we need
@@ -110,107 +128,18 @@ public class MinecraftDisplayer implements IDisplayer {
             configDir.mkdirs();
 
         // Image Config
-        String progress = "betterloadingscreen:textures/progressBars.png";
-        String title = "textures/gui/title/mojang.png";
-        String font = "textures/font/ascii.png";
-
-        toDisplay =
-            new ConfigBase(new ImageRender[] {
-                new ImageRender(title, EPosition.CENTER, EType.STATIC, new Area(0, 0, 256, 256), new Area(0, 0, 256, 256)),
-                new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_STATUS, null, new Area(0, 30, 0, 0), "000000", null),
-                new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, 40, 0, 0), "000000", null),
-                new ImageRender(progress, EPosition.CENTER, EType.STATIC, new Area(0, 10, 182, 5), new Area(0, 50, 182, 5)),
-                new ImageRender(progress, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 15, 182, 5), new Area(0, 50, 182, 5)) });
-
-        ConfigBase presetData = toDisplay;
+        toDisplay = new JsonConfig("sample/default", null, null, null, null, null);
 
         File imagesFile = new File(configDir, "images.json");
-        JsonConfig<ConfigBase> imagesConfig = new JsonConfig<ConfigBase>(imagesFile, ConfigBase.class, toDisplay);
+        JsonConfigLoader<JsonConfig> imagesConfig = new JsonConfigLoader<JsonConfig>(imagesFile, JsonConfig.class, toDisplay);
         toDisplay = imagesConfig.load();
 
-        // Preset 1 is the default one
-        definePreset(configDir, "preset-default", presetData);
-
-        // Preset 2 uses something akin to minecraft's loading screen when loading a world
-        presetData =
-            new ConfigBase(new ImageRender[] {
-                new ImageRender("textures/gui/options_background.png", EPosition.CENTER, EType.STATIC, new Area(0, 0, 65536, 65536), new Area(0, 0,
-                    8192, 8192), "404040", null),
-                new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_STATUS, null, new Area(0, 0, 0, 0), "FFFFFF", null),
-                new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, 10, 0, 0), "FFFFFF", null),
-                new ImageRender(font, EPosition.BOTTOM_CENTER, EType.STATIC_TEXT, null, new Area(0, -10, 0, 0), "FFDD49",
-                    "Better Loading Screen by AlexIIL") });
-        definePreset(configDir, "preset-akin to world loading", presetData);
-
-        // Preset 3 uses something similar to fry's test #5 for FML's loading screen
-        presetData =
-            new ConfigBase(new ImageRender[] {
-                new ImageRender(title, EPosition.CENTER, EType.STATIC, new Area(0, 0, 256, 256), new Area(0, 0, 256, 256)),
-                new ImageRender(font, EPosition.CENTER, EPosition.CENTER_LEFT, EType.DYNAMIC_TEXT_STATUS, null, new Area(-91, 10, 0, 0), "000000",
-                    null),
-                new ImageRender(progress, EPosition.CENTER, EType.STATIC, new Area(0, 50, 182, 10), new Area(0, 40, 182, 10)),
-                new ImageRender(progress, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 60, 182, 10), new Area(0, 40, 182, 10), "CC0000",
-                    null), new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, 41, 0, 0), "000000", null) });
-        definePreset(configDir, "preset-forge test", presetData);
-
-        // Preset 3 uses rotating cakes. And non rotating cakes.
-
-        String cakeIcon = "textures/items/cake.png";
-        String cakseSide = "textures/blocks/cake_side.png";
-        String cakeInner = "textures/blocks/cake_inner.png";
-
-        JsonRenderingPart[] parts = new JsonRenderingPart[8];
-        // Rotating Cakes:
-        parts[0] =
-            new JsonRenderingPart(new ImageRender(cakeIcon, EPosition.TOP_LEFT, EType.STATIC, new Area(0, 0, 256, 256), new Area(-32, -32, 64, 64)),
-                new JsonInstruction[] { new JsonInstruction("position", new String[] { "128", "128" }),
-                    new JsonInstruction("rotate", new String[] { "cake_rotation", "0", "0", "1" }) }, "true");
-        parts[1] =
-            new JsonRenderingPart(new ImageRender(cakeIcon, EPosition.TOP_RIGHT, EType.STATIC, new Area(0, 0, 256, 256), new Area(-32, -32, 64, 64)),
-                new JsonInstruction[] { new JsonInstruction("position", new String[] { "0", "128" }),
-                    new JsonInstruction("rotate", new String[] { "cake_rotation", "0", "0", "0-1" }) }, "true");
-        parts[2] =
-            new JsonRenderingPart(
-                new ImageRender(cakeIcon, EPosition.BOTTOM_LEFT, EType.STATIC, new Area(0, 0, 256, 256), new Area(-32, -32, 64, 64)),
-                new JsonInstruction[] { new JsonInstruction("position", new String[] { "128", "0" }),
-                    new JsonInstruction("rotate", new String[] { "cake_rotation", "0", "0", "1" }) }, "true");
-        parts[3] =
-            new JsonRenderingPart(new ImageRender(cakeIcon, EPosition.BOTTOM_RIGHT, EType.STATIC, new Area(0, 0, 256, 256),
-                new Area(-32, -32, 64, 64)), new JsonInstruction[] { new JsonInstruction("position", new String[] { "0", "0" }),
-                new JsonInstruction("rotate", new String[] { "cake_rotation", "0", "0", "0-1" }) }, "true");
-
-        // Texts
-        parts[4] =
-            new JsonRenderingPart(new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_STATUS, null, new Area(0, -30, 0, 0), "000000", null),
-                new JsonInstruction[0], "true");;
-        parts[5] =
-            new JsonRenderingPart(
-                new ImageRender(font, EPosition.CENTER, EType.DYNAMIC_TEXT_PERCENTAGE, null, new Area(0, -20, 0, 0), "000000", null),
-                new JsonInstruction[0], "true");;
-
-        // Cake Bar
-        parts[6] =
-            new JsonRenderingPart(new ImageRender(cakseSide, EPosition.CENTER, EType.STATIC, new Area(0, 0, 1024, 256), new Area(0, 0, 256, 64)),
-                new JsonInstruction[0], "true");
-        parts[7] =
-            new JsonRenderingPart(new ImageRender(cakeInner, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 0, 1024, 256), new Area(0, 0,
-                256, 64)), new JsonInstruction[0], "true");
-
-        JsonFunction[] functions = new JsonFunction[] { new JsonFunction("cake_rotation", "seconds * seconds * 50") };
-
-        presetData = new ConfigBase(parts, functions, new JsonFactory[0], new JsonAction[0], new JsonVariable[0]);
-
-        definePreset(configDir, "preset-CAKE", presetData);
-
-        // Preset 4 uses an introduction to Custom Main Menu's "End Sidebar" theme
-
-        // TODO: preset 4 :P
-
-        // Preset 5 uses... idk, TODO: Preset 5 etc
+        // Use the configs
+        BakedConfig baked = toDisplay.bake(getDefaultMap());
+        final TextureAnimator animator = new TextureAnimator(baked);
+        final MinecraftDisplayerRenderer render = new MinecraftDisplayerRenderer(this, baked, animator);
 
         // Open the rendering thread
-        final TextureAnimator animator = new TextureAnimator(toDisplay);
-        final MinecraftDisplayerRenderer render = new MinecraftDisplayerRenderer(this, toDisplay, animator);
         new Timer("BetterLoadingScreen|Renderer").scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -238,9 +167,9 @@ public class MinecraftDisplayer implements IDisplayer {
         }, 0, 17);
     }
 
-    private void definePreset(File configDir, String name, ConfigBase images) {
+    private void definePreset(File configDir, String name, JsonConfig images) {
         File presetFile = new File(configDir, name + ".json");
-        JsonConfig<ConfigBase> presetConfig = new JsonConfig<ConfigBase>(presetFile, ConfigBase.class, images);
+        JsonConfigLoader<JsonConfig> presetConfig = new JsonConfigLoader<JsonConfig>(presetFile, JsonConfig.class, images);
         presetConfig.createNew();
     }
 
@@ -283,13 +212,11 @@ public class MinecraftDisplayer implements IDisplayer {
     @Override
     public void pushProgress() {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void popProgress() {
         // TODO Auto-generated method stub
-
     }
 
     @Override

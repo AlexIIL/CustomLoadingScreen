@@ -1,0 +1,18 @@
+{
+  "renders": [
+    "sample/mojang_splash",
+    "sample/loading_bar_boss",
+    "sample/text_status",
+    "sample/text_percentage"
+  ],
+  "functions": [
+    "sample/item_rotation"
+  ],
+  "factories": [
+  ],
+  "actions": [
+    "sample/sound_at_end"
+  ],
+  "variables": [
+  ]
+}

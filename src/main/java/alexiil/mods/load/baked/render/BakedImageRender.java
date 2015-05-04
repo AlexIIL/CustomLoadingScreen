@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.ResourceLocation;
+
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.func.FunctionException;
 import alexiil.mods.load.baked.func.IBakedFunction;
@@ -56,5 +57,10 @@ public class BakedImageRender extends BakedRender {
 
     public void bindTexture(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
         Minecraft.getMinecraft().renderEngine.bindTexture(res);
+    }
+
+    @Override
+    public String getLocation() {
+        return res.toString();
     }
 }

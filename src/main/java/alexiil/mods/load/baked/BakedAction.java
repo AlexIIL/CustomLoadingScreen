@@ -2,9 +2,10 @@ package alexiil.mods.load.baked;
 
 import alexiil.mods.load.baked.func.FunctionException;
 import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-public abstract class BakedAction {
+public abstract class BakedAction extends BakedConfigurable {
     protected final IBakedFunction<Boolean> conditionStart, conditionEnd;
     private boolean started = false;
 
@@ -13,8 +14,8 @@ public abstract class BakedAction {
         this.conditionEnd = conditionEnd;
     }
 
-    /** Called once per tick by the main renderer(?) to check if this state should change. */
-    public final void tickAction(RenderingStatus status) throws FunctionException {
+    @Override
+    public void tick(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
         if (!started && conditionStart.call(status)) {
             started = true;
             start(status);

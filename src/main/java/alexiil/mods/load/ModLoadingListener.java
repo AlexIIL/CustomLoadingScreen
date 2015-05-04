@@ -39,7 +39,7 @@ public class ModLoadingListener {
         public String translate() {
             if (translatedName != null)
                 return translatedName;
-            String failure = name.replaceAll("\\_", " ");
+            String failure = name.replaceAll("_", " ");
             String[] split = failure.split(" ");
             failure = "";
             for (int i = 0; i < split.length; i++) {

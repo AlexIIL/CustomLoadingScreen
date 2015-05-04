@@ -12,7 +12,7 @@ public class BakedStackOperationLessOrEqual extends BakedStackFunction {
     public void doOperation(Deque stack, RenderingStatus status) throws StackFunctionException {
         Double one = popDouble(stack);
         Double two = popDouble(stack);
-        stack.push((Boolean) (two <= one));
+        stack.push(two <= one);
     }
 
     @Override

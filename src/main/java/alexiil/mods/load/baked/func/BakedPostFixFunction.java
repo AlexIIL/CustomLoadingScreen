@@ -11,7 +11,7 @@ import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedPostFixFunction<T> implements IBakedFunction<T> {
     public interface IBakedStackFunction {
-        void doOperation(Deque<? extends Object> stack, RenderingStatus status) throws StackFunctionException;
+        void doOperation(Deque<?> stack, RenderingStatus status) throws StackFunctionException;
     }
 
     private final List<IBakedStackFunction> toExecute;

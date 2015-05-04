@@ -1,0 +1,9 @@
+{
+  "parent": "loading_bar_standard",
+  "texture": {
+    "x": "0",
+    "y": "10",
+    "width": "182",
+    "height": "5"
+  }
+}

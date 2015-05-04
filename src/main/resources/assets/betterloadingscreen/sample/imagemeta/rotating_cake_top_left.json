@@ -1,0 +1,21 @@
+{
+  "image": "sample/cake_top_left",
+  "instructions": [
+    {
+      "function": "position",
+      "arguments": [
+        "128",
+        "128"
+      ]
+    },
+    {
+      "function": "rotate",
+      "arguments": [
+        "cake_rotation",
+        "0",
+        "0",
+        "1"
+      ]
+    }
+  ]
+}

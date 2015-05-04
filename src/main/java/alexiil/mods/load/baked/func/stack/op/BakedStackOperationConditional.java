@@ -18,6 +18,6 @@ public class BakedStackOperationConditional extends BakedStackFunction {
 
     @Override
     public String toString() {
-        return "Conditional [ 1(Boolean) ? 2(Any) : 3(Any) ] -> [(Any)]";
+        return "Conditional [ 3(Boolean) ? 1(Any) : 2(Any) ] -> [(Any)]";
     }
 }

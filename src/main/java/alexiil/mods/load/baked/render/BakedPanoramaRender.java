@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
 import alexiil.mods.load.baked.BakedRender;
@@ -18,23 +19,24 @@ import alexiil.mods.load.render.RenderingStatus;
 public class BakedPanoramaRender extends BakedRender {
     /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */
     private double panoramaTimer;
-
+    private final IBakedFunction<Double> angle;
     private final ResourceLocation[] titlePanoramaPaths;
 
-    public BakedPanoramaRender(IBakedFunction<Double> blurMultiple, String resourceLocation) {
+    public BakedPanoramaRender(IBakedFunction<Double> angle, String resourceLocation) {
         String[] strings = new String[6];
         for (int i = 0; i < 6; i++)
             strings[i] = resourceLocation.replace("_x", "_" + i);
         titlePanoramaPaths = new ResourceLocation[6];
         for (int i = 0; i < 6; i++)
             titlePanoramaPaths[i] = new ResourceLocation(strings[i]);
+        this.angle = angle;
     }
 
     /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
      * customizability added */
     @Override
     public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        panoramaTimer = status.getSeconds() * 20;
+        panoramaTimer = angle.call(status);
         drawPanorama();
     }
 
@@ -42,11 +44,11 @@ public class BakedPanoramaRender extends BakedRender {
         Minecraft mc = Minecraft.getMinecraft();
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        GlStateManager.matrixMode(5889);
+        GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
         Project.gluPerspective(120.0F, 1.0F, 0.05F, 10.0F);
-        GlStateManager.matrixMode(5888);
+        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -104,10 +106,16 @@ public class BakedPanoramaRender extends BakedRender {
 
         worldrenderer.setTranslation(0.0D, 0.0D, 0.0D);
         GlStateManager.colorMask(true, true, true, true);
-        GlStateManager.matrixMode(5889);
+        GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.popMatrix();
-        GlStateManager.matrixMode(5888);
+        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         GlStateManager.popMatrix();
         GlStateManager.enableAlpha();
+    }
+
+    @Override
+    public String getLocation() {
+        return null;
     }
 }

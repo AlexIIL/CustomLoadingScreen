@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+
 import alexiil.mods.load.ProgressDisplayer;
 import alexiil.mods.load.Translation;
 

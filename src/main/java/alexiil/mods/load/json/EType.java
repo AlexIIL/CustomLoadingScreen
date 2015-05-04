@@ -1,5 +1,6 @@
 package alexiil.mods.load.json;
 
+@Deprecated
 public enum EType {
     /** A single image, with nothing injected about it. */
     STATIC,

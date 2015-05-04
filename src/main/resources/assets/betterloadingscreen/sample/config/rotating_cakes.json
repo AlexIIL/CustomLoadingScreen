@@ -1,0 +1,21 @@
+{
+  "renders": [
+    "sample/rotating_cake_top_left",
+    "sample/rotating_cake_top_right",
+    "sample/rotating_cake_bottom_left",
+    "sample/rotating_cake_bottom_right",
+    "sample/cake_side_4_wide",
+    "sample/cake_inner_4_wide",
+    "sample/text_status",
+    "sample/text_percentage"
+  ],
+  "functions": [
+    "sample/item_rotation"
+  ],
+  "factories": [
+  ],
+  "actions": [
+  ],
+  "variables": [
+  ]
+}
