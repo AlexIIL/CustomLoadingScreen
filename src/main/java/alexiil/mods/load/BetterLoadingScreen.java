@@ -18,9 +18,10 @@ import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import alexiil.mods.lib.AlexIILMod;
 
 import com.google.common.eventbus.EventBus;
+
+import alexiil.mods.lib.AlexIILMod;
 
 @Mod(modid = Lib.Mod.ID, guiFactory = "alexiil.mods.load.ConfigGuiFactory", dependencies = "required-after:alexiillib",
         acceptableRemoteVersions = "*")

@@ -29,7 +29,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             return transformMinecraft(basicClass, transformedName.equals(name));
         if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
             return transformObjectFactoryClient(basicClass);
-        return LogHelperTransformer.transform(transformedName, basicClass);
+        return basicClass;
     }
 
     private byte[] transformObjectFactoryClient(byte[] before) {

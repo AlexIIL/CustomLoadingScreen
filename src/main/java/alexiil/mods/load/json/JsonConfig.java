@@ -33,7 +33,7 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
         for (String func : this.functions) {
             JsonFunction function = ConfigManager.getAsFunction(func);
             if (function != null)
-              functions.put(function.name, FunctionBaker.bakeFunction(function.function, functions));
+                functions.put(function.name, FunctionBaker.bakeFunction(function.function, functions));
         }
 
         BakedRenderingPart[] array = new BakedRenderingPart[this.renders.length];
