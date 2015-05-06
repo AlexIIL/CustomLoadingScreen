@@ -1,6 +1,7 @@
 package alexiil.mods.load.baked.insn;
 
 import net.minecraft.client.renderer.GlStateManager;
+
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedColourSimple extends BakedInstruction {

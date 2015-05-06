@@ -3,7 +3,7 @@
   "texture": {
     "x": "0",
     "y": "15",
-    "width": "182",
+    "width": "percentage * 182",
     "height": "5"
   }
 

@@ -1,6 +1,7 @@
 package alexiil.mods.load.render;
 
 import net.minecraftforge.common.config.Configuration;
+
 import alexiil.mods.load.ProgressDisplayer.IDisplayer;
 
 public class MinecraftDisplayerWrapper implements IDisplayer {

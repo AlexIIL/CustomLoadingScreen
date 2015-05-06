@@ -1,5 +1,5 @@
 {
-  "parent": "loading_bar_standard",
+  "parent": "sample/loading_bar_standard",
   "texture": {
     "x": "0",
     "y": "10",

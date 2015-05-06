@@ -16,7 +16,7 @@ public enum EPosition {
         if (x == -1)
             return argument;
         else if (x == 0)
-            return "(" + width + " / 2) - (" + argument + ")";
+            return "(((" + width + ") - (" + argument + ")) / 2)";
         else
             return width + " - (" + argument + ")";
     }
@@ -25,7 +25,7 @@ public enum EPosition {
         if (y == -1)
             return argument;
         else if (y == 0)
-            return "(" + height + " / 2) - (" + argument + ")";
+            return "(((" + height + ") - (" + argument + ")) / 2)";
         else
             return height + " - (" + argument + ")";
     }

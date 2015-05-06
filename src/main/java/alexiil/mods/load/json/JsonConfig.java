@@ -12,6 +12,7 @@ import alexiil.mods.load.baked.func.IBakedFunction;
 // TODO: Split images.json into little files defined like block-states are (with parents etc)
 /* This requires changing the JsonRenderingPart to look up its parent to bake it, and changing ConfigBase to have an
  * array of strings for rendering parts, factories, functions and actions. */
+
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final String[] renders;
     public final String[] functions;
@@ -79,7 +80,7 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
 
         String[] renders = consolidateArray(parent.renders, this.renders);
         String[] functions = consolidateArray(this.functions, parent.functions);
-        String[] factories = consolidateArray(parent.renders, this.renders);
+        String[] factories = consolidateArray(parent.factories, this.factories);
         String[] actions = consolidateArray(parent.actions, this.actions);
         JsonVariable[] variables = consolidateArray(parent.variables, this.variables);
 

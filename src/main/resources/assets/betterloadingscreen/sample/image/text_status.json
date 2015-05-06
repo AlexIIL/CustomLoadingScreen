@@ -1,13 +1,14 @@
 {
-  "parent":"builtin/text",
-  "resourceLocation":"textures/font/ascii.png",
-  "positionType":"CENTER",
-  "offsetPos":"CENTER",
-  "text":"status",
+  "parent": "builtin/text",
+  "image": "textures/font/ascii.png",
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "text": "status",
   "position": {
     "x": "0",
-    "y": "0-30",
-    "width":"0",
-    "height":"0"
-  }
+    "y": "25",
+    "width": "0",
+    "height": "0"
+  },
+  "colour":"0x000000"
 }

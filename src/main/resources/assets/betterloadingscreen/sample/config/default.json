@@ -2,11 +2,11 @@
   "renders": [
     "sample/mojang_splash",
     "sample/loading_bar_boss",
+    "sample/loading_bar_boss_percentage",
     "sample/text_status",
     "sample/text_percentage"
   ],
   "functions": [
-    "sample/item_rotation"
   ],
   "factories": [
   ],

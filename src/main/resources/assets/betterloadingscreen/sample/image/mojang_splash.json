@@ -1,17 +1,17 @@
 {
-  "resourceLocation":"textures/gui/title/mojang.png",
-  "positionType": "CENTER",
-  "offsetPos": "CENTER",
-  "texture": {
-    "x": "0",
-    "y": "0",
-    "width": "256",
-    "height": "256"
-  },
-  "position": {
-    "x": "0",
-    "y": "0",
-    "width": "256",
-    "height": "256"
-  }
+	"image":"textures/gui/title/mojang.png",
+	"positionType":"CENTER",
+	"offsetPos":"CENTER",
+	"texture":{
+		"x":"0",
+		"y":"0",
+		"width":"256",
+		"height":"256"
+	},
+	"position":{
+		"x":"0-128",
+		"y":"0-128",
+		"width":"256",
+		"height":"256"
+	}
 }

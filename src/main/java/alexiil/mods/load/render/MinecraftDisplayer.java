@@ -49,8 +49,6 @@ public class MinecraftDisplayer implements IDisplayer {
     // private ScaledResolution resolution = null;
     private Minecraft mc = null;
     // private boolean callAgain = false;
-    private volatile String lastText;
-    private volatile double lastPercent;
     private IResourcePack myPack;
     private volatile boolean isOpen = true, paused = false;
     private RenderingStatus status;
@@ -133,6 +131,7 @@ public class MinecraftDisplayer implements IDisplayer {
         File imagesFile = new File(configDir, "images.json");
         JsonConfigLoader<JsonConfig> imagesConfig = new JsonConfigLoader<JsonConfig>(imagesFile, JsonConfig.class, toDisplay);
         toDisplay = imagesConfig.load();
+        toDisplay.resourceLocation = new ResourceLocation("config", "images.json");
 
         // Use the configs
         BakedConfig baked = toDisplay.bake(getDefaultMap());
@@ -167,21 +166,8 @@ public class MinecraftDisplayer implements IDisplayer {
         }, 0, 17);
     }
 
-    private void definePreset(File configDir, String name, JsonConfig images) {
-        File presetFile = new File(configDir, name + ".json");
-        JsonConfigLoader<JsonConfig> presetConfig = new JsonConfigLoader<JsonConfig>(presetFile, JsonConfig.class, images);
-        presetConfig.createNew();
-    }
-
-    public void reDisplayProgress() {
-        if (isOpen)
-            updateProgress(lastText, lastPercent);
-    }
-
     @Override
     public void updateProgress(String text, double percent) {
-        lastText = text;
-        lastPercent = percent;
         status.progressState.changeFieldProgress(new ProgressPair(text, percent), status.getSeconds());
     }
 
@@ -189,14 +175,6 @@ public class MinecraftDisplayer implements IDisplayer {
     public void close() {
         isOpen = false;
         getOnlyList().remove(myPack);
-    }
-
-    public String getText() {
-        return lastText;
-    }
-
-    public double getProgress() {
-        return lastPercent;
     }
 
     @Override

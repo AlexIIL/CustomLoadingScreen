@@ -66,6 +66,6 @@ public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInst
     @Override
     protected JsonInstruction actuallyConsolidate() {
         // TODO Auto-generated method stub
-        return null;
+        return this;
     }
 }

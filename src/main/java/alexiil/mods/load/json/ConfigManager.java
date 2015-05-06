@@ -75,6 +75,8 @@ public class ConfigManager {
     }
 
     private static String getTextResource(ResourceLocation res) {
+        if (res == null)
+            throw new NullPointerException("Cannot (and should not) get a null resource!");
         if (cache.containsKey(res)) {
             return cache.get(res);
         }
@@ -122,7 +124,10 @@ public class ConfigManager {
             JsonImage ji = getAsImage(location);
             if (ji != null) {
                 jrp = new JsonRenderingPart(location, new JsonInstruction[0], "true", "");
+                jrp.resourceLocation = getLocation(EType.RENDERING_PART, location);
             }
+            else
+                throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
         }
         return jrp;
     }
@@ -139,7 +144,7 @@ public class ConfigManager {
     public static JsonImage getAsImage(String location) {
         if (isBuiltIn(location)) {
             if (location.equalsIgnoreCase("builtin/text"))
-                return new JsonImageText("textures/font/ascii.png", null, null, null, null, null, null);
+                return new JsonImageText(getLocation(EType.IMAGE, location), "textures/font/ascii.png", null, null, null, null, null, null);
             else if (location.equalsIgnoreCase("builtin/panorama"))
                 return null;// new JsonImagePanorama(null,null,null,null);
         }

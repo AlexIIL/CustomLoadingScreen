@@ -19,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
 
+import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedConfig;
 import alexiil.mods.load.baked.BakedRenderingPart;
 
@@ -137,8 +138,14 @@ public class TextureAnimator {
     public TextureAnimator(BakedConfig images) {
         Minecraft mc = Minecraft.getMinecraft();
         for (BakedRenderingPart render : images.renderingParts) {
-            String imageLocation = "";
-            boolean animated = false;
+            if (render == null) {
+                BLSLog.warn("Encountered null! This is not right!");
+                continue;
+            }
+            if (render.render == null) {
+                BLSLog.warn("render.render was null!");
+                continue;
+            }
             String resource = render.render.getLocation();
             if (isAnimated(resource)) {
                 try {

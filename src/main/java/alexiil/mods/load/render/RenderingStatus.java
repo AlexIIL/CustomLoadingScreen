@@ -57,7 +57,8 @@ public class RenderingStatus {
 
         /** How long ago, in seconds, this was created
          * 
-         * @param now  How long, in seconds, the loading screen has been ticking for*/
+         * @param now
+         *            How long, in seconds, the loading screen has been ticking for */
         private double getLength(double now) {
             return end == -1 ? now - start : end - start;
         }
@@ -273,7 +274,7 @@ public class RenderingStatus {
         screenHeight = height;
     }
 
-    public void tick(String status, double percentage, ScaledResolution res, double addedTime) {
+    public void tick(ScaledResolution res, double addedTime) {
         seconds += addedTime;
         screenWidth = res.getScaledWidth();
         screenHeight = res.getScaledHeight();

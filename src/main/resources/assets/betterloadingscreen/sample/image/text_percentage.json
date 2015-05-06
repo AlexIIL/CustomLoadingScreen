@@ -1,13 +1,14 @@
 {
-  "parent":"builtin/text",
-  "resourceLocation":"textures/font/ascii.png",
-  "positionType":"CENTER",
-  "offsetPos":"CENTER",
-  "text":"(percentage:integer) + '%'",
+  "parent": "builtin/text",
+  "image": "textures/font/ascii.png",
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "text": "((percentage * 100):integer) + '%'",
   "position": {
     "x": "0",
-    "y": "0-20",
-    "width":"0",
-    "height":"0"
-  }
+    "y": "20",
+    "width": "0",
+    "height": "0"
+  },
+  "colour":"0x000000"
 }

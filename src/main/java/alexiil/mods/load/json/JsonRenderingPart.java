@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.func.FunctionBaker;
@@ -14,6 +15,7 @@ import alexiil.mods.load.baked.insn.BakedInstruction;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
  * or not it should render at this time */
+
 public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, BakedRenderingPart> {
     public final String image;
     public final JsonInstruction[] instructions;
@@ -32,6 +34,11 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
 
         JsonImage element = ConfigManager.getAsImage(image);
         element = element.getConsolidated();
+
+        if (element.resourceLocation == null) {
+            BLSLog.warn("An elements resource location (child of " + this.resourceLocation + ") was null!");
+            element.resourceLocation = this.resourceLocation;
+        }
 
         args.addAll(element.bakeInstructions(functions));
 

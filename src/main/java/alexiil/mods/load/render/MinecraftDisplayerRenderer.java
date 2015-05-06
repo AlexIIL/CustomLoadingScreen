@@ -59,7 +59,7 @@ public class MinecraftDisplayerRenderer {
         try {
             ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
             RenderingStatus status = displayer.status();
-            status.tick(displayer.getText(), displayer.getProgress(), resolution, (now - lastTime) / 1000D);
+            status.tick(resolution, (now - lastTime) / 1000D);
 
             if (textureManager == null) {
                 textureManager = mc.renderEngine = new TextureManager(mc.getResourceManager());
@@ -135,7 +135,7 @@ public class MinecraftDisplayerRenderer {
 
             // Action stuffs
             for (BakedAction ba : actions) {
-                ba.tick(status, this);
+                // ba.tick(status, this);
             }
         }
         catch (Throwable t) {

@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ObjectArrays;
 
+import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedConfigurable;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
@@ -31,7 +32,15 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
      * this more than you need to. (This does not cache, as this could potentially be called with a different map of
      * functions) */
     public final B bake(Map<String, IBakedFunction<?>> functions) {
-        return getConsolidated().actuallyBake(functions);
+        if (resourceLocation == null)
+            throw new NullPointerException();
+        try {
+            return getConsolidated().actuallyBake(functions);
+        }
+        catch (Throwable t) {
+            BLSLog.warn(resourceLocation + " failed to bake!", t);
+            return null;
+        }
     }
 
     /** Bakes this object into something that will process quickly. Only call this on a consolidated object! (Use
@@ -40,8 +49,18 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
 
     /** ALWAYS call this as opposed to {@link #actuallyConsolidate()}, as this caches the result. */
     public final C getConsolidated() {
-        if (consolidated == null)
-            consolidated = actuallyConsolidate();
+        if (resourceLocation == null)
+            throw new NullPointerException();
+        if (consolidated == null) {
+            try {
+                consolidated = actuallyConsolidate();
+                if (consolidated.resourceLocation == null)
+                    consolidated.resourceLocation = resourceLocation;
+            }
+            catch (Throwable t) {
+                BLSLog.warn(resourceLocation + " failed to consolidate!", t);
+            }
+        }
         return consolidated;
     }
 
