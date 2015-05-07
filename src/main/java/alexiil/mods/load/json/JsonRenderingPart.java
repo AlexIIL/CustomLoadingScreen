@@ -50,7 +50,7 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
 
         BakedInstruction[] instructions = args.toArray(new BakedInstruction[args.size()]);
         BakedRender actualRender = element.bake(functions);
-        IBakedFunction<Boolean> shouldRenderFunc = FunctionBaker.bakeFunctionBoolean(shouldRender, functions);
+        IBakedFunction<Boolean> shouldRenderFunc = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
 
         return new BakedRenderingPart(instructions, actualRender, shouldRenderFunc);
     }

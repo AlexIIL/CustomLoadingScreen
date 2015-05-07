@@ -1,10 +1,6 @@
 {
   "parent":"sample/loading_bar_standard_percentage",
   "texture": {
-    "x": "0",
-    "y": "15",
-    "width": "percentage * 182",
-    "height": "5"
+    "y": "15"
   }
-
 }

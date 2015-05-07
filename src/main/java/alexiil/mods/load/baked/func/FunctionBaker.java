@@ -195,7 +195,8 @@ public class FunctionBaker {
                 if (token.equals("("))
                     stack.push(token);
                 else if (token.equals(":"))
-                    ;// Ignore colons, as these are used for spacing stuffs. Ok fine, this isn't great in terms of functions, but until sin(argument) like stuff is proeprly implemented, this is all we get
+                    ;// Ignore colons, as these are used for spacing stuffs. Ok fine, this isn't great in terms of
+                     // functions, but until sin(argument) like stuff is proeprly implemented, this is all we get
                 else if (token.equals(")")) {
                     while (true) {
                         if (stack.isEmpty())
@@ -237,13 +238,13 @@ public class FunctionBaker {
         return list;
     }
 
-    public static <T> IBakedFunction<T> bakeFunction(String function) {
-        return bakeFunction(function, Collections.<String, IBakedFunction<?>> emptyMap());
-    }
-
     public static <T> IBakedFunction<T> bakeFunction(String function, Map<String, IBakedFunction<?>> functions) {
         List<IBakedStackFunction> postfix = infixToPostfix(function.replace(" ", ""), functions);
         return new BakedPostFixFunction<T>(postfix, function);
+    }
+
+    public static <T> IBakedFunction<T> bakeFunction(String function) {
+        return bakeFunction(function, Collections.<String, IBakedFunction<?>> emptyMap());
     }
 
     public static IBakedFunction<Double> bakeFunctionDouble(String function, Map<String, IBakedFunction<?>> functions) {

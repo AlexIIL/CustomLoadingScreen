@@ -40,8 +40,8 @@ public class JsonImageText extends JsonImage {
         // list.add(new BakedColourSimple(getRed(), getGreen(), getBlue(), 1));
         // }
 
-        String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX("('textWidth':variable)", position.x));
-        String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY("('textHeight':variable)", position.y));
+        String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX("('textWidth':variable)", "0"));
+        String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY("('textHeight':variable)", "0"));
 
         list.add(new BakedPositionFunctional(FunctionBaker.bakeFunctionDouble(x, functions), FunctionBaker.bakeFunctionDouble(y, functions),
             FunctionBaker.bakeFunctionDouble("0")));

@@ -1,6 +1,6 @@
 {
   "parent": "sample/item",
-  "resourceLocation": "textures/item/cake.png",
+  "image": "textures/items/cake.png",
   "position": {
     "x": "0-32",
     "y": "0-32",

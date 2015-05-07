@@ -129,6 +129,13 @@ public class ConfigManager {
             else
                 throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
         }
+        if (jrp.instructions != null) {
+            int i = 0;
+            for (JsonInstruction insn : jrp.instructions) {
+                insn.resourceLocation = new ResourceLocation(location.toString() + "!instruction_" + i);
+                i++;
+            }
+        }
         return jrp;
     }
 

@@ -1,0 +1,16 @@
+{
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "texture": {
+    "x": "0",
+    "y": "0",
+    "width": "1024 * percentage",
+    "height": "256"
+  },
+  "position": {
+    "x": "(percentage * 128) - 128",
+    "y": "0",
+    "width": "256 * percentage",
+    "height": "64"
+  }
+}

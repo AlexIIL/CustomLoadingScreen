@@ -11,7 +11,7 @@
     {
       "function": "rotate",
       "arguments": [
-        "cake_rotation",
+        "item_rotation",
         "0",
         "0",
         "1"

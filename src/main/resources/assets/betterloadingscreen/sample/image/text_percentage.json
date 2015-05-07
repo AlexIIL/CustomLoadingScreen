@@ -6,7 +6,7 @@
   "text": "((percentage * 100):integer) + '%'",
   "position": {
     "x": "0",
-    "y": "20",
+    "y": "40",
     "width": "0",
     "height": "0"
   },

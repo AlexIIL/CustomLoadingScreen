@@ -78,6 +78,9 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
                 return defaultF;
             else
                 return parent;
+        else if (parent == null) {
+            return in;
+        }
         else
             return FunctionBaker.expandParents(in, parent);
     }
@@ -109,5 +112,18 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
         if (last == null || last.length == 0)
             return first;
         return ObjectArrays.concat(first, last, (Class<O>) first.getClass().getComponentType());
+    }
+
+    protected Area consolidateArea(Area in, Area parent) {
+        if (in == null)
+            return parent;
+        if (parent == null)
+            return in;
+        String x = consolidateFunction(in.x, parent.x, null);
+        String y = consolidateFunction(in.y, parent.y, null);;
+        String width = consolidateFunction(in.width, parent.width, null);;
+        String height = consolidateFunction(in.height, parent.height, null);;
+        Area a = new Area(x, y, width, height);
+        return a;
     }
 }

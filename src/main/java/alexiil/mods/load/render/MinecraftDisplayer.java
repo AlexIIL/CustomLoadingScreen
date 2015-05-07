@@ -34,8 +34,8 @@ import alexiil.mods.load.baked.func.var.BakedVariableScreenHeight;
 import alexiil.mods.load.baked.func.var.BakedVariableScreenWidth;
 import alexiil.mods.load.baked.func.var.BakedVariableSeconds;
 import alexiil.mods.load.baked.func.var.BakedVariableStatus;
+import alexiil.mods.load.json.ConfigManager;
 import alexiil.mods.load.json.JsonConfig;
-import alexiil.mods.load.json.JsonConfigLoader;
 import alexiil.mods.load.render.RenderingStatus.ProgressPair;
 
 public class MinecraftDisplayer implements IDisplayer {
@@ -109,8 +109,18 @@ public class MinecraftDisplayer implements IDisplayer {
         ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
         status = new RenderingStatus(res.getScaledWidth(), res.getScaledWidth());
         // Open the normal config
-        String comment4 = "What sound to play when loading is complete. Default is the level up sound (" + defaultSound + ")";
-        sound = cfg.getString("sound", "general", defaultSound, comment4);
+
+        String comment = "What sound to play when loading is complete. Default is the level up sound (" + defaultSound + ")";
+        sound = cfg.getString("sound", "general", defaultSound, comment);
+
+        comment =
+            "The loading screen configuration json file. Some presets are ['sample/default', 'sample/bland', 'sample/rotating_cakes', 'sample/']."
+                + " You can use your own by creating ";
+        // TODO: Create a way to have a folder with custom loading screen JSON parts (add a FileResourcePack)
+        // TODO: Create sample/default that looks similar to the one with the world background
+        // (Panorama, Darkened_blur_horizontal_strip, White status + percentage text + boss loading bar)
+        // Or a different sort of loading bar that would fit better?
+        String configFile = cfg.getString("jsonDetails", "general", "sample/default", comment);
 
         // Add ourselves as a resource pack
         if (!ProgressDisplayer.coreModLocation.isDirectory())
@@ -126,12 +136,14 @@ public class MinecraftDisplayer implements IDisplayer {
             configDir.mkdirs();
 
         // Image Config
-        toDisplay = new JsonConfig("sample/default", null, null, null, null, null);
+        toDisplay = ConfigManager.getAsConfig(configFile);
+        // new JsonConfig("sample/default", null, null, null, null, null);
 
-        File imagesFile = new File(configDir, "images.json");
-        JsonConfigLoader<JsonConfig> imagesConfig = new JsonConfigLoader<JsonConfig>(imagesFile, JsonConfig.class, toDisplay);
-        toDisplay = imagesConfig.load();
-        toDisplay.resourceLocation = new ResourceLocation("config", "images.json");
+        // File imagesFile = new File(configDir, "images.json");
+        // JsonConfigLoader<JsonConfig> imagesConfig = new JsonConfigLoader<JsonConfig>(imagesFile, JsonConfig.class,
+        // toDisplay);
+        // toDisplay = imagesConfig.load();
+        // toDisplay.resourceLocation = new ResourceLocation("config", "images.json");
 
         // Use the configs
         BakedConfig baked = toDisplay.bake(getDefaultMap());

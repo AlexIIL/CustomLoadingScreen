@@ -16,17 +16,17 @@ public enum EPosition {
         if (x == -1)
             return argument;
         else if (x == 0)
-            return "(((" + width + ") - (" + argument + ")) / 2)";
+            return "(" + width + ") / 2 - (" + argument + ")";
         else
-            return width + " - (" + argument + ")";
+            return "(" + width + ") - (" + argument + ")";
     }
 
     public String getFunctionY(String height, String argument) {
         if (y == -1)
             return argument;
         else if (y == 0)
-            return "(((" + height + ") - (" + argument + ")) / 2)";
+            return "(" + height + ") / 2 - (" + argument + ")";
         else
-            return height + " - (" + argument + ")";
+            return "(" + height + ") - (" + argument + ")";
     }
 }

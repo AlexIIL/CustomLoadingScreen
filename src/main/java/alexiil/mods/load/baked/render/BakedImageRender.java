@@ -11,7 +11,6 @@ import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-
 public class BakedImageRender extends BakedRender {
     protected final ResourceLocation res;
     private final IBakedFunction<Double> x, y, width, height, u, uWidth, v, vHeight;

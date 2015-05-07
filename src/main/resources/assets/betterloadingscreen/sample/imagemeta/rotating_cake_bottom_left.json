@@ -1,17 +1,11 @@
 {
   "image": "sample/cake_bottom_left",
   "instructions": [
-    {
-      "function": "position",
-      "arguments": [
-        "128",
-        "0"
-      ]
-    },
+
     {
       "function": "rotate",
       "arguments": [
-        "cake_rotation",
+        "item_rotation",
         "0",
         "0",
         "1"

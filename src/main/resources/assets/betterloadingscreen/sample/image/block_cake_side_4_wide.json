@@ -1,4 +1,4 @@
 {
   "parent":"sample/block_4_wide",
-  "resourceLocation":"textures/blocks/cake_side.png"
+  "image":"textures/blocks/cake_side.png"
 }

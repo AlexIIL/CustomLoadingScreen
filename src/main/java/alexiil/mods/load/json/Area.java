@@ -10,6 +10,13 @@ public class Area {
         this.height = Double.toString(height);
     }
 
+    public Area(String x, String y, String width, String height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
     @Override
     public String toString() {
         return "ImageTexture [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";

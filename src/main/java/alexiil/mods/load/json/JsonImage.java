@@ -84,8 +84,8 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
         String image = overrideObject(this.image, parent.image, null);
         EPosition positionType = overrideObject(this.positionType, parent.positionType, null);
         EPosition offsetPos = overrideObject(this.offsetPos, parent.positionType, null);
-        Area texture = overrideObject(this.texture, parent.texture, null);
-        Area position = overrideObject(this.position, parent.position, null);
+        Area texture = consolidateArea(this.texture, parent.texture);
+        Area position = consolidateArea(this.position, parent.position);
         String colour = overrideObject(this.colour, parent.colour, "0xFFFFFF");
         String text = overrideObject(this.text, parent.text, null);
         String frame = overrideObject(this.frame, parent.frame, "0");
@@ -161,8 +161,8 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
             list.add(new BakedColourSimple(getRed(), getGreen(), getBlue(), 1));
         }
 
-        String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX(position.width, position.x));
-        String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY(position.height, position.y));
+        String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX(position.width, "0"/* position.x */));
+        String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY(position.height, "0"/* position.y */));
 
         // FIXME: Position types is... weird. Fix this please!
 
