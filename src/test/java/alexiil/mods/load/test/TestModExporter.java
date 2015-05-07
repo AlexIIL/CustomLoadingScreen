@@ -1,15 +1,32 @@
 package alexiil.mods.load.test;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import javax.imageio.ImageIO;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
+import alexiil.mods.lib.AlexIILMod;
+import com.google.common.base.Throwables;
 
 public class TestModExporter implements Opcodes {
     public static void dumpMods() {
@@ -19,11 +36,31 @@ public class TestModExporter implements Opcodes {
             String name = StringUtils.leftPad(Integer.toHexString(i), 3, "0");
             name = name.toUpperCase();
             System.out.println(name);
-            byte[] bytes = dump(name);
-            File fle = new File(folder, "BasicTestMod_" + name + ".class");
+            byte[] classBytes = dump(name);
+            File fle = new File(folder, "BasicTestMod_" + name + ".jar");
             try {
                 FileOutputStream fos = new FileOutputStream(fle);
-                fos.write(bytes);
+                ZipOutputStream zos = new ZipOutputStream(fos);
+                
+                // Class
+                ZipEntry ze = new ZipEntry("alexiil/mods/test/BasicTestMod_" + name + ".class");
+                zos.putNextEntry(ze);
+                zos.write(classBytes);
+                zos.closeEntry();
+                
+                zos.finish();
+                
+                // Random Texture
+                ze = new ZipEntry("assets/test/textures/blocks/Block_" + name + ".png");
+                zos.putNextEntry(ze);
+                zos.write(texture(name));
+                zos.closeEntry();
+                
+                zos.finish();
+                
+                zos.flush();
+                zos.close();
+                
                 fos.flush();
                 fos.close();
             }
@@ -32,20 +69,52 @@ public class TestModExporter implements Opcodes {
             }
         }
     }
-
+    
+    private static byte[] texture(String num) {
+        BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = image.createGraphics();
+        genRandomGraphics(g2d, num);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", out);
+        }
+        catch (IOException shouldnthappen) {
+            throw Throwables.propagate(shouldnthappen);
+        }
+        return out.toByteArray();
+    }
+    
+    private static void genRandomGraphics(Graphics2D g2d, String num) {
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(0, 0, 64, 64);
+        
+        g2d.setColor(new Color(0xAFAFAF));
+        for (int i = 0; i < 1024; i++) {
+            int x = (int) (Math.random() * 64);
+            int y = (int) (Math.random() * 64);
+            g2d.fillRect(x, y, 1, 1);
+        }
+        
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(g2d.getFont().deriveFont(32));
+        g2d.drawString(num, 0, 0);
+    }
+    
     public static byte[] dump(String num) {
         ClassWriter cw = new ClassWriter(0);
         MethodVisitor mv;
         AnnotationVisitor av0;
-
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, "BasicTestMod_" + num, null, "java/lang/Object", null);
-
-        cw.visitSource("BasicTestMod_" + num + ".java", null);
-
+        MethodNode mn;
+        
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, "alexiil/mods/test/BasicTestMod_" + num, null,
+                Type.getInternalName(AlexIILMod.class), null);
+        
+        cw.visitSource("SYNTHETIC[TestModExporter]", null);
+        
         {
             av0 = cw.visitAnnotation("Lnet/minecraftforge/fml/common/Mod;", true);
             av0.visit("modid", "emptyTestMod_" + num);
-            av0.visit("name", "Empty Test Mod number " + num);
+            av0.visit("name", "Empty Test Mod " + num);
             av0.visit("version", "0.1");
             av0.visitEnd();
         }
@@ -62,8 +131,34 @@ public class TestModExporter implements Opcodes {
             mv.visitMaxs(1, 1);
             mv.visitEnd();
         }
+        {
+            String preInit = Type.getDescriptor(FMLPreInitializationEvent.class);
+            mn = new MethodNode(ACC_PUBLIC, "preInit", "(" + preInit + ")V", null, null);
+            
+            mn.visitAnnotation(Type.getDescriptor(EventHandler.class), true);
+            
+            InsnList list = mn.instructions;
+            list.add(new VarInsnNode(ALOAD, 0));
+            list.add(new InsnNode(DUP));
+            list.add(new VarInsnNode(ALOAD, 1));
+            list.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(AlexIILMod.class), "preInit", "(" + preInit + ")V", false));
+            // list.add(new MethodInsnNode(INVOKESTATIC));
+            mn.accept(cw);
+        }
+        {
+            String postInit = Type.getDescriptor(FMLPostInitializationEvent.class);
+            mn = new MethodNode(ACC_PUBLIC, "postInit", "(" + postInit + ")V", null, null);
+            
+            mn.visitAnnotation(Type.getDescriptor(EventHandler.class), true);
+            
+            InsnList list = mn.instructions;
+            list.add(new VarInsnNode(ALOAD, 0));
+            list.add(new VarInsnNode(ALOAD, 1));
+            list.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(AlexIILMod.class), "postInit", "(" + postInit + ")V", false));
+            mn.accept(cw);
+        }
         cw.visitEnd();
-
+        
         return cw.toByteArray();
     }
 }
