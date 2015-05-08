@@ -27,13 +27,13 @@ import alexiil.mods.lib.AlexIILMod;
         acceptableRemoteVersions = "*")
 public class BetterLoadingScreen extends AlexIILMod {
     @Instance(Lib.Mod.ID)
-    public static BetterLoadingScreen instance;
+    public static BetterLoadingScreen INSTANCE;
 
     @Override
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
-        MinecraftForge.EVENT_BUS.register(instance);
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package alexiil.mods.load.render;
 
-import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.client.FMLFolderResourcePack;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import com.google.common.collect.Maps;
 
@@ -122,6 +123,9 @@ public class MinecraftDisplayer implements IDisplayer {
         // Or a different sort of loading bar that would fit better?
         String configFile = cfg.getString("jsonDetails", "general", "sample/default", comment);
 
+        // Resource Loader Compat
+        loadResourceLoader();
+
         // Add ourselves as a resource pack
         if (!ProgressDisplayer.coreModLocation.isDirectory())
             myPack = new FMLFileResourcePack(ProgressDisplayer.modContainer);
@@ -129,11 +133,6 @@ public class MinecraftDisplayer implements IDisplayer {
             myPack = new FMLFolderResourcePack(ProgressDisplayer.modContainer);
         getOnlyList().add(myPack);
         mc.refreshResources();
-
-        // Open the special config directory
-        File configDir = new File("./config/BetterLoadingScreen");
-        if (!configDir.exists())
-            configDir.mkdirs();
 
         // Image Config
         toDisplay = ConfigManager.getAsConfig(configFile);
@@ -176,6 +175,22 @@ public class MinecraftDisplayer implements IDisplayer {
                 }
             }
         }, 0, 17);
+    }
+
+    private void loadResourceLoader() {
+        try {
+            Class<?> resLoaderClass = Class.forName("lumien.resourceloader.ResourceLoader");
+            Object instance = resLoaderClass.newInstance();
+            resLoaderClass.getField("INSTANCE").set(null, instance);
+            Method m = resLoaderClass.getMethod("preInit", FMLPreInitializationEvent.class);
+            m.invoke(instance, new Object[] { null });
+        }
+        catch (ClassNotFoundException ex) {
+            BLSLog.info("Resource loader not loaded, not initialising early");
+        }
+        catch (Throwable t) {
+            BLSLog.warn("Resource Loader Compat FAILED!", t);
+        }
     }
 
     @Override

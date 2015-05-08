@@ -13,11 +13,13 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 
+import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.ProgressDisplayer;
 
 public class BetterLoadingScreenTransformer implements IClassTransformer, Opcodes {
@@ -29,6 +31,9 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             return transformMinecraft(basicClass, transformedName.equals(name));
         if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
             return transformObjectFactoryClient(basicClass);
+        if (name.equals("lumien.resourceloader.ResourceLoader")) {
+            return transformResourceLoader(basicClass);
+        }
         return basicClass;
     }
 
@@ -84,7 +89,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                             continue;
                         }
                         else if (method.owner.startsWith("com/mumfrey")) {
-                            System.out.println("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
+                            BLSLog.info("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
                         }
                     }
                     // LiteLoader removing end
@@ -122,22 +127,22 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         }
 
         if (!found) {
-            System.out.println("Did not find " + tryingToFind + "! Could it have been any of these?");
+            BLSLog.info("Did not find " + tryingToFind + "! Could it have been any of these?");
             for (MethodNode m : classNode.methods) {
-                System.out.println("  -" + m.name);
+                BLSLog.info("  -" + m.name);
             }
         }
 
         if (!hasFoundStartGame) {
             System.out.println("Did not find " + minecraftStartGame + "! Could it have been any of these?");
             for (MethodNode m : classNode.methods) {
-                System.out.println("  -" + m.name);
+                BLSLog.info("  -" + m.name);
             }
         }
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
-        System.out.println("Transformed Minecraft");
+        BLSLog.info("Transformed Minecraft");
         byte[] bytes = cw.toByteArray();
 
         // Export it :)
@@ -156,6 +161,29 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         }
 
         return bytes;
+    }
+
+    private byte[] transformResourceLoader(byte[] before) {
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        for (MethodNode m : classNode.methods) {
+            if (m.name.equals("preInit")) {
+                m.visibleAnnotations.remove(0);// Remove @Mod.EventHandler
+            }
+        }
+
+        for (FieldNode f : classNode.fields) {
+            if (f.name.equals("INSTANCE"))
+                f.visibleAnnotations.remove(0);// Remove @Mod.Instance("ResourceLoader")
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        byte[] arr = cw.toByteArray();
+        BLSLog.info("Transformed ResourceLoader!");
+        return arr;
     }
 
     private AbstractInsnNode getPrevious(AbstractInsnNode node, int num) {

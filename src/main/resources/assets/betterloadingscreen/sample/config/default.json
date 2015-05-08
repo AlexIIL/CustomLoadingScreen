@@ -1,5 +1,7 @@
 {
   "renders": [
+    "sample/panorama",
+    "sample/horizontal_stripe",
     "sample/mojang_splash",
     "sample/loading_bar_boss",
     "sample/loading_bar_boss_percentage",

@@ -6,6 +6,6 @@ import alexiil.mods.lib.gui.BaseConfig;
 
 public class Config extends BaseConfig {
     public Config(GuiScreen screen) {
-        super(screen, BetterLoadingScreen.instance);
+        super(screen, BetterLoadingScreen.INSTANCE);
     }
 }

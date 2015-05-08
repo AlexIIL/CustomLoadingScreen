@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 
 import org.apache.commons.lang3.StringUtils;
 
+import alexiil.mods.lib.ConfigAccess;
 import alexiil.mods.load.render.MinecraftDisplayerWrapper;
 
 public class ProgressDisplayer {
@@ -215,9 +216,8 @@ public class ProgressDisplayer {
                 return Lib.Mod.ID;
             }
         };
-
-        Configuration cfg = new Configuration(new File("./config/BetterLoadingScreen/config.cfg"));
-        cfg.load();
+        ConfigAccess ca = ConfigAccess.get(new File("./config/betterloadingscreen.cfg"), null);
+        Configuration cfg = ca.cfg();
 
         boolean useMinecraft = isClient();
         if (useMinecraft) {
@@ -228,8 +228,7 @@ public class ProgressDisplayer {
         }
 
         String comment =
-            "Whether or not to show a window seperate to minecraft to show the loading time -this can "
-                + "be helpful if you set it to display above all windows if you alt tab while minecraft loads";
+            "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
         boolean showFrame = cfg.getBoolean("showFrame", "general", false, comment);
 
         playSound = cfg.getBoolean("playSound", "general", true, "Play a sound after Minecraft has finished starting up");
