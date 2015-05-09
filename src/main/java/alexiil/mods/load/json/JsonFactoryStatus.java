@@ -8,7 +8,7 @@ import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
 
 public class JsonFactoryStatus extends JsonFactory {
-    public JsonFactoryStatus(String shouldDestroy, JsonRenderingPart toCreate) {
+    public JsonFactoryStatus(String shouldDestroy, String toCreate) {
         // None of the arguments matter
         super("false", shouldDestroy, toCreate);
     }
@@ -21,7 +21,14 @@ public class JsonFactoryStatus extends JsonFactory {
     @Override
     public BakedFactoryStatus actuallyBake(Map<String, IBakedFunction<?>> functions) {
         IBakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
-        BakedRenderingPart component = toCreate.bake(functions);
+
+        JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate);
+        if (jrp == null) {
+
+            return null;
+        }
+        jrp = jrp.getConsolidated();
+        BakedRenderingPart component = jrp.bake(functions);
         return new BakedFactoryStatus(shouldDestroy, component);
     }
 

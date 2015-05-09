@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.func.FunctionBaker;
@@ -15,13 +14,12 @@ import alexiil.mods.load.baked.insn.BakedInstruction;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
  * or not it should render at this time */
-
 public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, BakedRenderingPart> {
     public final String image;
-    public final JsonInstruction[] instructions;
+    public final String[] instructions;
     public final String shouldRender;
 
-    public JsonRenderingPart(String image, JsonInstruction[] openGlInstructions, String shouldRender, String parent) {
+    public JsonRenderingPart(String image, String[] openGlInstructions, String shouldRender, String parent) {
         super(parent);
         this.image = image;
         this.instructions = openGlInstructions;
@@ -32,19 +30,14 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
     protected BakedRenderingPart actuallyBake(Map<String, IBakedFunction<?>> functions) {
         List<BakedInstruction> args = new ArrayList<BakedInstruction>();
 
-        JsonImage element = ConfigManager.getAsImage(image);
-        element = element.getConsolidated();
-
-        if (element.resourceLocation == null) {
-            BLSLog.warn("An elements resource location (child of " + this.resourceLocation + ") was null!");
-            element.resourceLocation = this.resourceLocation;
-        }
+        JsonImage element = ConfigManager.getAsImage(image).getConsolidated();
 
         args.addAll(element.bakeInstructions(functions));
 
         if (instructions != null) {
-            for (JsonInstruction insn : instructions) {
-                args.add(insn.bake(functions));
+            for (String insn : instructions) {
+                JsonInstruction ji = ConfigManager.getAsInsn(insn).getConsolidated();
+                args.add(ji.bake(functions));
             }
         }
 
@@ -67,16 +60,9 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
         if (parent == null)
             return this;
 
-        // Consolidate the parent, just in case it has its own parents
         parent = parent.getConsolidated();
-
-        // Image: Just override the parents image if this image is not null
         String image = overrideObject(this.image, parent.image, null);
-
-        // Instructions: Append the parents instructions to this array
-        JsonInstruction[] insns = consolidateArray(this.instructions, parent.instructions);
-
-        // ShouldRender: Expand any "super" tokens (if they exist), or use the parents one if this is null
+        String[] insns = consolidateArray(this.instructions, parent.instructions);
         String render = consolidateFunction(shouldRender, parent.shouldRender, "true");
 
         // Initialise the new object with all the details, and set its resource location to this one (as it will act in

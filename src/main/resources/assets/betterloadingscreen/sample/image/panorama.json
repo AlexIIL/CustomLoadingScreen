@@ -1,4 +1,4 @@
 {
-  "parent":"builtin/panorama",
-  "image":""
+  "parent": "builtin/panorama",
+  "image": "textures/gui/title/background/panorama_x.png"
 }

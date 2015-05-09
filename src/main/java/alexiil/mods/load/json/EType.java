@@ -5,7 +5,7 @@ public enum EType {
     /** A single image, with nothing injected about it. */
     STATIC,
     /** A single line of text, with nothing injected into it. */
-    STATIC_TEXT,// Now builtin/text (TODO)
+    STATIC_TEXT,// Now builtin/text
     /** A single line of text that overrides the 'text' variable with the current status. */
     DYNAMIC_TEXT_STATUS,// Now sample/text_status
     /** A single line of text that overrides the 'text' variable with the function "(percentage * 100) integer + '%'". */

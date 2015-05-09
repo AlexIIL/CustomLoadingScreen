@@ -1,0 +1,36 @@
+package alexiil.mods.load.json;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.util.ResourceLocation;
+
+import alexiil.mods.load.baked.func.FunctionBaker;
+import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.insn.BakedInstruction;
+import alexiil.mods.load.baked.render.BakedPanoramaRender;
+
+public class JsonImagePanorama extends JsonImage {
+
+    public JsonImagePanorama(ResourceLocation resourceLocation, String image) {
+        super("", image, null, null, null, null, null, null, null);
+        this.resourceLocation = resourceLocation;
+    }
+
+    @Override
+    protected JsonImagePanorama actuallyConsolidate() {
+        return this;
+    }
+
+    @Override
+    protected BakedPanoramaRender actuallyBake(Map<String, IBakedFunction<?>> functions) {
+        IBakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble("seconds * 40", functions);
+        return new BakedPanoramaRender(angle, image);
+    }
+
+    @Override
+    public List<BakedInstruction> bakeInstructions(Map<String, IBakedFunction<?>> functions) {
+        return Collections.emptyList();
+    }
+}

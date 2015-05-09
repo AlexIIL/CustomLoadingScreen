@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
@@ -93,9 +92,9 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
         if (parent instanceof JsonImageText) {
             return new JsonImageText(resourceLocation, image, positionType, offsetPos, texture, position, colour, text);
         }
-        // if (parent instanceof JsonImagePanorama) {
-        // return new JsonImagePanorama(image, texture, colour);
-        // }
+        if (parent instanceof JsonImagePanorama) {
+            return new JsonImagePanorama(resourceLocation, image);
+        }
 
         return new JsonImage("", image, positionType, offsetPos, texture, position, colour, text, frame);
     }
@@ -163,11 +162,6 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
 
         String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX(position.width, "0"/* position.x */));
         String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY(position.height, "0"/* position.y */));
-
-        // FIXME: Position types is... weird. Fix this please!
-
-        BLSLog.info(x);
-        BLSLog.info(y);
 
         list.add(new BakedPositionFunctional(FunctionBaker.bakeFunctionDouble(x, functions), FunctionBaker.bakeFunctionDouble(y, functions),
             FunctionBaker.bakeFunctionDouble("0")));

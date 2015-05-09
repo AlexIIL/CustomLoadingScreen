@@ -19,6 +19,6 @@ public class Area {
 
     @Override
     public String toString() {
-        return "ImageTexture [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
+        return "Area [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
     }
 }

@@ -1,15 +1,6 @@
 {
   "image": "sample/cake_bottom_left",
   "instructions": [
-
-    {
-      "function": "rotate",
-      "arguments": [
-        "item_rotation",
-        "0",
-        "0",
-        "1"
-      ]
-    }
+    "sample/item_rotate_clockwise"
   ]
 }

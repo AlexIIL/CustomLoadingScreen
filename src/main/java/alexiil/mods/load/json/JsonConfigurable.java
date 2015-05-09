@@ -67,7 +67,7 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
     /** This consolidates this object with its parent, overriding at all stages. This also causes the parent to
      * consolidate with ITS parent, etc. This returns a new object with all overriding elements squashed down, unless
      * this objects parent is null. As a result, consolidate() does nothing if this has already been consolidated.
-     * Generally, this method should only be called during this classes bake() method */
+     * Generally, this method should only be called during this classes bake() method. */
     protected abstract C actuallyConsolidate();
 
     // These are helper methods to make consolidation one-liners

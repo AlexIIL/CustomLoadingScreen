@@ -14,26 +14,41 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import alexiil.mods.load.BLSLog;
 
 public class ConfigManager {
     public enum EType {
-        FACTORY(JsonFactory.class, "factory"), FUNCTION(JsonFunction.class, "function"), ACTION(JsonAction.class, "action"), RENDERING_PART(
-                JsonRenderingPart.class, "imagemeta"), IMAGE(JsonImage.class, "image"), INSTRUCTION(JsonInstruction.class, "instruction"), CONFIG(
-                JsonConfig.class, "config");
+        FACTORY(JsonFactory.class, "factory"),
+        FUNCTION(JsonFunction.class, "function"),
+        ACTION(JsonAction.class, "action"),
+        RENDERING_PART(JsonRenderingPart.class, "imagemeta"),
+        IMAGE(JsonImage.class, "image"),
+        INSTRUCTION(JsonInstruction.class, "instruction"),
+        CONFIG(JsonConfig.class, "config");
 
-        public final Class<?> clazz;
+        public final Class<? extends JsonConfigurable<?, ?>> clazz;
         public final String resourceBase;
 
-        EType(Class<?> clazz, String resourceBase) {
+        public static EType valueOf(Class<? extends JsonConfigurable<?, ?>> configurable) {
+            return types.get(configurable);
+        }
+
+        <T extends JsonConfigurable<?, ?>> EType(Class<T> clazz, String resourceBase) {
             this.clazz = clazz;
             this.resourceBase = resourceBase;
+            types.put(clazz, this);
         }
     }
 
+    private static final Map<Class<? extends JsonConfigurable<?, ?>>, EType> types = Maps.newHashMap();
     private static IResourceManager resManager = Minecraft.getMinecraft().getResourceManager();
     private static final Map<ResourceLocation, String> cache = Maps.newHashMap(), failedCache = Maps.newHashMap();
+
+    public static Gson getGson() {
+        return new GsonBuilder().create();
+    }
 
     private static String getFirst(ResourceLocation res, boolean firstAttempt) {
         if (res == null) {
@@ -111,7 +126,7 @@ public class ConfigManager {
             BLSLog.warn("The text inside of \"" + loc + "\" was null!");
             return null;
         }
-        T t = (T) new Gson().fromJson(text, type.clazz);
+        T t = (T) getGson().fromJson(text, type.clazz);
         t.resourceLocation = loc;
         return t;
     }
@@ -123,18 +138,11 @@ public class ConfigManager {
         if (jrp == null) {
             JsonImage ji = getAsImage(location);
             if (ji != null) {
-                jrp = new JsonRenderingPart(location, new JsonInstruction[0], "true", "");
+                jrp = new JsonRenderingPart(location, new String[0], "true", "");
                 jrp.resourceLocation = getLocation(EType.RENDERING_PART, location);
             }
             else
                 throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
-        }
-        if (jrp.instructions != null) {
-            int i = 0;
-            for (JsonInstruction insn : jrp.instructions) {
-                insn.resourceLocation = new ResourceLocation(location.toString() + "!instruction_" + i);
-                i++;
-            }
         }
         return jrp;
     }
@@ -153,7 +161,7 @@ public class ConfigManager {
             if (location.equalsIgnoreCase("builtin/text"))
                 return new JsonImageText(getLocation(EType.IMAGE, location), "textures/font/ascii.png", null, null, null, null, null, null);
             else if (location.equalsIgnoreCase("builtin/panorama"))
-                return null;// new JsonImagePanorama(null,null,null,null);
+                return new JsonImagePanorama(getLocation(EType.IMAGE, location), "textures/gui/title/background/panorama_x.png");
         }
         return getAsT(EType.IMAGE, location);
     }

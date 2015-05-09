@@ -2,18 +2,16 @@
   "renders": [
     "sample/panorama",
     "sample/horizontal_stripe",
-    "sample/mojang_splash",
-    "sample/loading_bar_boss",
-    "sample/loading_bar_boss_percentage",
-    "sample/text_status",
-    "sample/text_percentage"
+    "sample/loading_bar_bevel",
+    "sample/loading_bar_bevel_percentage",
+    "sample/text_status_white",
+    "sample/text_percentage_white"
   ],
   "functions": [
   ],
   "factories": [
   ],
   "actions": [
-    "sample/sound_at_end"
   ],
   "variables": [
   ]

@@ -18,25 +18,25 @@ import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedPanoramaRender extends BakedRender {
     /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */
-    private double panoramaTimer;
-    private final IBakedFunction<Double> angle;
-    private final ResourceLocation[] titlePanoramaPaths;
+    private double actualAngle;
+    private final IBakedFunction<Double> angleFunc;
+    private final ResourceLocation[] cubeSides;
 
     public BakedPanoramaRender(IBakedFunction<Double> angle, String resourceLocation) {
         String[] strings = new String[6];
         for (int i = 0; i < 6; i++)
             strings[i] = resourceLocation.replace("_x", "_" + i);
-        titlePanoramaPaths = new ResourceLocation[6];
+        cubeSides = new ResourceLocation[6];
         for (int i = 0; i < 6; i++)
-            titlePanoramaPaths[i] = new ResourceLocation(strings[i]);
-        this.angle = angle;
+            cubeSides[i] = new ResourceLocation(strings[i]);
+        angleFunc = angle;
     }
 
     /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
-     * customizability added */
+     * customizability added. TODO: Add customizability */
     @Override
     public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        panoramaTimer = angle.call(status);
+        actualAngle = angleFunc.call(status);
         drawPanorama();
     }
 
@@ -62,8 +62,8 @@ public class BakedPanoramaRender extends BakedRender {
             float f2 = ((float) (k / b0) / (float) b0 - 0.5F) / 64.0F;
             float f3 = 0.0F;
             GlStateManager.translate(f1, f2, f3);
-            GlStateManager.rotate(MathHelper.sin(((float) this.panoramaTimer) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(-((float) this.panoramaTimer) * 0.1F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(MathHelper.sin(((float) this.actualAngle) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-((float) this.actualAngle) * 0.1F, 0.0F, 1.0F, 0.0F);
 
             for (int l = 0; l < 6; ++l) {
                 GlStateManager.pushMatrix();
@@ -88,7 +88,7 @@ public class BakedPanoramaRender extends BakedRender {
                     GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
-                mc.getTextureManager().bindTexture(titlePanoramaPaths[l]);
+                mc.getTextureManager().bindTexture(cubeSides[l]);
                 worldrenderer.startDrawingQuads();
                 worldrenderer.setColorRGBA_I(16777215, 255 / (k + 1));
                 float f4 = 0.0F;

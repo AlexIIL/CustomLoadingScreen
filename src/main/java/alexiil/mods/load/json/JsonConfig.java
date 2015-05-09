@@ -9,10 +9,6 @@ import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.IBakedFunction;
 
-// TODO: Split images.json into little files defined like block-states are (with parents etc)
-/* This requires changing the JsonRenderingPart to look up its parent to bake it, and changing ConfigBase to have an
- * array of strings for rendering parts, factories, functions and actions. */
-
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final String[] renders;
     public final String[] functions;
