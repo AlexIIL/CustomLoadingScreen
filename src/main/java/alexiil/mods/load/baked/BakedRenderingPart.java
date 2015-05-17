@@ -4,18 +4,18 @@ import net.minecraft.client.renderer.GlStateManager;
 
 import org.lwjgl.opengl.GL11;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-public class BakedRenderingPart extends BakedConfigurable {
+public class BakedRenderingPart extends BakedTickable {
     public final BakedInstruction[] instructions;
     public final BakedRender render;
-    public final IBakedFunction<Boolean> shouldRender;
+    public final BakedFunction<Boolean> shouldRender;
 
-    public BakedRenderingPart(BakedInstruction[] instructions, BakedRender render, IBakedFunction<Boolean> shouldRender) {
+    public BakedRenderingPart(BakedInstruction[] instructions, BakedRender render, BakedFunction<Boolean> shouldRender) {
         this.instructions = instructions;
         this.render = render;
         this.shouldRender = shouldRender;

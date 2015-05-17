@@ -6,18 +6,18 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mods.load.baked.BakedRender;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedImageRender extends BakedRender {
     protected final ResourceLocation res;
-    private final IBakedFunction<Double> x, y, width, height, u, uWidth, v, vHeight;
+    private final BakedFunction<Double> x, y, width, height, u, uWidth, v, vHeight;
 
-    public BakedImageRender(String resourceLocation, IBakedFunction<Double> x, IBakedFunction<Double> y, IBakedFunction<Double> width,
-            IBakedFunction<Double> height, IBakedFunction<Double> uMin, IBakedFunction<Double> uMax, IBakedFunction<Double> vMin,
-            IBakedFunction<Double> vMax) {
+    public BakedImageRender(String resourceLocation, BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> width,
+            BakedFunction<Double> height, BakedFunction<Double> uMin, BakedFunction<Double> uMax, BakedFunction<Double> vMin,
+            BakedFunction<Double> vMax) {
         res = new ResourceLocation(resourceLocation);
         this.x = x;
         this.y = y;

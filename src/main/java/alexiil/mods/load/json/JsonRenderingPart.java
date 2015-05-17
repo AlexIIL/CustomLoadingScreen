@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.BakedRenderingPart;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
@@ -27,7 +27,7 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
     }
 
     @Override
-    protected BakedRenderingPart actuallyBake(Map<String, IBakedFunction<?>> functions) {
+    protected BakedRenderingPart actuallyBake(Map<String, BakedFunction<?>> functions) {
         List<BakedInstruction> args = new ArrayList<BakedInstruction>();
 
         JsonImage element = ConfigManager.getAsImage(image).getConsolidated();
@@ -43,7 +43,7 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
 
         BakedInstruction[] instructions = args.toArray(new BakedInstruction[args.size()]);
         BakedRender actualRender = element.bake(functions);
-        IBakedFunction<Boolean> shouldRenderFunc = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
+        BakedFunction<Boolean> shouldRenderFunc = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
 
         return new BakedRenderingPart(instructions, actualRender, shouldRenderFunc);
     }

@@ -6,8 +6,8 @@ import java.util.Map;
 
 import net.minecraft.util.ResourceLocation;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.render.BakedPanoramaRender;
 
@@ -24,13 +24,13 @@ public class JsonImagePanorama extends JsonImage {
     }
 
     @Override
-    protected BakedPanoramaRender actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        IBakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble("seconds * 40", functions);
+    protected BakedPanoramaRender actuallyBake(Map<String, BakedFunction<?>> functions) {
+        BakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble("seconds * 40", functions);
         return new BakedPanoramaRender(angle, image);
     }
 
     @Override
-    public List<BakedInstruction> bakeInstructions(Map<String, IBakedFunction<?>> functions) {
+    public List<BakedInstruction> bakeInstructions(Map<String, BakedFunction<?>> functions) {
         return Collections.emptyList();
     }
 }

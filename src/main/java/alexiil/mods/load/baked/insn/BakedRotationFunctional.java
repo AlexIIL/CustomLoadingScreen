@@ -2,14 +2,14 @@ package alexiil.mods.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedRotationFunctional extends BakedInstruction {
-    private final IBakedFunction<Double> angle, x, y, z;
+    private final BakedFunction<Double> angle, x, y, z;
 
-    public BakedRotationFunctional(IBakedFunction<Double> angle, IBakedFunction<Double> x, IBakedFunction<Double> y, IBakedFunction<Double> z) {
+    public BakedRotationFunctional(BakedFunction<Double> angle, BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> z) {
         this.angle = angle;
         this.x = x;
         this.y = y;

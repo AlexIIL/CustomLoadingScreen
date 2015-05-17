@@ -7,8 +7,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.load.baked.BakedRender;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedColourSimple;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.insn.BakedPositionFunctional;
@@ -100,18 +100,18 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     }
 
     @Override
-    protected BakedRender actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        IBakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(position.x, functions);
-        IBakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(position.y, functions);
-        IBakedFunction<Double> widthFunc = FunctionBaker.bakeFunctionDouble(position.width, functions);
-        IBakedFunction<Double> heightFunc = FunctionBaker.bakeFunctionDouble(position.height, functions);
+    protected BakedRender actuallyBake(Map<String, BakedFunction<?>> functions) {
+        BakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(position.x, functions);
+        BakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(position.y, functions);
+        BakedFunction<Double> widthFunc = FunctionBaker.bakeFunctionDouble(position.width, functions);
+        BakedFunction<Double> heightFunc = FunctionBaker.bakeFunctionDouble(position.height, functions);
 
-        IBakedFunction<Double> uFunc = FunctionBaker.bakeFunctionDouble(texture.x, functions);
-        IBakedFunction<Double> vFunc = FunctionBaker.bakeFunctionDouble(texture.y, functions);
-        IBakedFunction<Double> uWidthFunc = FunctionBaker.bakeFunctionDouble(texture.width, functions);
-        IBakedFunction<Double> vHeightFunc = FunctionBaker.bakeFunctionDouble(texture.height, functions);
+        BakedFunction<Double> uFunc = FunctionBaker.bakeFunctionDouble(texture.x, functions);
+        BakedFunction<Double> vFunc = FunctionBaker.bakeFunctionDouble(texture.y, functions);
+        BakedFunction<Double> uWidthFunc = FunctionBaker.bakeFunctionDouble(texture.width, functions);
+        BakedFunction<Double> vHeightFunc = FunctionBaker.bakeFunctionDouble(texture.height, functions);
         if (TextureAnimator.isAnimated(resourceLocation.toString())) {
-            IBakedFunction<Double> frameFunc = FunctionBaker.bakeFunctionDouble(frame, functions);
+            BakedFunction<Double> frameFunc = FunctionBaker.bakeFunctionDouble(frame, functions);
             return new BakedAnimatedRender(image, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc, frameFunc);
         }
         else
@@ -154,7 +154,7 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     // return new BakedPanoramaRender(angle, image);
     // }
 
-    public List<BakedInstruction> bakeInstructions(Map<String, IBakedFunction<?>> functions) {
+    public List<BakedInstruction> bakeInstructions(Map<String, BakedFunction<?>> functions) {
         List<BakedInstruction> list = new ArrayList<BakedInstruction>();
         if (getColour() != 0xFFFFFF) {
             list.add(new BakedColourSimple(getRed(), getGreen(), getBlue(), 1));

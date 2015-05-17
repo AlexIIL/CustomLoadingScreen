@@ -1,16 +1,16 @@
 package alexiil.mods.load.baked;
 
 import alexiil.mods.load.baked.factory.FactoryElement;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-public class BakedFactory extends BakedConfigurable {
-    public final IBakedFunction<Boolean> shouldCreate, shouldDestroy;
+public class BakedFactory extends BakedTickable {
+    public final BakedFunction<Boolean> shouldCreate, shouldDestroy;
     public final BakedRenderingPart component;
 
-    public BakedFactory(IBakedFunction<Boolean> shouldCreate, IBakedFunction<Boolean> shouldDestroy, BakedRenderingPart component) {
+    public BakedFactory(BakedFunction<Boolean> shouldCreate, BakedFunction<Boolean> shouldDestroy, BakedRenderingPart component) {
         this.shouldCreate = shouldCreate;
         this.shouldDestroy = shouldDestroy;
         this.component = component;

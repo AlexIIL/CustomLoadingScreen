@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.load.baked.BakedFactory;
 import alexiil.mods.load.baked.BakedRenderingPart;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 
 public class JsonFactory extends JsonConfigurable<JsonFactory, BakedFactory> {
     public final String shouldCreate, shouldDestroy, toCreate;
@@ -20,9 +20,9 @@ public class JsonFactory extends JsonConfigurable<JsonFactory, BakedFactory> {
     }
 
     @Override
-    public BakedFactory actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        IBakedFunction<Boolean> shouldCreate = FunctionBaker.bakeFunctionBoolean(this.shouldCreate, functions);
-        IBakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
+    public BakedFactory actuallyBake(Map<String, BakedFunction<?>> functions) {
+        BakedFunction<Boolean> shouldCreate = FunctionBaker.bakeFunctionBoolean(this.shouldCreate, functions);
+        BakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
         JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate).getConsolidated();
         BakedRenderingPart component = jrp.bake(functions);
         return new BakedFactory(shouldCreate, shouldDestroy, component);

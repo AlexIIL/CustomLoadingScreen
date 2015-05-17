@@ -11,18 +11,18 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
 import alexiil.mods.load.baked.BakedRender;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedPanoramaRender extends BakedRender {
     /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */
     private double actualAngle;
-    private final IBakedFunction<Double> angleFunc;
+    private final BakedFunction<Double> angleFunc;
     private final ResourceLocation[] cubeSides;
 
-    public BakedPanoramaRender(IBakedFunction<Double> angle, String resourceLocation) {
+    public BakedPanoramaRender(BakedFunction<Double> angle, String resourceLocation) {
         String[] strings = new String[6];
         for (int i = 0; i < 6; i++)
             strings[i] = resourceLocation.replace("_x", "_" + i);

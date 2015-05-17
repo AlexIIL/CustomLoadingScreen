@@ -6,8 +6,8 @@ import java.util.Map;
 
 import net.minecraft.util.ResourceLocation;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.insn.BakedPositionFunctional;
 import alexiil.mods.load.baked.render.BakedTextRenderStatic;
@@ -25,16 +25,16 @@ public class JsonImageText extends JsonImage {
     }
 
     @Override
-    protected BakedTextRenderStatic actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        IBakedFunction<String> textFunc = FunctionBaker.bakeFunctionString(text, functions);
-        IBakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(position.x, functions);
-        IBakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(position.y, functions);
-        IBakedFunction<Double> colourFunc = FunctionBaker.bakeFunctionDouble(colour);
+    protected BakedTextRenderStatic actuallyBake(Map<String, BakedFunction<?>> functions) {
+        BakedFunction<String> textFunc = FunctionBaker.bakeFunctionString(text, functions);
+        BakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(position.x, functions);
+        BakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(position.y, functions);
+        BakedFunction<Double> colourFunc = FunctionBaker.bakeFunctionDouble(colour);
         return new BakedTextRenderStatic(textFunc, xFunc, yFunc, colourFunc, image);
     }
 
     @Override
-    public List<BakedInstruction> bakeInstructions(Map<String, IBakedFunction<?>> functions) {
+    public List<BakedInstruction> bakeInstructions(Map<String, BakedFunction<?>> functions) {
         List<BakedInstruction> list = new ArrayList<BakedInstruction>();
         // if (getColour() != 0xFFFFFF) {
         // list.add(new BakedColourSimple(getRed(), getGreen(), getBlue(), 1));

@@ -2,7 +2,7 @@ package alexiil.mods.load.json;
 
 import java.util.Map;
 
-import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.func.BakedFunction;
 
 public class JsonVariable {
     public final String name;
@@ -13,7 +13,7 @@ public class JsonVariable {
         this.initialValue = initialValue;
     }
 
-    public void bake(Map<String, IBakedFunction<?>> functions) {
+    public void bake(Map<String, BakedFunction<?>> functions) {
 
     }
 }

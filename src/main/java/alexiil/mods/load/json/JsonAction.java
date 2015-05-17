@@ -2,14 +2,12 @@ package alexiil.mods.load.json;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import alexiil.mods.load.baked.BakedAction;
-import alexiil.mods.load.baked.action.ActionSound;
-import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
-import alexiil.mods.load.baked.func.var.BakedFunctionConstant;
+import alexiil.mods.load.baked.func.BakedFunction;
 
 public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
-
     public final String conditionStart;
     public final String conditionEnd;
     public final String[] arguments;
@@ -21,27 +19,27 @@ public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
         this.arguments = arguments;
     }
 
-    // TODO: Convert JsonAction to use parents instead of an enumeration
     @Override
-    protected BakedAction actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        // switch (type) {
-        // case SOUND: {
-        IBakedFunction<Boolean> start = FunctionBaker.bakeFunctionBoolean(conditionStart, functions);
-        IBakedFunction<Boolean> end = FunctionBaker.bakeFunctionBoolean(conditionEnd, functions);
-        IBakedFunction<String> sound = FunctionBaker.bakeFunctionString(arguments[0], functions);
-        IBakedFunction<Boolean> repeat;
-        if (arguments.length > 1)
-            repeat = FunctionBaker.bakeFunctionBoolean(arguments[1], functions);
-        else
-            repeat = new BakedFunctionConstant<Boolean>(true);
-        return new ActionSound(start, end, sound, repeat);
-        // }
-        // }
-        // return null;
+    protected BakedAction actuallyBake(Map<String, BakedFunction<?>> functions) {
+        throw new IllegalArgumentException("You cannot bake an action wth no parent!");
     }
 
     @Override
     protected JsonAction actuallyConsolidate() {
-        return this;
+        if (StringUtils.isEmpty(parent))
+            return this;
+
+        JsonAction jParent = ConfigManager.getAsAction(parent).getConsolidated();
+        String conditionStart = consolidateFunction(this.conditionStart, jParent.conditionStart, "false");
+        String conditionEnd = consolidateFunction(this.conditionEnd, jParent.conditionEnd, "true");
+        // We don't consolidate the array as the positions of the array are important
+        String[] arguments = overrideObject(this.arguments, jParent.arguments, null);
+
+        if (jParent instanceof JsonActionSound) {
+            return new JsonActionSound(resourceLocation, conditionStart, conditionEnd, arguments);
+        }
+
+        return new JsonAction("", conditionStart, conditionEnd, arguments);
+
     }
 }

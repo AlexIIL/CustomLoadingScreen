@@ -9,8 +9,8 @@ import com.google.common.eventbus.Subscribe;
 
 import alexiil.mods.load.baked.BakedFactory;
 import alexiil.mods.load.baked.BakedRenderingPart;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.event.StatusPushedEvent;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
@@ -19,7 +19,7 @@ public class BakedFactoryStatus extends BakedFactory {
     /** This can be called by any thread to add an event to the list */
     private List<StatusPushedEvent> events = Collections.synchronizedList(new ArrayList<StatusPushedEvent>());
 
-    public BakedFactoryStatus(IBakedFunction<Boolean> shouldDestroy, BakedRenderingPart component) {
+    public BakedFactoryStatus(BakedFunction<Boolean> shouldDestroy, BakedRenderingPart component) {
         super(null, shouldDestroy, component);
     }
 

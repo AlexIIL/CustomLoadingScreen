@@ -1,7 +1,6 @@
 package alexiil.mods.load;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +9,6 @@ import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
-
-import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.lib.ConfigAccess;
 import alexiil.mods.load.render.MinecraftDisplayerWrapper;
@@ -87,90 +84,10 @@ public class ProgressDisplayer {
         }
     }
 
-    public static class ConsoleDisplayer implements IDisplayer {
-        private class ConsoleOutStream extends PrintStream {
-            private final PrintStream out;
-
-            public ConsoleOutStream(PrintStream out) {
-                super(out);
-                this.out = out;
-            }
-
-            @Override
-            public void println(Object o) {
-                out.println(o);
-                printStatusLine();
-            }
-
-            @Override
-            public void println(String text) {
-                out.println(text);
-                printStatusLine();
-
-            }
-
-            private synchronized void printStatusLine() {
-                out.print(line);
-            }
-        }
-
-        private static final String WHITESPACE = StringUtils.repeat(" ", 1);
-        private static final int BAR_LENGTH = 20;
-        private String line;
-
-        @Override
-        public void open(Configuration cfg) {
-            System.setOut(new ConsoleOutStream(System.out));
-            System.setErr(new ConsoleOutStream(System.err));
-        }
-
-        @Override
-        public void updateProgress(String text, double percent) {
-            printStatusLine(text, percent);
-        }
-
-        private void printStatusLine(String text, double percent) {
-            String progress = "[";
-            int length = (int) (BAR_LENGTH * percent);
-            progress += StringUtils.repeat("=", length - 1);
-            progress += ">";
-            progress += StringUtils.repeat(" ", BAR_LENGTH - length);
-            line = progress + "] " + (int) (percent * 100) + "% " + text + WHITESPACE + "\r";
-            System.out.print(line);
-        }
-
-        @Override
-        public void close() {}
-
-        @Override
-        public void pause() {}
-
-        @Override
-        public void resume() {}
-
-        @Override
-        public void pushProgress() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void popProgress() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void addFuture(String text, double percent) {
-            // TODO Auto-generated method stub
-
-        }
-    }
-
     private static List<IDisplayer> displayers = new ArrayList<IDisplayer>();
     private static int clientState = -1;
     public static Configuration cfg;
-    public static boolean playSound;
+    // public static boolean playSound;
     public static File coreModLocation;
     public static ModContainer modContainer;
 
@@ -178,6 +95,9 @@ public class ProgressDisplayer {
         if (clientState < 1000)
             return true;
         // FIXME: isClient() is broken!
+        // TODO: Decide whether or not to drop server support.
+        // It would make sense, right?
+        // Because this isn't used on the server... right?
         if (clientState != -1)
             return clientState == 1;
         StackTraceElement[] steArr = Thread.currentThread().getStackTrace();
@@ -231,16 +151,13 @@ public class ProgressDisplayer {
             "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
         boolean showFrame = cfg.getBoolean("showFrame", "general", false, comment);
 
-        playSound = cfg.getBoolean("playSound", "general", true, "Play a sound after Minecraft has finished starting up");
+        // playSound = cfg.getBoolean("playSound", "general", true,
+        // "Play a sound after Minecraft has finished starting up");
 
         if (useMinecraft)
             displayers.add(new MinecraftDisplayerWrapper());
         if (showFrame)
             displayers.add(new FrameDisplayer());
-
-        // if (System.console() != null)
-        // displayers.add(new ConsoleDisplayer());
-        // FIXME: fix console logging!
 
         for (IDisplayer displayer : displayers)
             displayer.open(cfg);
@@ -253,18 +170,6 @@ public class ProgressDisplayer {
     }
 
     public static void close() {
-        if (isClient() && playSound && displayers.size() != 0) {
-            new Thread("BetterLoadingScreen|LoadedSound") {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(2000);
-                    }
-                    catch (InterruptedException ignored) {}
-                    MinecraftDisplayerWrapper.playFinishedSound();
-                }
-            }.start();
-        }
         for (IDisplayer displayer : displayers)
             displayer.close();
         displayers.clear();

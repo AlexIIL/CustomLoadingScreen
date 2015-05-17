@@ -6,8 +6,7 @@ import alexiil.mods.load.baked.BakedAction;
 import alexiil.mods.load.baked.BakedConfig;
 import alexiil.mods.load.baked.BakedFactory;
 import alexiil.mods.load.baked.BakedRenderingPart;
-import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.func.BakedFunction;
 
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final String[] renders;
@@ -26,11 +25,13 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     }
 
     @Override
-    protected BakedConfig actuallyBake(Map<String, IBakedFunction<?>> functions) {
+    protected BakedConfig actuallyBake(Map<String, BakedFunction<?>> functions) {
         for (String func : this.functions) {
             JsonFunction function = ConfigManager.getAsFunction(func);
-            if (function != null)
-                functions.put(function.name, FunctionBaker.bakeFunction(function.function, functions));
+            if (function != null) {
+                BakedFunction<?> bf = function.bake(functions);
+                functions.put(function.name, bf);
+            }
         }
 
         BakedRenderingPart[] array = new BakedRenderingPart[this.renders.length];

@@ -27,8 +27,8 @@ import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.ProgressDisplayer;
 import alexiil.mods.load.ProgressDisplayer.IDisplayer;
 import alexiil.mods.load.baked.BakedConfig;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.func.var.BakedFunctionConstant;
 import alexiil.mods.load.baked.func.var.BakedVariablePercentage;
 import alexiil.mods.load.baked.func.var.BakedVariableScreenHeight;
@@ -88,8 +88,8 @@ public class MinecraftDisplayer implements IDisplayer {
         return null;
     }
 
-    private static Map<String, IBakedFunction<?>> getDefaultMap() {
-        Map<String, IBakedFunction<?>> functions = Maps.newHashMap();
+    private static Map<String, BakedFunction<?>> getDefaultMap() {
+        Map<String, BakedFunction<?>> functions = Maps.newHashMap();
 
         functions.put("true", new BakedFunctionConstant<Boolean>(true));
         functions.put("false", new BakedFunctionConstant<Boolean>(false));

@@ -8,8 +8,8 @@ import com.google.common.collect.ObjectArrays;
 
 import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedConfigurable;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 
 /** @param <C>
  *            The class that extends this. This is what it should consolidate down to.
@@ -31,11 +31,13 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
     /** Bakes this into something that can be ticked quickly. This is a potentially expensive function, so don't call
      * this more than you need to. (This does not cache, as this could potentially be called with a different map of
      * functions) */
-    public final B bake(Map<String, IBakedFunction<?>> functions) {
+    public final B bake(Map<String, BakedFunction<?>> functions) {
         if (resourceLocation == null)
             throw new NullPointerException();
         try {
-            return getConsolidated().actuallyBake(functions);
+            B b = getConsolidated().actuallyBake(functions);
+            b.setOrigin(resourceLocation);
+            return b;
         }
         catch (Throwable t) {
             BLSLog.warn(resourceLocation + " failed to bake!", t);
@@ -45,7 +47,7 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
 
     /** Bakes this object into something that will process quickly. Only call this on a consolidated object! (Use
      * {@link #bake(Map)} instead of this) */
-    protected abstract B actuallyBake(Map<String, IBakedFunction<?>> functions);
+    protected abstract B actuallyBake(Map<String, BakedFunction<?>> functions);
 
     /** ALWAYS call this as opposed to {@link #actuallyConsolidate()}, as this caches the result. */
     public final C getConsolidated() {

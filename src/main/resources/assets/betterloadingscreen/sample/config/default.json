@@ -1,18 +1,22 @@
 {
-  "renders": [
-    "sample/panorama",
-    "sample/horizontal_stripe",
-    "sample/loading_bar_bevel",
-    "sample/loading_bar_bevel_percentage",
-    "sample/text_status_white",
-    "sample/text_percentage_white"
-  ],
-  "functions": [
-  ],
-  "factories": [
-  ],
-  "actions": [
-  ],
-  "variables": [
-  ]
+	"renders":[
+		"sample/panorama",
+		"sample/horizontal_stripe",
+		"sample/loading_bar_bevel",
+		"sample/loading_bar_bevel_percentage",
+		"sample/text_status_white",
+		"sample/text_percentage_white"
+	],
+	"functions":[
+		
+	],
+	"factories":[
+		
+	],
+	"actions":[
+		
+	],
+	"variables":[
+		
+	]
 }

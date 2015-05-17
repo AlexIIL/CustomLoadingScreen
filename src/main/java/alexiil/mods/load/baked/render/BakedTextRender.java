@@ -4,16 +4,16 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 import alexiil.mods.load.baked.BakedRender;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
 public abstract class BakedTextRender extends BakedRender {
-    private final IBakedFunction<Double> x, y, colour;
+    private final BakedFunction<Double> x, y, colour;
     private final String fontTexture;
 
-    public BakedTextRender(IBakedFunction<Double> x, IBakedFunction<Double> y, IBakedFunction<Double> colour, String font) {
+    public BakedTextRender(BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> colour, String font) {
         this.x = x;
         this.y = y;
         this.colour = colour;

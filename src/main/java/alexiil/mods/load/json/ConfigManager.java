@@ -171,6 +171,10 @@ public class ConfigManager {
     }
 
     public static JsonAction getAsAction(String location) {
+        if (isBuiltIn(location)) {
+            if (location.equalsIgnoreCase("builtin/sound"))
+                return new JsonActionSound(getLocation(EType.ACTION, location), null, null, null);
+        }
         return getAsT(EType.ACTION, location);
     }
 
@@ -188,6 +192,12 @@ public class ConfigManager {
 
     public static JsonConfig getAsConfig(String location) {
         return getAsT(EType.CONFIG, location);
+    }
+
+    public static void getAsScript(String location) {
+        // TODO: Support for LuaJ scripts that can do arbitrary things for displaying
+        // Scripts should run once each tick for each thing they are associated with
+        // (Scripts could just be for the config, for a specific image or more created by factories)
     }
 
     public static ResourceLocation getLocation(EType type, String base) {

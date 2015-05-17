@@ -2,14 +2,14 @@ package alexiil.mods.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedScaleFunctional extends BakedInstruction {
-    private final IBakedFunction<Double> x, y, z;
+    private final BakedFunction<Double> x, y, z;
 
-    public BakedScaleFunctional(IBakedFunction<Double> x, IBakedFunction<Double> y, IBakedFunction<Double> z) {
+    public BakedScaleFunctional(BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> z) {
         this.x = x;
         this.y = y;
         this.z = z;

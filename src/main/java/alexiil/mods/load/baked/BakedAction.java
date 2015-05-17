@@ -1,15 +1,15 @@
 package alexiil.mods.load.baked;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-public abstract class BakedAction extends BakedConfigurable {
-    protected final IBakedFunction<Boolean> conditionStart, conditionEnd;
+public abstract class BakedAction extends BakedTickable {
+    protected final BakedFunction<Boolean> conditionStart, conditionEnd;
     private boolean started = false;
 
-    public BakedAction(IBakedFunction<Boolean> conditionStart, IBakedFunction<Boolean> conditionEnd) {
+    public BakedAction(BakedFunction<Boolean> conditionStart, BakedFunction<Boolean> conditionEnd) {
         this.conditionStart = conditionStart;
         this.conditionEnd = conditionEnd;
     }

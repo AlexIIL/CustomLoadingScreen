@@ -2,8 +2,8 @@ package alexiil.mods.load.json;
 
 import java.util.Map;
 
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.baked.insn.BakedColourFunctional;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.insn.BakedPositionFunctional;
@@ -21,18 +21,18 @@ public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInst
     }
 
     // TODO: Convert JsonInstruction to use parents for rotation, scaling, colour and position
-    public BakedInstruction actuallyBake(Map<String, IBakedFunction<?>> functions) {
+    public BakedInstruction actuallyBake(Map<String, BakedFunction<?>> functions) {
         if (function.equalsIgnoreCase("rotate")) {
-            IBakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            IBakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            IBakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
-            IBakedFunction<Double> z = FunctionBaker.bakeFunctionDouble(arguments[3], functions);
+            BakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
+            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
+            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
+            BakedFunction<Double> z = FunctionBaker.bakeFunctionDouble(arguments[3], functions);
             return new BakedRotationFunctional(angle, x, y, z);
         }
         else if (function.equalsIgnoreCase("scale")) {
-            IBakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            IBakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            IBakedFunction<Double> z;
+            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
+            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
+            BakedFunction<Double> z;
             if (arguments.length == 3)
                 z = FunctionBaker.bakeFunctionDouble("1");
             else
@@ -40,10 +40,10 @@ public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInst
             return new BakedScaleFunctional(x, y, z);
         }
         else if (function.equalsIgnoreCase("colour")) {
-            IBakedFunction<Double> r = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            IBakedFunction<Double> g = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            IBakedFunction<Double> b = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
-            IBakedFunction<Double> alpha;
+            BakedFunction<Double> r = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
+            BakedFunction<Double> g = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
+            BakedFunction<Double> b = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
+            BakedFunction<Double> alpha;
             if (arguments.length == 3)
                 alpha = FunctionBaker.bakeFunctionDouble("1");
             else
@@ -51,9 +51,9 @@ public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInst
             return new BakedColourFunctional(r, g, b, alpha);
         }
         else if (function.equalsIgnoreCase("position")) {
-            IBakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            IBakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            IBakedFunction<Double> z;
+            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
+            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
+            BakedFunction<Double> z;
             if (arguments.length == 2)
                 z = FunctionBaker.bakeFunctionDouble("0");
             else

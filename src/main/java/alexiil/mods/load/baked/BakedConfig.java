@@ -4,7 +4,7 @@ import alexiil.mods.load.baked.func.FunctionException;
 import alexiil.mods.load.render.MinecraftDisplayerRenderer;
 import alexiil.mods.load.render.RenderingStatus;
 
-public class BakedConfig extends BakedConfigurable {
+public class BakedConfig extends BakedTickable {
     public final BakedRenderingPart[] renderingParts;
     public final BakedAction[] actions;
     public final BakedFactory[] factories;

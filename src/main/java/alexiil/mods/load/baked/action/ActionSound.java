@@ -7,18 +7,18 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mods.load.baked.BakedAction;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;
-import alexiil.mods.load.baked.func.IBakedFunction;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class ActionSound extends BakedAction {
     public static final SoundHandler sndHandler = Minecraft.getMinecraft().getSoundHandler();
-    public final IBakedFunction<String> sound;
-    public final IBakedFunction<Boolean> repeat;
+    public final BakedFunction<String> sound;
+    public final BakedFunction<Boolean> repeat;
     private ISound currentSound = null;
 
-    public ActionSound(IBakedFunction<Boolean> conditionStart, IBakedFunction<Boolean> conditionEnd, IBakedFunction<String> sound,
-            IBakedFunction<Boolean> repeat) {
+    public ActionSound(BakedFunction<Boolean> conditionStart, BakedFunction<Boolean> conditionEnd, BakedFunction<String> sound,
+            BakedFunction<Boolean> repeat) {
         super(conditionStart, conditionEnd);
         this.sound = sound;
         this.repeat = repeat;

@@ -4,8 +4,8 @@ import java.util.Map;
 
 import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.factory.BakedFactoryStatus;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
-import alexiil.mods.load.baked.func.IBakedFunction;
 
 public class JsonFactoryStatus extends JsonFactory {
     public JsonFactoryStatus(String shouldDestroy, String toCreate) {
@@ -19,8 +19,8 @@ public class JsonFactoryStatus extends JsonFactory {
     }
 
     @Override
-    public BakedFactoryStatus actuallyBake(Map<String, IBakedFunction<?>> functions) {
-        IBakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
+    public BakedFactoryStatus actuallyBake(Map<String, BakedFunction<?>> functions) {
+        BakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
 
         JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate);
         if (jrp == null) {

@@ -4,14 +4,14 @@ import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mods.load.baked.func.IBakedFunction;
+import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.json.EPosition;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedPositionSimple extends BakedInstruction {
     private final double x, y;
 
-    public static BakedInstruction bake(EPosition general, EPosition specific, String x, String y, Map<String, IBakedFunction<?>> functions) {
+    public static BakedInstruction bake(EPosition general, EPosition specific, String x, String y, Map<String, BakedFunction<?>> functions) {
         if (general != EPosition.TOP_LEFT || specific != EPosition.TOP_LEFT || isInvalid(x) || isInvalid(y)) {
 //            String xFunc = general.getFunctionX(specific.getFunctionX(x));
 //            String yFunc = general.getFunctionY(specific.getFunctionY(y));
