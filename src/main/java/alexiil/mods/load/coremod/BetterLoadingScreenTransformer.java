@@ -20,7 +20,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("net.minecraft.client.Minecraft"))
-            return transformMinecraft(basicClass, transformedName == name);
+            return transformMinecraft(basicClass, transformedName.equals(name));
         if (name.equals("com.mumfrey.liteloader.client.api.ObjectFactoryClient"))
             return transformObjectFactoryClient(basicClass);
         return basicClass;
@@ -111,7 +111,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             }
         }
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         System.out.println("Transformed Minecraft");
         return cw.toByteArray();
