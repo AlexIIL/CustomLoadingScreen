@@ -11,10 +11,8 @@ import alexiil.mods.load.baked.BakedConfigurable;
 import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
 
-/** @param <C>
- *            The class that extends this. This is what it should consolidate down to.
- * @param <B>
- *            The class that this is baked to. */
+/** @param <C> The class that extends this. This is what it should consolidate down to.
+ * @param <B> The class that this is baked to. */
 public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B extends BakedConfigurable> {
     /** This is what its parent is. The definition of parent defines on what subclass this is of JsonConfigurable, see
      * each subclass for details. */
@@ -114,6 +112,26 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
         if (last == null || last.length == 0)
             return first;
         return ObjectArrays.concat(first, last, (Class<O>) first.getClass().getComponentType());
+    }
+
+    /** This will override the parent array with the in array. For example, passing in = { "hi", null, "three" } and
+     * parent = { "one", "two" } would return { "hi", "two", "three" } */
+    protected <O> O[] overrideArray(O[] in, O[] parent) {
+        if (in == null || in.length == 0)
+            return parent;
+        if (parent == null || parent.length == 0)
+            return in;
+        O[] array = ObjectArrays.newArray(in, Math.max(in.length, parent.length));
+        for (int i = 0; i < array.length; i++) {
+            if (i < in.length && i < parent.length)
+                array[i] = overrideObject(in[i], parent[i], null);
+            else if (i >= in.length)
+                array[i] = parent[i];
+            else
+                array[i] = in[i];
+        }
+        return array;
+
     }
 
     protected Area consolidateArea(Area in, Area parent) {

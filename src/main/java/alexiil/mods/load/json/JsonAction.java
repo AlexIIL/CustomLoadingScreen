@@ -32,8 +32,7 @@ public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
         JsonAction jParent = ConfigManager.getAsAction(parent).getConsolidated();
         String conditionStart = consolidateFunction(this.conditionStart, jParent.conditionStart, "false");
         String conditionEnd = consolidateFunction(this.conditionEnd, jParent.conditionEnd, "true");
-        // We don't consolidate the array as the positions of the array are important
-        String[] arguments = overrideObject(this.arguments, jParent.arguments, null);
+        String[] arguments = overrideArray(this.arguments, jParent.arguments);
 
         if (jParent instanceof JsonActionSound) {
             return new JsonActionSound(resourceLocation, conditionStart, conditionEnd, arguments);
