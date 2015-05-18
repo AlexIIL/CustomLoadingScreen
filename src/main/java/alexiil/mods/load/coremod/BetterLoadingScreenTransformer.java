@@ -140,14 +140,14 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             }
         }
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         BLSLog.info("Transformed Minecraft");
         byte[] bytes = cw.toByteArray();
 
         // Export it :)
 
-        File folder = new File("./bls-asm");
+        File folder = new File("./asm/BetterLoadingScreen");
         folder.mkdir();
         File fle = new File(folder, "Minecraft.class");
         try {
