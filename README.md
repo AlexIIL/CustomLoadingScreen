@@ -3,11 +3,15 @@ Drone.io: [![Build Status](https://drone.io/github.com/AlexIIL/BetterLoadingScre
 
 ## Building from scratch
 Clone this repository into an empty folder
-If you are on linux, run 
+
+    git clone https://github.com/AlexIIL/BetterLoadingScreen.git
+    cd BetterLoadingScreen
+
+If you are on linux, run:
 
     ./setupWorkspace build
     
-Otherwise you need to run the following:
+Otherwise you need to run:
 
     git submodule init
     git submodule update
@@ -18,16 +22,18 @@ Otherwise you need to run the following:
     ./gradlew setupCIWorkspace
     ./gradlew build
     
-The build jar files will be in /build/libs
+The build jar files will be in /build/libs.
   
 ## Contributing
 Fork this repository
+
 Clone the forked repository into an empty folder
-If you are on linux, run 
+
+If you are on linux run
 
     ./setupWorkspace build
     
-Otherwise you need to run the following:
+Otherwise you need to run
 
     git submodule init
     git submodule update
@@ -37,7 +43,7 @@ Otherwise you need to run the following:
     cd ..
     ./gradlew setupDecompWorkspace
     
-if you use eclipse...
+If you use eclipse...
 
     ./gradlew eclipse
     
