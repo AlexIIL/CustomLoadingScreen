@@ -2,7 +2,10 @@ package alexiil.mods.load;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+
+import com.google.common.collect.Queues;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLFileResourcePack;
@@ -67,21 +70,18 @@ public class ProgressDisplayer {
 
         @Override
         public void pushProgress() {
-            // TODO Auto-generated method stub
-
+            if (frame != null)
+                frame.pushProgress();
         }
 
         @Override
         public void popProgress() {
-            // TODO Auto-generated method stub
-
+            if (frame != null)
+                frame.popProgress();
         }
 
         @Override
-        public void addFuture(String text, double percent) {
-            // TODO Auto-generated method stub
-
-        }
+        public void addFuture(String text, double percent) {}
     }
 
     private static List<IDisplayer> displayers = new ArrayList<IDisplayer>();
@@ -193,5 +193,41 @@ public class ProgressDisplayer {
         for (IDisplayer displayer : displayers)
             if (displayer != null)
                 displayer.resume();
+    }
+
+    public static void pushProgress() {
+        for (IDisplayer displayer : displayers) {
+            if (displayer != null)
+                displayer.pushProgress();
+        }
+    }
+
+    public static void popProgress() {
+        for (IDisplayer displayer : displayers) {
+            if (displayer != null)
+                displayer.popProgress();
+        }
+    }
+
+//    private static Deque<Integer> stepsQueue = Queues.newArrayDeque();
+//    private static Deque<Integer> stepsCurrent = Queues.newArrayDeque();
+
+    public static void forgeHook_ProgressManager_Push(String title, int steps, boolean timeEachStep) {
+//        pushProgress();
+//        stepsQueue.push(steps);
+//        stepsCurrent.push(0);
+//        displayProgress(title, 0);
+    }
+
+    public static void forgeHook_ProgressManager_Pop() {
+//        popProgress();
+//        stepsQueue.pop();
+//        stepsCurrent.pop();
+    }
+
+    public static void forgeHook_ProgressManager_ProgressBar_Step(String message) {
+//        int current = stepsCurrent.pop() + 1;
+//        stepsCurrent.push(current);
+//        displayProgress(message, current / (double) stepsQueue.peek());
     }
 }

@@ -24,5 +24,4 @@ public class ConfigGuiFactory implements IModGuiFactory {
     public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
         return null;
     }
-
 }

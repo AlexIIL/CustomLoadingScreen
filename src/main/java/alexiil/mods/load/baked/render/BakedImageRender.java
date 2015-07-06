@@ -1,6 +1,5 @@
 package alexiil.mods.load.baked.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -56,7 +55,7 @@ public class BakedImageRender extends BakedRender {
     }
 
     public void bindTexture(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        Minecraft.getMinecraft().renderEngine.bindTexture(res);
+        renderer.textureManager.bindTexture(res);
     }
 
     @Override

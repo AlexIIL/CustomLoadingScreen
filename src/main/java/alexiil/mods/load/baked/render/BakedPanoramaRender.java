@@ -1,14 +1,14 @@
 package alexiil.mods.load.baked.render;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Project;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Project;
 
 import alexiil.mods.load.baked.BakedRender;
 import alexiil.mods.load.baked.func.BakedFunction;
@@ -37,10 +37,10 @@ public class BakedPanoramaRender extends BakedRender {
     @Override
     public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
         actualAngle = angleFunc.call(status);
-        drawPanorama();
+        drawPanorama(renderer);
     }
 
-    private void drawPanorama() {
+    private void drawPanorama(MinecraftDisplayerRenderer renderer) {
         Minecraft mc = Minecraft.getMinecraft();
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -88,7 +88,7 @@ public class BakedPanoramaRender extends BakedRender {
                     GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
-                mc.getTextureManager().bindTexture(cubeSides[l]);
+                renderer.textureManager.bindTexture(cubeSides[l]);
                 worldrenderer.startDrawingQuads();
                 worldrenderer.setColorRGBA_I(16777215, 255 / (k + 1));
                 float f4 = 0.0F;

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.common.collect.Maps;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -20,8 +22,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.client.FMLFolderResourcePack;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import com.google.common.collect.Maps;
 
 import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.ProgressDisplayer;
@@ -79,8 +79,7 @@ public class MinecraftDisplayer implements IDisplayer {
                 f.setAccessible(true);
                 try {
                     return (List<IResourcePack>) f.get(mc);
-                }
-                catch (Throwable e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
@@ -116,7 +115,7 @@ public class MinecraftDisplayer implements IDisplayer {
 
         comment =
             "The loading screen configuration json file. Some presets are ['sample/default', 'sample/bland', 'sample/rotating_cakes', 'sample/']."
-                + " You can use your own by creating ";
+                + " You can use your own by creating a file in ";
         // TODO: Create a way to have a folder with custom loading screen JSON parts (add a FileResourcePack)
         // TODO: Create sample/default that looks similar to the one with the world background
         // (Panorama, Darkened_blur_horizontal_strip, White status + percentage text + boss loading bar)
@@ -166,11 +165,9 @@ public class MinecraftDisplayer implements IDisplayer {
                 animator.tick();
                 try {
                     render.tick();
-                }
-                catch (FunctionException fe) {
+                } catch (FunctionException fe) {
                     throw new RuntimeException("A function failed!", fe);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     throw new RuntimeException("Something unexpected happened!", t);
                 }
             }
@@ -184,11 +181,9 @@ public class MinecraftDisplayer implements IDisplayer {
             resLoaderClass.getField("INSTANCE").set(null, instance);
             Method m = resLoaderClass.getMethod("preInit", FMLPreInitializationEvent.class);
             m.invoke(instance, new Object[] { null });
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             BLSLog.info("Resource loader not loaded, not initialising early");
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             BLSLog.warn("Resource Loader Compat FAILED!", t);
         }
     }
@@ -216,12 +211,12 @@ public class MinecraftDisplayer implements IDisplayer {
 
     @Override
     public void pushProgress() {
-        // TODO Auto-generated method stub
+        status.progressState.pushChild(new ProgressPair("", 0), status.getSeconds());
     }
 
     @Override
     public void popProgress() {
-        // TODO Auto-generated method stub
+        status.progressState.popChild(status.getSeconds());
     }
 
     @Override

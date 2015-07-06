@@ -157,7 +157,7 @@ public class RenderingStatus {
 
         /** @return <code>True</code> if there are future fields waiting to be started */
         public boolean hasMore() {
-            return current < history.size();
+            return current + 1 < history.size();
         }
     }
 

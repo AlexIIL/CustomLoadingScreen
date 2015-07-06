@@ -1,6 +1,7 @@
 package alexiil.mods.load;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -11,19 +12,48 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 @SuppressWarnings("serial")
 public class LoadingFrame extends JFrame {
-    private JLabel lblState;
-    private JProgressBar progressBar;
+    private static class ProgressPart {
+        private final JPanel panel, container;
+        private final JLabel label;
+        private final JProgressBar bar;
+        private final ProgressPart parent;
+        private ProgressPart child;
+
+        public ProgressPart(ProgressPart parent) {
+            panel = new JPanel();
+            panel.setLayout(new BorderLayout(0, 0));
+
+            container = new JPanel();
+            container.setLayout(new BorderLayout(0, 0));
+            container.setBorder(new LineBorder(Color.BLACK));
+            panel.add(container, BorderLayout.NORTH);
+
+            label = new JLabel();
+            container.add(label, BorderLayout.NORTH);
+
+            bar = new JProgressBar();
+            container.add(bar, BorderLayout.SOUTH);
+
+            this.parent = parent;
+
+            if (parent != null) {
+                parent.panel.add(panel, BorderLayout.SOUTH);
+            }
+        }
+    }
+
+    private ProgressPart head, current;
 
     /** Launch the application. */
     public static LoadingFrame openWindow() {
         String clsName = UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(clsName);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         try {
@@ -32,8 +62,7 @@ public class LoadingFrame extends JFrame {
             frame.setAlwaysOnTop(true);
             frame.setVisible(true);
             return frame;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -59,23 +88,30 @@ public class LoadingFrame extends JFrame {
         contentPane.add(panel, BorderLayout.NORTH);
         panel.setLayout(new BorderLayout(0, 0));
 
-        lblState = new JLabel("State");
-        panel.add(lblState, BorderLayout.NORTH);
-
-        JPanel panel_1 = new JPanel();
-        panel.add(panel_1, BorderLayout.CENTER);
-        panel_1.setLayout(new BorderLayout(0, 0));
-
-        progressBar = new JProgressBar();
-        progressBar.setStringPainted(true);
-        panel_1.add(progressBar, BorderLayout.NORTH);
+        head = new ProgressPart(null);
+        current = head;
     }
 
     public void setMessage(String message) {
-        lblState.setText(message);
+        current.label.setText(message);
     }
 
     public void setProgress(double percent) {
-        progressBar.setValue((int) percent);
+        current.bar.setValue((int) percent);
+    }
+
+    public void pushProgress() {
+        current = new ProgressPart(current);
+    }
+
+    public void popProgress() {
+        if (current == head) {
+            throw new Error("Tried to pop the head off!");
+        }
+        ProgressPart part = current;
+        current = current.parent;
+        current.panel.remove(part.panel);
+        current.panel.revalidate();
+        current.panel.repaint();
     }
 }

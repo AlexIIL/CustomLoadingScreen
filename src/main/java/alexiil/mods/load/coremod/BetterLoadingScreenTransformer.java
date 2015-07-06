@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.fml.client.FMLClientHandler;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -18,6 +15,10 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.ProgressDisplayer;
@@ -34,6 +35,17 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         if (name.equals("lumien.resourceloader.ResourceLoader")) {
             return transformResourceLoader(basicClass);
         }
+        // I COULD submit a pull request with these features, but it just doesn't make sense with it being a non stable
+        // API. Also, this is just a hook! I'm sorry!
+        if (name.equals("net.minecraftforge.fml.common.ProgressManager")) {
+            return transformProgressManager(basicClass);
+        }
+
+        // I'm SO SORRY FORGE PEOPLE!
+        if (name.equals("net.minecraftforge.fml.common.ProgressManager$ProgressBar")) {
+            return transformProgressBar(basicClass);
+        }
+        out(basicClass, transformedName);
         return basicClass;
     }
 
@@ -87,8 +99,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                         if (method.owner.equals("com/mumfrey/liteloader/client/gui/startup/LoadingBar")) {
                             m.instructions.remove(method);
                             continue;
-                        }
-                        else if (method.owner.startsWith("com/mumfrey")) {
+                        } else if (method.owner.startsWith("com/mumfrey")) {
                             BLSLog.info("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
                         }
                     }
@@ -110,8 +121,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                                 m.instructions.insert(method.getNext().getNext().getNext().getNext().getNext().getNext(), newTwo);
                                 hasFoundStartGame = true;
                                 hasFoundOnce = true;
-                            }
-                            else {
+                            } else {
                                 // Pause when minecraft inits its render global
                                 MethodInsnNode pause = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "pause", "()V", false);
                                 m.instructions.insertBefore(getPrevious(method, 39), pause);
@@ -155,8 +165,7 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             stream.write(bytes);
             stream.flush();
             stream.close();
-        }
-        catch (IOException io) {
+        } catch (IOException io) {
             io.printStackTrace();
         }
 
@@ -184,6 +193,68 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         byte[] arr = cw.toByteArray();
         BLSLog.info("Transformed ResourceLoader!");
         return arr;
+    }
+
+    private byte[] transformProgressManager(byte[] before) {
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        for (MethodNode m : classNode.methods) {
+            if (m.name.equals("push") && m.desc.contains("Z")) {
+                // ADD:
+                // Load 0
+                // Load 1
+                // Load 2
+                // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Push();
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_Push", "(Ljava/lang/String;IZ)V", false));
+                m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 2));
+                m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 1));
+                m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 0));
+
+            }
+
+            if (m.name.equals("pop")) {
+                // ADD:
+                // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Pop();
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_Pop", "()V", false));
+            }
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        byte[] arr = cw.toByteArray();
+        BLSLog.info("Transformed ProgressManager!");
+        return arr;
+    }
+
+    private byte[] transformProgressBar(byte[] before) {
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        for (MethodNode m : classNode.methods) {
+            if (m.name.equals("step") && !m.desc.contains("Class")) {
+                // ADD
+                // LOAD 0
+                // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_ProgressBar_Step();
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_ProgressBar_Step", "(Ljava/lang/String;)V", false));
+                m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 1));
+            }
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        byte[] arr = cw.toByteArray();
+        BLSLog.info("Transformed ProgressBar!");
+        return arr;
+    }
+
+    private void out(byte[] data, String clazzName) {
+
     }
 
     private AbstractInsnNode getPrevious(AbstractInsnNode node, int num) {

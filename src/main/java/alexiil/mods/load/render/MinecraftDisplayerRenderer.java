@@ -4,20 +4,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.SharedDrawable;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
 
 import alexiil.mods.load.baked.BakedAction;
 import alexiil.mods.load.baked.BakedConfig;
@@ -36,7 +37,7 @@ public class MinecraftDisplayerRenderer {
     private long lastTime;
     private Minecraft mc;
     private final Map<String, FontRenderer> fontRenderers = Maps.newHashMap();
-    private TextureManager textureManager;
+    public TextureManager textureManager;
     private boolean first = true;
     private SharedDrawable drawable;
     private final List<BakedRenderingPart> tempList = Lists.newArrayList();
@@ -66,15 +67,14 @@ public class MinecraftDisplayerRenderer {
                 mc.refreshResources();
                 textureManager.onResourceManagerReload(mc.getResourceManager());
             }
-            if (textureManager != mc.renderEngine)
-                textureManager = mc.renderEngine;
+            // if (textureManager != mc.renderEngine)
+            // textureManager = mc.renderEngine;
 
             if (first) {
                 try {
                     drawable = new SharedDrawable(Display.getDrawable());
                     drawable.makeCurrent();
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     throw Throwables.propagate(t);
                 }
                 first = false;
@@ -135,17 +135,15 @@ public class MinecraftDisplayerRenderer {
 
             // Action stuffs
             for (BakedAction ba : actions) {
-                // ba.tick(status, this);
+                ba.tick(status, this);
             }
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             if (t instanceof FunctionException) {
                 lastTime = now;
                 throw (FunctionException) t;
             }
             t.printStackTrace();
-        }
-        finally {
+        } finally {
             lastTime = now;
         }
     }
@@ -163,11 +161,10 @@ public class MinecraftDisplayerRenderer {
 
     public void close() {
         GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-        GlStateManager.color(1, 1, 1, 1);
-
+        GlStateManager.clearColor(1, 1, 1, 0);
         drawable.destroy();
     }
 }
