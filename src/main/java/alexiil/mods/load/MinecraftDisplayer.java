@@ -1,5 +1,6 @@
 package alexiil.mods.load;
 
+import java.awt.SplashScreen;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -114,6 +115,10 @@ public class MinecraftDisplayer implements IDisplayer {
         images[3] = new ImageRender(progress, EPosition.CENTER, EType.STATIC, new Area(0, 10, 182, 5), new Area(0, -50, 182, 5));
         images[4] = new ImageRender(progress, EPosition.CENTER, EType.DYNAMIC_PERCENTAGE, new Area(0, 15, 182, 5), new Area(0, -50, 182, 5));
 
+        SplashScreen splashScreen=SplashScreen.getSplashScreen();
+        if(splashScreen!=null)
+            splashScreen.close();
+
         ImageRender[] defaultImageRender = images;
 
         File imagesFile = new File(configDir, "images.json");
@@ -185,12 +190,13 @@ public class MinecraftDisplayer implements IDisplayer {
     public void drawImageRender(ImageRender render, String text, double percent) {
         int startX = render.transformX(resolution.getScaledWidth());
         int startY = render.transformY(resolution.getScaledHeight());
+        int realWidth=render.position.width==0?resolution.getScaledWidth():render.position.width;
         GlStateManager.color(render.getRed(), render.getGreen(), render.getBlue());
         switch (render.type) {
             case DYNAMIC_PERCENTAGE: {
                 ResourceLocation res = new ResourceLocation(render.resourceLocation);
                 textureManager.bindTexture(res);
-                double alteredWidth = render.position.width * percent;
+                double alteredWidth = realWidth * percent;
                 drawRect(startX, startY, alteredWidth, render.position.height, render.texture.x, render.texture.y, alteredWidth,
                     render.texture.height);
                 break;
@@ -223,7 +229,7 @@ public class MinecraftDisplayer implements IDisplayer {
             default: {// Assume STATIC
                 ResourceLocation res = new ResourceLocation(render.resourceLocation);
                 textureManager.bindTexture(res);
-                drawRect(startX, startY, render.position.width, render.position.height, render.texture.x, render.texture.y, render.texture.width,
+                drawRect(startX, startY, realWidth, render.position.height, render.texture.x, render.texture.y, render.texture.width,
                     render.texture.height);
                 break;
             }
