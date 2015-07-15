@@ -1,5 +1,6 @@
 package alexiil.mods.load.render;
 
+import java.awt.SplashScreen;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -124,6 +125,10 @@ public class MinecraftDisplayer implements IDisplayer {
 
         // Resource Loader Compat
         loadResourceLoader();
+
+        SplashScreen splashScreen=SplashScreen.getSplashScreen();
+        if(splashScreen!=null)
+            splashScreen.close();
 
         // Add ourselves as a resource pack
         if (!ProgressDisplayer.coreModLocation.isDirectory())
