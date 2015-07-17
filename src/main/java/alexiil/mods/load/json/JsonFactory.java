@@ -8,6 +8,7 @@ import alexiil.mods.load.baked.BakedFactory;
 import alexiil.mods.load.baked.BakedRenderingPart;
 import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
+import alexiil.mods.load.json.subtypes.JsonFactoryStatus;
 
 public class JsonFactory extends JsonConfigurable<JsonFactory, BakedFactory> {
     public final String shouldCreate, shouldDestroy, toCreate;

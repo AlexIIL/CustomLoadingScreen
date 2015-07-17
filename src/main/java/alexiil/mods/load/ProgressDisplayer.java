@@ -176,11 +176,13 @@ public class ProgressDisplayer {
     }
 
     public static void minecraftDisplayFirstProgress() {
-        displayProgress(Translation.translate("betterloadingscreen.state.minecraft_init", "Minecraft Initializing"), 0F);
+        // displayProgress(Translation.translate("betterloadingscreen.state.minecraft_init", "Minecraft Initializing"),
+        // 0F);
     }
 
     public static void minecraftDisplayAfterForge() {
-        displayProgress(Translation.translate("betterloadingscreen.state.minecraft_init", "Minecraft Initializing"), 0.55);
+        // displayProgress(Translation.translate("betterloadingscreen.state.minecraft_init", "Minecraft Initializing"),
+        // 0.55);
     }
 
     public static void pause() {
@@ -209,25 +211,30 @@ public class ProgressDisplayer {
         }
     }
 
-//    private static Deque<Integer> stepsQueue = Queues.newArrayDeque();
-//    private static Deque<Integer> stepsCurrent = Queues.newArrayDeque();
+    private static Deque<Integer> stepsQueue = Queues.newArrayDeque();
+    private static Deque<Integer> stepsCurrent = Queues.newArrayDeque();
 
     public static void forgeHook_ProgressManager_Push(String title, int steps, boolean timeEachStep) {
-//        pushProgress();
-//        stepsQueue.push(steps);
-//        stepsCurrent.push(0);
-//        displayProgress(title, 0);
+        pushProgress();
+        stepsQueue.push(steps);
+        stepsCurrent.push(0);
+        displayProgress(title, 0);
     }
 
     public static void forgeHook_ProgressManager_Pop() {
-//        popProgress();
-//        stepsQueue.pop();
-//        stepsCurrent.pop();
+        popProgress();
+        stepsQueue.pop();
+        stepsCurrent.pop();
     }
 
     public static void forgeHook_ProgressManager_ProgressBar_Step(String message) {
-//        int current = stepsCurrent.pop() + 1;
-//        stepsCurrent.push(current);
-//        displayProgress(message, current / (double) stepsQueue.peek());
+        int current = stepsCurrent.pop() + 1;
+        stepsCurrent.push(current);
+        double numSteps = (double) stepsQueue.peek();
+        if (current > numSteps) {
+            BLSLog.warn("Current (" + current + ") was greater than num steps(" + numSteps + ")!");
+            current = (int) numSteps;
+        }
+        displayProgress(message, current / numSteps);
     }
 }

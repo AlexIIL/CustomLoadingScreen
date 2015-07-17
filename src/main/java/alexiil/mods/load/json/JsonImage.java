@@ -14,14 +14,14 @@ import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.insn.BakedPositionFunctional;
 import alexiil.mods.load.baked.render.BakedAnimatedRender;
 import alexiil.mods.load.baked.render.BakedImageRender;
+import alexiil.mods.load.json.subtypes.JsonImagePanorama;
+import alexiil.mods.load.json.subtypes.JsonImageText;
 import alexiil.mods.load.render.TextureAnimator;
 
 public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     public final String image;
     public final EPosition positionType;
     public final EPosition offsetPos;
-    @Deprecated
-    public EType type;
     public final Area texture;
     public final Area position;
     public final String colour;

@@ -1,4 +1,4 @@
-package alexiil.mods.load.json;
+package alexiil.mods.load.json.subtypes;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +10,7 @@ import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.render.BakedPanoramaRender;
+import alexiil.mods.load.json.JsonImage;
 
 public class JsonImagePanorama extends JsonImage {
 

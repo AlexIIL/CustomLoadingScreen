@@ -37,8 +37,7 @@ public class RenderingStatus {
 
         /** Starts ticking this field.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         public FieldState<T> start(double now) {
             start = now;
             return this;
@@ -46,8 +45,7 @@ public class RenderingStatus {
 
         /** Stops this field from ticking, and ends it. If this field has not been started yet then it starts it too.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         public FieldState<T> end(double now) {
             if (start == -1)
                 start = now;
@@ -57,24 +55,21 @@ public class RenderingStatus {
 
         /** How long ago, in seconds, this was created
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getLength(double now) {
             return end == -1 ? now - start : end - start;
         }
 
         /** How long ago, in seconds, this has been ended for. Returns -1 if it has not ended yet.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getEndDiff(double now) {
             return end == -1 ? -1 : now - end;
         }
 
         /** How long ago, in seconds, this has been started for. Returns -1 if it has not started yet.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getStartDiff(double now) {
             return start == -1 ? -1 : now - start;
         }
@@ -86,8 +81,7 @@ public class RenderingStatus {
 
         /** Change the field immediately, ending the old one and starting a new one
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void changeField(T field, double now) {
             addFuture(field);
             moveOn(now);
@@ -95,8 +89,7 @@ public class RenderingStatus {
 
         /** End the current field immediately.
          *
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void endCurrent(double now) {
             if (current != -1) {
                 FieldState<T> currentField = history.get(current);
@@ -106,8 +99,7 @@ public class RenderingStatus {
 
         /** End the current field (if it has not already been ended) and start the next one immediately.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void moveOn(double now) {
             endCurrent(now);
             if (history.size() == current + 1)
@@ -170,7 +162,7 @@ public class RenderingStatus {
             if (status == null)
                 throw new IllegalArgumentException("Cannot have an empty progress!");
             if (percentage < 0 || percentage > 1)
-                throw new IllegalArgumentException("Percentage must be between 0 and 1! (was " + percentage + ")");
+                new IllegalArgumentException("Percentage should be between 0 and 1! (was " + percentage + ")").printStackTrace();
             this.status = status;
             this.percentage = percentage;
         }

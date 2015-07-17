@@ -35,13 +35,15 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
         if (name.equals("lumien.resourceloader.ResourceLoader")) {
             return transformResourceLoader(basicClass);
         }
+
         // I COULD submit a pull request with these features, but it just doesn't make sense with it being a non stable
-        // API. Also, this is just a hook! I'm sorry!
+        // API. Also, this is just a hook! I'm sorry! I'll put a big warning in the log file? is that ok?
         if (name.equals("net.minecraftforge.fml.common.ProgressManager")) {
             return transformProgressManager(basicClass);
         }
 
         // I'm SO SORRY FORGE PEOPLE!
+        // Actually I'm not. But I hope you can understand why this is needed.
         if (name.equals("net.minecraftforge.fml.common.ProgressManager$ProgressBar")) {
             return transformProgressBar(basicClass);
         }
@@ -207,8 +209,9 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                 // Load 1
                 // Load 2
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Push();
-                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
-                    "forgeHook_ProgressManager_Push", "(Ljava/lang/String;IZ)V", false));
+                m.instructions.insert(new MethodInsnNode(
+                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_Push",
+                        "(Ljava/lang/String;IZ)V", false));
                 m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 2));
                 m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 1));
                 m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 0));
@@ -218,8 +221,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             if (m.name.equals("pop")) {
                 // ADD:
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Pop();
-                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
-                    "forgeHook_ProgressManager_Pop", "()V", false));
+                m.instructions.insert(new MethodInsnNode(
+                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_Pop", "()V", false));
             }
         }
 
@@ -240,8 +243,9 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                 // ADD
                 // LOAD 0
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_ProgressBar_Step();
-                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
-                    "forgeHook_ProgressManager_ProgressBar_Step", "(Ljava/lang/String;)V", false));
+                m.instructions.insert(new MethodInsnNode(
+                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_ProgressBar_Step",
+                        "(Ljava/lang/String;)V", false));
                 m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 1));
             }
         }

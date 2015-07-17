@@ -3,6 +3,8 @@ package alexiil.mods.load;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.eventbus.Subscribe;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
@@ -11,12 +13,15 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import com.google.common.eventbus.Subscribe;
-
 public class ModLoadingListener {
     public enum State {
-        CONSTRUCT("construction"), PRE_INIT("pre_initialization"), LITE_LOADER_INIT("lite", true, true), INIT("initialization"), POST_INIT(
-                "post_initialization"), LOAD_COMPLETE("completed"), FINAL_LOADING("reloading_resource_packs", true, false);
+        CONSTRUCT("construction"),
+        PRE_INIT("pre_initialization"),
+        LITE_LOADER_INIT("lite", true, true),
+        INIT("initialization"),
+        POST_INIT("post_initialization"),
+        LOAD_COMPLETE("completed"),
+        FINAL_LOADING("reloading_resource_packs", true, false);
 
         private String translatedName = null;
         final String name;
@@ -85,7 +90,7 @@ public class ModLoadingListener {
             if (state.isLoneState)
                 return state.translate();
             return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " "
-                    + listeners.get(index).mod.getName();
+                + listeners.get(index).mod.getName();
         }
 
         public float getProgress() {
@@ -135,19 +140,13 @@ public class ModLoadingListener {
     }
 
     private static void doProgress(State state, ModLoadingListener mod) {
+        /* try { if (stage == null) if (mod == null) stage = new ModStage(state, 0); else stage = new ModStage(state,
+         * listeners.indexOf(mod)); stage = stage.getNext(); if (stage != null) {
+         * ProgressDisplayer.displayProgress(stage.getDisplayText(), stage.getProgress() / 100D); } } catch (Throwable
+         * t) { t.printStackTrace(); } */
+
         try {
-            if (stage == null)
-                if (mod == null)
-                    stage = new ModStage(state, 0);
-                else
-                    stage = new ModStage(state, listeners.indexOf(mod));
-            stage = stage.getNext();
-            if (stage != null) {
-                ProgressDisplayer.displayProgress(stage.getDisplayText(), stage.getProgress() / 100D);
-            }
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
+            Thread.sleep(20);
+        } catch (Throwable t) {}
     }
 }

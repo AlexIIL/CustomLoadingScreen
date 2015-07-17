@@ -26,10 +26,11 @@ public class LoadingFrame extends JFrame {
         public ProgressPart(ProgressPart parent) {
             panel = new JPanel();
             panel.setLayout(new BorderLayout(0, 0));
+            panel.setBorder(new LineBorder(new Color((float) Math.random(), (float) Math.random(), (float) Math.random())));
 
             container = new JPanel();
             container.setLayout(new BorderLayout(0, 0));
-            container.setBorder(new LineBorder(Color.BLACK));
+            container.setBorder(new LineBorder(Color.black));
             panel.add(container, BorderLayout.NORTH);
 
             label = new JLabel();
@@ -42,6 +43,8 @@ public class LoadingFrame extends JFrame {
 
             if (parent != null) {
                 parent.panel.add(panel, BorderLayout.SOUTH);
+                parent.panel.revalidate();
+                parent.panel.repaint();
             }
         }
     }
@@ -78,7 +81,8 @@ public class LoadingFrame extends JFrame {
     public LoadingFrame() {
         setTitle("Minecraft Loading");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setBounds(100, 100, 450, 85);
+        setBounds(100, 100, 450, 200);
+        setResizable(false);// Not too sure about this actually.
         JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
@@ -89,15 +93,23 @@ public class LoadingFrame extends JFrame {
         panel.setLayout(new BorderLayout(0, 0));
 
         head = new ProgressPart(null);
+        panel.add(head.panel);
         current = head;
+        current.panel.revalidate();
+        panel.validate();
+        current.panel.repaint();
     }
 
     public void setMessage(String message) {
         current.label.setText(message);
+        current.panel.revalidate();
+        current.panel.repaint();
     }
 
     public void setProgress(double percent) {
         current.bar.setValue((int) percent);
+        current.panel.revalidate();
+        current.panel.repaint();
     }
 
     public void pushProgress() {

@@ -4,19 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import alexiil.mods.load.BLSLog;
+import alexiil.mods.load.json.subtypes.JsonActionSound;
+import alexiil.mods.load.json.subtypes.JsonFactoryStatus;
+import alexiil.mods.load.json.subtypes.JsonImagePanorama;
+import alexiil.mods.load.json.subtypes.JsonImageText;
 
 public class ConfigManager {
     public enum EType {
@@ -30,15 +34,17 @@ public class ConfigManager {
 
         public final Class<? extends JsonConfigurable<?, ?>> clazz;
         public final String resourceBase;
+        public final LocationDeserialiser excluded;
 
         public static EType valueOf(Class<? extends JsonConfigurable<?, ?>> configurable) {
             return types.get(configurable);
         }
 
-        <T extends JsonConfigurable<?, ?>> EType(Class<T> clazz, String resourceBase) {
+        <T extends JsonConfigurable<T, ?>> EType(Class<T> clazz, String resourceBase) {
             this.clazz = clazz;
             this.resourceBase = resourceBase;
             types.put(clazz, this);
+            excluded = new LocationDeserialiser<T>(this, clazz);
         }
     }
 
@@ -46,8 +52,20 @@ public class ConfigManager {
     private static IResourceManager resManager = Minecraft.getMinecraft().getResourceManager();
     private static final Map<ResourceLocation, String> cache = Maps.newHashMap(), failedCache = Maps.newHashMap();
 
-    public static Gson getGson() {
-        return new GsonBuilder().create();
+    /** Essentially, this 'cheats' the system to allow for loading a class with a deserialiser for all types EXCEPT the
+     * one currently being loaded, which makes LocationDeserialiser easy to implement without doing each one
+     * indervidualy. */
+    public static Gson getGsonExcluding(Class<?> clazz) {
+        GsonBuilder builder = new GsonBuilder();
+        BLSLog.info("Getting Json Excluding " + clazz);
+        for (EType type : EType.values()) {
+            if (clazz != type.clazz) {
+                // We cannot really do much about this warning, as enums cannot have generic types
+                builder.registerTypeAdapter(type.clazz, new LocationDeserialiser(type, clazz));
+                BLSLog.info("  - " + type.clazz);
+            }
+        }
+        return builder.create();
     }
 
     private static String getFirst(ResourceLocation res, boolean firstAttempt) {
@@ -59,8 +77,7 @@ public class ConfigManager {
         IResource resource;
         try {
             resource = resManager.getResource(res);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (firstAttempt) {
                 BLSLog.warn("Tried to get the resource but failed! (" + res + ") because " + e.getClass());
             }
@@ -82,8 +99,7 @@ public class ConfigManager {
 
         try {
             return IOUtils.toString(stream);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             BLSLog.warn("Tried to access \"" + res + "\", but an IO exception occoured!", e);
         }
         return null;
@@ -111,11 +127,11 @@ public class ConfigManager {
         return actual;
     }
 
-    /** This makes the assumption that the type.clazz is the same as T or a subclass of T. Because this is a private
-     * function, this is known and so it will NEVER throw a class cast exception. */
+    /** This makes the assumption that the type.clazz is the same as T or a subclass of T. Because this is a
+     * package-protected function, this is known and so it will NEVER throw a class cast exception. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     /* For some reason, using <T extends JsonConfigurable<T, ?>> didn't compile. (But it did in eclipse? What?) */
-    private static <T extends JsonConfigurable> T getAsT(EType type, String location) {
+    static <T extends JsonConfigurable> T getAsT(EType type, String location) {
         if (StringUtils.isEmpty(location)) {
             BLSLog.warn("Location was given as null!", new Throwable());
             return null;
@@ -126,13 +142,13 @@ public class ConfigManager {
             BLSLog.warn("The text inside of \"" + loc + "\" was null!");
             return null;
         }
-        T t = (T) getGson().fromJson(text, type.clazz);
+        T t = (T) getGsonExcluding(type.clazz).fromJson(text, type.clazz);
         t.resourceLocation = loc;
         return t;
     }
 
-    /** Rendering parts act slightly differently: if they don't exist, but an image with the same name DOES, then use the
-     * image and provide a default rendering part. */
+    /** Rendering parts act slightly differently: if they don't exist, but an image with the same name DOES, then use
+     * the image and provide a default rendering part. */
     public static JsonRenderingPart getAsRenderingPart(String location) {
         JsonRenderingPart jrp = getAsT(EType.RENDERING_PART, location);
         if (jrp == null) {
@@ -140,8 +156,7 @@ public class ConfigManager {
             if (ji != null) {
                 jrp = new JsonRenderingPart(location, new String[0], "true", "");
                 jrp.resourceLocation = getLocation(EType.RENDERING_PART, location);
-            }
-            else
+            } else
                 throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
         }
         return jrp;
@@ -204,11 +219,9 @@ public class ConfigManager {
         String path;
         if (StringUtils.startsWith(base, "builtin/")) {
             path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
-        }
-        else if (base.startsWith("sample/")) {
+        } else if (base.startsWith("sample/")) {
             path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
-        }
-        else {
+        } else {
             path = "custom/" + type.resourceBase + "/" + base + ".json";
         }
 

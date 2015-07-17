@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.load.baked.BakedAction;
 import alexiil.mods.load.baked.func.BakedFunction;
+import alexiil.mods.load.json.subtypes.JsonActionSound;
 
 public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
     public final String conditionStart;

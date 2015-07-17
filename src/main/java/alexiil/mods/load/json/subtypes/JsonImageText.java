@@ -1,4 +1,4 @@
-package alexiil.mods.load.json;
+package alexiil.mods.load.json.subtypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,9 @@ import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.insn.BakedInstruction;
 import alexiil.mods.load.baked.insn.BakedPositionFunctional;
 import alexiil.mods.load.baked.render.BakedTextRenderStatic;
+import alexiil.mods.load.json.Area;
+import alexiil.mods.load.json.EPosition;
+import alexiil.mods.load.json.JsonImage;
 
 public class JsonImageText extends JsonImage {
     public JsonImageText(ResourceLocation resourceLocation, String image, EPosition positionType, EPosition offsetPos, Area texture, Area position,

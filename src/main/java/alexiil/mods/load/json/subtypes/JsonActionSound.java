@@ -1,4 +1,4 @@
-package alexiil.mods.load.json;
+package alexiil.mods.load.json.subtypes;
 
 import java.util.Map;
 
@@ -9,6 +9,7 @@ import alexiil.mods.load.baked.action.ActionSound;
 import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
 import alexiil.mods.load.baked.func.var.BakedFunctionConstant;
+import alexiil.mods.load.json.JsonAction;
 
 public class JsonActionSound extends JsonAction {
     public JsonActionSound(ResourceLocation loc, String conditionStart, String conditionEnd, String[] arguments) {
