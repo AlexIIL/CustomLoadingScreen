@@ -66,7 +66,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     compile "alexiil.mods.lib:AlexIILLib:"+config.mc_version+"-"+config.alexiil_lib_version+":developer"
-    testRuntime "junit:junit:4.12"
+    testCompile "junit:junit:4.12"
 }
 
 // --------------------
