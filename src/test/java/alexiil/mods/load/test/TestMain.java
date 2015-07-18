@@ -3,10 +3,10 @@ package alexiil.mods.load.test;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.util.ResourceLocation;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import net.minecraft.util.ResourceLocation;
 
 import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.func.BakedFunction;

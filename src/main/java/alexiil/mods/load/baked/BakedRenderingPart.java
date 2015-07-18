@@ -1,8 +1,8 @@
 package alexiil.mods.load.baked;
 
-import net.minecraft.client.renderer.GlStateManager;
-
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.renderer.GlStateManager;
 
 import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionException;

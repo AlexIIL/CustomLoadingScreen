@@ -101,7 +101,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                         if (method.owner.equals("com/mumfrey/liteloader/client/gui/startup/LoadingBar")) {
                             m.instructions.remove(method);
                             continue;
-                        } else if (method.owner.startsWith("com/mumfrey")) {
+                        }
+                        else if (method.owner.startsWith("com/mumfrey")) {
                             BLSLog.info("Started with \"com/mumfrey\", was actually \"" + method.owner + "\"");
                         }
                     }
@@ -113,17 +114,18 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                         MethodInsnNode method = (MethodInsnNode) node;
                         if (method.owner.equals(Type.getInternalName(FMLClientHandler.class)) && method.name.equals("instance")) {
                             if (!hasFoundOnce) {
-                                MethodInsnNode newOne =
-                                    new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayFirstProgress", "()V", false);
+                                MethodInsnNode newOne = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayFirstProgress",
+                                    "()V", false);
                                 m.instructions.insertBefore(method, newOne);
                                 i++;
 
-                                MethodInsnNode newTwo =
-                                    new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayAfterForge", "()V", false);
+                                MethodInsnNode newTwo = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "minecraftDisplayAfterForge",
+                                    "()V", false);
                                 m.instructions.insert(method.getNext().getNext().getNext().getNext().getNext().getNext(), newTwo);
                                 hasFoundStartGame = true;
                                 hasFoundOnce = true;
-                            } else {
+                            }
+                            else {
                                 // Pause when minecraft inits its render global
                                 MethodInsnNode pause = new MethodInsnNode(Opcodes.INVOKESTATIC, progressDisplayer, "pause", "()V", false);
                                 m.instructions.insertBefore(getPrevious(method, 39), pause);
@@ -167,7 +169,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             stream.write(bytes);
             stream.flush();
             stream.close();
-        } catch (IOException io) {
+        }
+        catch (IOException io) {
             io.printStackTrace();
         }
 
@@ -209,9 +212,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                 // Load 1
                 // Load 2
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Push();
-                m.instructions.insert(new MethodInsnNode(
-                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_Push",
-                        "(Ljava/lang/String;IZ)V", false));
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_Push", "(Ljava/lang/String;IZ)V", false));
                 m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 2));
                 m.instructions.insert(new VarInsnNode(Opcodes.ILOAD, 1));
                 m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 0));
@@ -221,8 +223,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
             if (m.name.equals("pop")) {
                 // ADD:
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_Pop();
-                m.instructions.insert(new MethodInsnNode(
-                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_Pop", "()V", false));
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_Pop", "()V", false));
             }
         }
 
@@ -243,9 +245,8 @@ public class BetterLoadingScreenTransformer implements IClassTransformer, Opcode
                 // ADD
                 // LOAD 0
                 // INVOKE_STATIC alexiil.mods.load.ProgressDisplayer.forgeHook_ProgressManager_ProgressBar_Step();
-                m.instructions.insert(new MethodInsnNode(
-                        Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class), "forgeHook_ProgressManager_ProgressBar_Step",
-                        "(Ljava/lang/String;)V", false));
+                m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(ProgressDisplayer.class),
+                    "forgeHook_ProgressManager_ProgressBar_Step", "(Ljava/lang/String;)V", false));
                 m.instructions.insert(new VarInsnNode(Opcodes.ALOAD, 1));
             }
         }

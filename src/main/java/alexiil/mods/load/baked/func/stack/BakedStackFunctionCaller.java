@@ -23,9 +23,10 @@ public class BakedStackFunctionCaller extends BakedStackFunction {
                 objects[i] = stack.pop();
             }
             stack.push(func.call(status, objects));
-        } catch (FunctionException fe) {
-            StackFunctionException sfe = new StackFunctionException(
-                    "The function inside failed because {\n  " + fe.getMessage().replace("\n", "\n  ") + "}");
+        }
+        catch (FunctionException fe) {
+            StackFunctionException sfe = new StackFunctionException("The function inside failed because {\n  " + fe.getMessage().replace("\n", "\n  ")
+                + "}");
             sfe.initCause(fe);
             throw sfe;
         }

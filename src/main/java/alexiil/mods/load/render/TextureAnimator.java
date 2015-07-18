@@ -10,14 +10,14 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-
-import com.google.common.collect.ImmutableList;
 
 import alexiil.mods.load.baked.BakedConfig;
 import alexiil.mods.load.baked.BakedRenderingPart;
@@ -80,7 +80,8 @@ public class TextureAnimator {
                     deleteFrame(i);
         }
 
-        /** This assumes that the frame is currently uploaded to the GPU in the first place ( (ids[frame] != -1) is true) */
+        /** This assumes that the frame is currently uploaded to the GPU in the first place ( (ids[frame] != -1) is
+         * true) */
         private void deleteFrame(int frame) {
             TextureUtil.deleteTexture(ids[frame]);
             ids[frame] = -1;
@@ -100,8 +101,8 @@ public class TextureAnimator {
     /** How long to wait before deleting a texture. This is helpful mostly for textures with a greater number of frames
      * that you would like to be kept uploaded (say, part of an animated movie), and if they will only be shown once */
     private static final int TEXTURE_MILLI_SECONDS = 16384;// 2 ^ 14
-    /** The cap before starting to delete older textures, in pixels. If the given texture has more total pixels than this
-     * number, older textures will be deleted quicker. Default is a 256x texture at 60fps, for 10 seconds */
+    /** The cap before starting to delete older textures, in pixels. If the given texture has more total pixels than
+     * this number, older textures will be deleted quicker. Default is a 256x texture at 60fps, for 10 seconds */
     private static final int TEXTURE_PIXEL_CAP = 256 * 256 * 60 * 10;
     /** The minimum number of pixels that are needed to actually use automatic texture deletion, and postpone uploading
      * until later. Default is a 32x image, at 20fps for 10 seconds. */

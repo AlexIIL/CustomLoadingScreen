@@ -56,7 +56,8 @@ public class LoadingFrame extends JFrame {
         String clsName = UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(clsName);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             t.printStackTrace();
         }
         try {
@@ -65,7 +66,8 @@ public class LoadingFrame extends JFrame {
             frame.setAlwaysOnTop(true);
             frame.setVisible(true);
             return frame;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return null;

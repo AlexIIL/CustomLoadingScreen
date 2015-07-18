@@ -15,7 +15,8 @@ public abstract class BakedStackFunction implements IBakedStackFunction {
             Double var = (Double) obj;
             stack.pop();// Bit long, but this makes it throw a class cast exception BEFORE
             return var;
-        } catch (ClassCastException cce) {
+        }
+        catch (ClassCastException cce) {
             throw new StackFunctionException(obj + "(" + obj.getClass() + ") is not a double! (" + Double.class + ")");
         }
     }
@@ -30,7 +31,8 @@ public abstract class BakedStackFunction implements IBakedStackFunction {
             Boolean var = (Boolean) obj;
             stack.pop();// Bit long, but this makes it throw a class cast exception BEFORE
             return var;
-        } catch (ClassCastException cce) {
+        }
+        catch (ClassCastException cce) {
             throw new StackFunctionException(obj + "(" + obj.getClass() + ") is not a boolean! (" + Boolean.class + ")");
         }
     }
@@ -45,7 +47,8 @@ public abstract class BakedStackFunction implements IBakedStackFunction {
             String var = (String) obj;
             stack.pop();// Bit long, but this makes it throw a class cast exception BEFORE
             return var;
-        } catch (ClassCastException cce) {
+        }
+        catch (ClassCastException cce) {
             throw new StackFunctionException(obj + "(" + obj.getClass() + ") is not a string! (" + String.class + ")");
         }
     }

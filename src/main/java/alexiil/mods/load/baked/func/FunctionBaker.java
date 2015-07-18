@@ -61,13 +61,8 @@ public class FunctionBaker {
     private static int getType(String chr) {
         if (chr.startsWith("0x"))
             return 0;
-        if (chr.startsWith("{"))                                             // {0} means take the first argument, {1}
-            // means
-            // take
-            // the
-            // second
-            // argument
-            // etc
+        if (chr.startsWith("{"))
+            // {0} means take the first argument, {1} means take the second argument etc
             return 2;
         if (VALID_CHARACHTERS.contains(chr))
             return 1;
@@ -88,29 +83,41 @@ public class FunctionBaker {
     private static IBakedStackFunction getForToken(String token) {
         if (token.equals("+")) {
             return new BakedStackOperationAddition();
-        } else if (token.equals("-")) {
+        }
+        else if (token.equals("-")) {
             return (new BakedStackOperationSubtraction());
-        } else if (token.equals("*")) {
+        }
+        else if (token.equals("*")) {
             return new BakedStackOperationMultiply();
-        } else if (token.equals("/")) {
+        }
+        else if (token.equals("/")) {
             return new BakedStackOperationDivision();
-        } else if (token.equals("^")) {
+        }
+        else if (token.equals("^")) {
             return new BakedStackOperationPower();
-        } else if (token.equals("=")) {
+        }
+        else if (token.equals("=")) {
             return new BakedStackOperationEquality();
-        } else if (token.equals("?")) {
+        }
+        else if (token.equals("?")) {
             return new BakedStackOperationConditional();
-        } else if (token.equals("<")) {
+        }
+        else if (token.equals("<")) {
             return new BakedStackOperationLess();
-        } else if (token.equals(">")) {
+        }
+        else if (token.equals(">")) {
             return new BakedStackOperationGreater();
-        } else if (token.equals("<=")) {
+        }
+        else if (token.equals("<=")) {
             return new BakedStackOperationLessOrEqual();
-        } else if (token.equals(">=")) {
+        }
+        else if (token.equals(">=")) {
             return new BakedStackOperationGreaterOrEqual();
-        } else if (token.equals("&")) {
+        }
+        else if (token.equals("&")) {
             return new BakedStackOperationAnd();
-        } else if (token.equals("|")) {
+        }
+        else if (token.equals("|")) {
             return new BakedStackOperationOr();
         }
         throw new Error(token + " was not a valid token!");
@@ -139,7 +146,8 @@ public class FunctionBaker {
                         token += atPos;
                         pos++;
                         continue;
-                    } else {
+                    }
+                    else {
                         token += "'";
                         break;
                     }
@@ -155,12 +163,14 @@ public class FunctionBaker {
                     token += atPos;
                     pos++;
                     break;
-                } else
+                }
+                else
                     type = getType(atPos);
                 if (type != lastType) {
                     // lastType = type;
                     break;
-                } else
+                }
+                else
                     token += atPos;
                 if (SINGLE_LETTER_OPERATORS.contains(token))
                     break;
@@ -172,31 +182,40 @@ public class FunctionBaker {
                 if (token.startsWith("0x")) {// Hex => should transform to normal integer, then push itself
                     int value = Integer.parseInt(token.substring(2), 16);
                     list.add(new BakedStackValue<Double>((double) value));
-                } else
+                }
+                else
                     list.add(new BakedStackValue<Double>(Double.valueOf(token)));
-            } else if (lastType == 1) {
+            }
+            else if (lastType == 1) {
                 if (token.startsWith("'") && token.endsWith("'") && token.length() > 1) {
                     list.add(new BakedStackValue<String>(token.substring(1, token.length() - 1)));
-                } else if (token.equals("integer")) {
+                }
+                else if (token.equals("integer")) {
                     list.add(new BakedStackCastInteger());
-                } else if (token.equals("variable")) {
+                }
+                else if (token.equals("variable")) {
                     list.add(new BakedStackVariable());
-                } else if (token.equals("super")) {
+                }
+                else if (token.equals("super")) {
                     throw new Error("Found a 'super' token, this function is not available in the current context!");
-                } else {
+                }
+                else {
                     // doThing(5,6,1) + 15
                     BakedFunction<?> function = getFunctionIgnoreCase(functions, token);
                     if (function == null)
                         throw new Error("The function cannot be null!");
                     if (!StringUtils.isEmpty(infix) && infix.substring(0, 1).equals("(")) {
                         stack.push(token);
-                    } else
+                    }
+                    else
                         list.add(new BakedStackFunctionCaller(function));
                 }
-            } else if (lastType == 2) {
+            }
+            else if (lastType == 2) {
                 if (token.equals("(")) {
                     stack.push(token);
-                } else if (token.equals(":"))
+                }
+                else if (token.equals(":"))
                     ;// Ignore colons, as these are used for spacing stuffs. OK fine, this isn't great in terms of
                      // functions, but until sin(argument) like stuff is properly implemented, this is all you get
                      // We don't ignore commas here as they need to have a precedence level slightly greater than
@@ -208,7 +227,8 @@ public class FunctionBaker {
                         String onStack = stack.pop();
                         if (!onStack.equals("(") && !onStack.equals(",")) {
                             list.add(getForToken(onStack));
-                        } else if (onStack.equals("(")) {
+                        }
+                        else if (onStack.equals("(")) {
                             if (stack.isEmpty())
                                 break;
                             String lowerDown = stack.peek();
@@ -220,19 +240,24 @@ public class FunctionBaker {
                             break;
                         }
                     }
-                } else if (token.startsWith("{")) {
+                }
+                else if (token.startsWith("{")) {
                     if (!token.endsWith("}")) {
                         throw new Error("Found the start of an argument seperator, but not the end! (" + token + ")(" + origonal + ")");
-                    } else if (token.length() > 2) {
+                    }
+                    else if (token.length() > 2) {
                         String inner = token.substring(1, token.length() - 1);
                         int i = Integer.parseInt(inner);
                         list.add(new BakedStackArgument(i));
-                    } else {
+                    }
+                    else {
                         throw new Error("Found the start and end of an argument seperator, but no middle!");
                     }
-                } else if (stack.isEmpty()) {
+                }
+                else if (stack.isEmpty()) {
                     stack.add(token);
-                } else {
+                }
+                else {
                     while (!stack.isEmpty()) {
                         int stackPrec = getPrecedence(stack.peek());
                         int tokenPrec = getPrecedence(token);
@@ -245,7 +270,7 @@ public class FunctionBaker {
                             break;
                         else {
                             String popped = stack.pop();
-                            if (!popped.equals(","))                                            // Ignore commas
+                            if (!popped.equals(",")) // Ignore commas
                                 list.add(getForToken(popped));
                         }
                     }

@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
@@ -74,7 +73,8 @@ public class MinecraftDisplayerRenderer {
                 try {
                     drawable = new SharedDrawable(Display.getDrawable());
                     drawable.makeCurrent();
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     throw Throwables.propagate(t);
                 }
                 first = false;
@@ -137,13 +137,15 @@ public class MinecraftDisplayerRenderer {
             for (BakedAction ba : actions) {
                 ba.tick(status, this);
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             if (t instanceof FunctionException) {
                 lastTime = now;
                 throw (FunctionException) t;
             }
             t.printStackTrace();
-        } finally {
+        }
+        finally {
             lastTime = now;
         }
     }

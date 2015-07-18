@@ -2,6 +2,8 @@ package alexiil.mods.load;
 
 import java.lang.reflect.Field;
 
+import com.google.common.eventbus.EventBus;
+
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,8 +20,6 @@ import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.common.eventbus.EventBus;
 
 import alexiil.mods.lib.AlexIILMod;
 

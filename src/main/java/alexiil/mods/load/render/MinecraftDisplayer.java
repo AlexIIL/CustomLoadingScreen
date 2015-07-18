@@ -80,7 +80,8 @@ public class MinecraftDisplayer implements IDisplayer {
                 f.setAccessible(true);
                 try {
                     return (List<IResourcePack>) f.get(mc);
-                } catch (Throwable e) {
+                }
+                catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
@@ -126,8 +127,8 @@ public class MinecraftDisplayer implements IDisplayer {
         // Resource Loader Compat
         loadResourceLoader();
 
-        SplashScreen splashScreen=SplashScreen.getSplashScreen();
-        if(splashScreen!=null)
+        SplashScreen splashScreen = SplashScreen.getSplashScreen();
+        if (splashScreen != null)
             splashScreen.close();
 
         // Add ourselves as a resource pack
@@ -170,9 +171,11 @@ public class MinecraftDisplayer implements IDisplayer {
                 animator.tick();
                 try {
                     render.tick();
-                } catch (FunctionException fe) {
+                }
+                catch (FunctionException fe) {
                     throw new RuntimeException("A function failed!", fe);
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     throw new RuntimeException("Something unexpected happened!", t);
                 }
             }
@@ -186,9 +189,11 @@ public class MinecraftDisplayer implements IDisplayer {
             resLoaderClass.getField("INSTANCE").set(null, instance);
             Method m = resLoaderClass.getMethod("preInit", FMLPreInitializationEvent.class);
             m.invoke(instance, new Object[] { null });
-        } catch (ClassNotFoundException ex) {
+        }
+        catch (ClassNotFoundException ex) {
             BLSLog.info("Resource loader not loaded, not initialising early");
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             BLSLog.warn("Resource Loader Compat FAILED!", t);
         }
     }

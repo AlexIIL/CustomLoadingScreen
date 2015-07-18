@@ -9,10 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import javax.imageio.ImageIO;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+import com.google.common.base.Throwables;
+
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -25,8 +26,12 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
 import alexiil.mods.lib.AlexIILMod;
-import com.google.common.base.Throwables;
 
 public class TestModExporter implements Opcodes {
     public static void dumpMods() {
@@ -41,26 +46,26 @@ public class TestModExporter implements Opcodes {
             try {
                 FileOutputStream fos = new FileOutputStream(fle);
                 ZipOutputStream zos = new ZipOutputStream(fos);
-                
+
                 // Class
                 ZipEntry ze = new ZipEntry("alexiil/mods/test/BasicTestMod_" + name + ".class");
                 zos.putNextEntry(ze);
                 zos.write(classBytes);
                 zos.closeEntry();
-                
+
                 zos.finish();
-                
+
                 // Random Texture
                 ze = new ZipEntry("assets/test/textures/blocks/Block_" + name + ".png");
                 zos.putNextEntry(ze);
                 zos.write(texture(name));
                 zos.closeEntry();
-                
+
                 zos.finish();
-                
+
                 zos.flush();
                 zos.close();
-                
+
                 fos.flush();
                 fos.close();
             }
@@ -69,7 +74,7 @@ public class TestModExporter implements Opcodes {
             }
         }
     }
-    
+
     private static byte[] texture(String num) {
         BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
@@ -83,34 +88,34 @@ public class TestModExporter implements Opcodes {
         }
         return out.toByteArray();
     }
-    
+
     private static void genRandomGraphics(Graphics2D g2d, String num) {
         g2d.setColor(Color.WHITE);
         g2d.drawRect(0, 0, 64, 64);
-        
+
         g2d.setColor(new Color(0xAFAFAF));
         for (int i = 0; i < 1024; i++) {
             int x = (int) (Math.random() * 64);
             int y = (int) (Math.random() * 64);
             g2d.fillRect(x, y, 1, 1);
         }
-        
+
         g2d.setColor(Color.BLACK);
         g2d.setFont(g2d.getFont().deriveFont(32));
         g2d.drawString(num, 0, 0);
     }
-    
+
     public static byte[] dump(String num) {
         ClassWriter cw = new ClassWriter(0);
         MethodVisitor mv;
         AnnotationVisitor av0;
         MethodNode mn;
-        
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, "alexiil/mods/test/BasicTestMod_" + num, null,
-                Type.getInternalName(AlexIILMod.class), null);
-        
+
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, "alexiil/mods/test/BasicTestMod_" + num, null, Type.getInternalName(AlexIILMod.class),
+            null);
+
         cw.visitSource("SYNTHETIC[TestModExporter]", null);
-        
+
         {
             av0 = cw.visitAnnotation("Lnet/minecraftforge/fml/common/Mod;", true);
             av0.visit("modid", "emptyTestMod_" + num);
@@ -134,9 +139,9 @@ public class TestModExporter implements Opcodes {
         {
             String preInit = Type.getDescriptor(FMLPreInitializationEvent.class);
             mn = new MethodNode(ACC_PUBLIC, "preInit", "(" + preInit + ")V", null, null);
-            
+
             mn.visitAnnotation(Type.getDescriptor(EventHandler.class), true);
-            
+
             InsnList list = mn.instructions;
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new InsnNode(DUP));
@@ -148,9 +153,9 @@ public class TestModExporter implements Opcodes {
         {
             String postInit = Type.getDescriptor(FMLPostInitializationEvent.class);
             mn = new MethodNode(ACC_PUBLIC, "postInit", "(" + postInit + ")V", null, null);
-            
+
             mn.visitAnnotation(Type.getDescriptor(EventHandler.class), true);
-            
+
             InsnList list = mn.instructions;
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new VarInsnNode(ALOAD, 1));
@@ -158,7 +163,7 @@ public class TestModExporter implements Opcodes {
             mn.accept(cw);
         }
         cw.visitEnd();
-        
+
         return cw.toByteArray();
     }
 }

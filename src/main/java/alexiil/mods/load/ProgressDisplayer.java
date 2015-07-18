@@ -18,6 +18,7 @@ import alexiil.mods.load.render.MinecraftDisplayerWrapper;
 
 public class ProgressDisplayer {
     public interface IDisplayer {
+
         void open(Configuration cfg);
 
         void updateProgress(String text, double percent);
@@ -142,13 +143,13 @@ public class ProgressDisplayer {
         boolean useMinecraft = isClient();
         if (useMinecraft) {
             String comment =
-                "Whether or not to use minecraft's display to show the progress. This looks better, but there is a possibilty of not being ";
+                    "Whether or not to use minecraft's display to show the progress. This looks better, but there is a possibilty of not being ";
             comment += "compatible, so if you do have any strange crash reports or compatability issues, try setting this to false";
             useMinecraft = cfg.getBoolean("useMinecraft", "general", true, comment);
         }
 
         String comment =
-            "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
+                "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
         boolean showFrame = cfg.getBoolean("showFrame", "general", false, comment);
 
         // playSound = cfg.getBoolean("playSound", "general", true,

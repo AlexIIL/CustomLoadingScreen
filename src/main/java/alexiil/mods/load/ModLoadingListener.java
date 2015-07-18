@@ -89,8 +89,8 @@ public class ModLoadingListener {
         public String getDisplayText() {
             if (state.isLoneState)
                 return state.translate();
-            return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " "
-                + listeners.get(index).mod.getName();
+            return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " " + listeners.get(index).mod
+                .getName();
         }
 
         public float getProgress() {
@@ -147,6 +147,7 @@ public class ModLoadingListener {
 
         try {
             Thread.sleep(20);
-        } catch (Throwable t) {}
+        }
+        catch (Throwable t) {}
     }
 }

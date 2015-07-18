@@ -50,8 +50,8 @@ public class Translation {
                     String name = je.getName();
                     if (name.startsWith(lookingFor) && !name.equals(lookingFor)) {
                         try {
-                            addTranslation(name.replace(lookingFor, "").replace(".lang", ""),
-                                    new BufferedReader(new InputStreamReader(modJar.getInputStream(je), "UTF-8")));
+                            addTranslation(name.replace(lookingFor, "").replace(".lang", ""), new BufferedReader(new InputStreamReader(modJar
+                                .getInputStream(je), "UTF-8")));
                         }
                         catch (IOException e) {
                             System.out.println("Had trouble opening " + name);
@@ -106,7 +106,7 @@ public class Translation {
         else if (!translators.isEmpty()) {
             String name = translators.keySet().iterator().next();
             System.out.println("Failed to load " + language + ", AND FAILED TO LOAD en_US! One available however is " + name
-                    + ", using that and keeping quiet...");
+                + ", using that and keeping quiet...");
             currentTranslation = translators.values().iterator().next();
         }
         else {

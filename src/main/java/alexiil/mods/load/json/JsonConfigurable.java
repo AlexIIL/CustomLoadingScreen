@@ -2,17 +2,19 @@ package alexiil.mods.load.json;
 
 import java.util.Map;
 
-import net.minecraft.util.ResourceLocation;
-
 import com.google.common.collect.ObjectArrays;
+
+import net.minecraft.util.ResourceLocation;
 
 import alexiil.mods.load.BLSLog;
 import alexiil.mods.load.baked.BakedConfigurable;
 import alexiil.mods.load.baked.func.BakedFunction;
 import alexiil.mods.load.baked.func.FunctionBaker;
 
-/** @param <C> The class that extends this. This is what it should consolidate down to.
- * @param <B> The class that this is baked to. */
+/** @param <C>
+ *            The class that extends this. This is what it should consolidate down to.
+ * @param <B>
+ *            The class that this is baked to. */
 public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B extends BakedConfigurable> {
     /** This is what its parent is. The definition of parent defines on what subclass this is of JsonConfigurable, see
      * each subclass for details. */

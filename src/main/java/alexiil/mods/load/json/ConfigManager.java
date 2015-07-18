@@ -77,7 +77,8 @@ public class ConfigManager {
         IResource resource;
         try {
             resource = resManager.getResource(res);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             if (firstAttempt) {
                 BLSLog.warn("Tried to get the resource but failed! (" + res + ") because " + e.getClass());
             }
@@ -99,7 +100,8 @@ public class ConfigManager {
 
         try {
             return IOUtils.toString(stream);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             BLSLog.warn("Tried to access \"" + res + "\", but an IO exception occoured!", e);
         }
         return null;
@@ -156,7 +158,8 @@ public class ConfigManager {
             if (ji != null) {
                 jrp = new JsonRenderingPart(location, new String[0], "true", "");
                 jrp.resourceLocation = getLocation(EType.RENDERING_PART, location);
-            } else
+            }
+            else
                 throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
         }
         return jrp;
@@ -219,9 +222,11 @@ public class ConfigManager {
         String path;
         if (StringUtils.startsWith(base, "builtin/")) {
             path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
-        } else if (base.startsWith("sample/")) {
+        }
+        else if (base.startsWith("sample/")) {
             path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
-        } else {
+        }
+        else {
             path = "custom/" + type.resourceBase + "/" + base + ".json";
         }
 

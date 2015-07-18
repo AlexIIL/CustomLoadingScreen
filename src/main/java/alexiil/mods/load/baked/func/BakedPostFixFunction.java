@@ -20,9 +20,11 @@ public class BakedPostFixFunction<T> extends BakedFunction<T> {
     private final String function;
     private final int arguments;
 
-    /** @param executions The baked execution list
-     * @param function The function that created the baked list. This is only used for debugging purposes if something
-     *            goes wrong */
+    /** @param executions
+     *            The baked execution list
+     * @param function
+     *            The function that created the baked list. This is only used for debugging purposes if something goes
+     *            wrong */
     public BakedPostFixFunction(List<IBakedStackFunction> executions, String function, int arguments) {
         toExecute = executions;
         this.function = function;
@@ -52,7 +54,8 @@ public class BakedPostFixFunction<T> extends BakedFunction<T> {
                 return (T) stack.pop();
             }
             throw new StackFunctionException("Empty stack at the end of the function");
-        } catch (StackFunctionException e) {
+        }
+        catch (StackFunctionException e) {
             throw new FunctionException(function, e.getMessage() + "\n" + StackFunctionException.getMessage(this, status, stack, i));
         }
     }

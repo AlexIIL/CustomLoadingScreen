@@ -74,7 +74,8 @@ public class FunctionBakerTester {
             BakedFunction<Double> func = FunctionBaker.bakeFunctionDouble(function, functions);
             double got = func.call(status);
             assertEquals(expected, got, Math.ulp(expected) * 2);
-        } catch (FunctionException fe) {
+        }
+        catch (FunctionException fe) {
             fail(fe.getMessage());
         }
     }
