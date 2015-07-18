@@ -1,6 +1,7 @@
 package alexiil.mods.load.baked.func;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
@@ -12,18 +13,16 @@ import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedPostFixFunction<T> extends BakedFunction<T> {
     public interface IBakedStackFunction {
-        void doOperation(Deque<?> stack, RenderingStatus status) throws StackFunctionException;
+                void doOperation(Deque<?> stack, RenderingStatus status) throws StackFunctionException;
     }
 
     private final List<IBakedStackFunction> toExecute;
     private final String function;
     private final int arguments;
 
-    /** @param executions
-     *            The baked execution list
-     * @param function
-     *            The function that created the baked list. This is only used for debugging purposes if something goes
-     *            wrong */
+    /** @param executions The baked execution list
+     * @param function The function that created the baked list. This is only used for debugging purposes if something
+     *            goes wrong */
     public BakedPostFixFunction(List<IBakedStackFunction> executions, String function, int arguments) {
         toExecute = executions;
         this.function = function;
@@ -37,6 +36,7 @@ public class BakedPostFixFunction<T> extends BakedFunction<T> {
             throw new FunctionException(function, "Was not given any arguments! Wanted " + arguments + ", got 0!");
         if (args.length != arguments)
             throw new FunctionException(function, "Was not given enough Arguments! Wanted " + arguments + ", got " + args.length + "!");
+        System.out.println(Arrays.toString(args));
         Deque<Object> stack = new ArrayDeque<Object>();
         if (args != null)
             for (Object o : args) {
@@ -52,8 +52,7 @@ public class BakedPostFixFunction<T> extends BakedFunction<T> {
                 return (T) stack.pop();
             }
             throw new StackFunctionException("Empty stack at the end of the function");
-        }
-        catch (StackFunctionException e) {
+        } catch (StackFunctionException e) {
             throw new FunctionException(function, e.getMessage() + "\n" + StackFunctionException.getMessage(this, status, stack, i));
         }
     }
@@ -82,6 +81,7 @@ public class BakedPostFixFunction<T> extends BakedFunction<T> {
 
     @Override
     public int numArgs() {
+        System.out.println("Wanted " + arguments + " for " + function);
         return arguments;
     }
 }

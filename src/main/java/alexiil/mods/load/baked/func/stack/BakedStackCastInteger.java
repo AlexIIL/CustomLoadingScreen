@@ -23,5 +23,4 @@ public class BakedStackCastInteger extends BakedStackFunction {
     public String toString() {
         return "Cast [(Double)] -> [(Integer)] OR [(String)] -> [(Integer)]";
     }
-
 }

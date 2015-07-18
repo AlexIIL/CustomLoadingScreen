@@ -19,18 +19,13 @@ public class BakedStackFunctionCaller extends BakedStackFunction {
         try {
             int args = func.numArgs();
             Object[] objects = new Object[args];
-            int i = 0;
-            for (Object o : stack) {
-                if (i == args)
-                    break;
-                objects[i] = o;
-                i++;
+            for (int i = args - 1; i >= 0; i--) {
+                objects[i] = stack.pop();
             }
             stack.push(func.call(status, objects));
-        }
-        catch (FunctionException fe) {
-            StackFunctionException sfe =
-                new StackFunctionException("The function inside failed because {\n  " + fe.getMessage().replace("\n", "\n  ") + "}");
+        } catch (FunctionException fe) {
+            StackFunctionException sfe = new StackFunctionException(
+                    "The function inside failed because {\n  " + fe.getMessage().replace("\n", "\n  ") + "}");
             sfe.initCause(fe);
             throw sfe;
         }

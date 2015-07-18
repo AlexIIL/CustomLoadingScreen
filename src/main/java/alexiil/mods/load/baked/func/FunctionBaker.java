@@ -7,20 +7,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+
+import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mods.load.baked.func.BakedPostFixFunction.IBakedStackFunction;
 import alexiil.mods.load.baked.func.stack.BakedStackArgument;
 import alexiil.mods.load.baked.func.stack.BakedStackCastInteger;
+import alexiil.mods.load.baked.func.stack.BakedStackDebug;
 import alexiil.mods.load.baked.func.stack.BakedStackFunctionCaller;
 import alexiil.mods.load.baked.func.stack.BakedStackValue;
 import alexiil.mods.load.baked.func.stack.op.*;
 import alexiil.mods.load.baked.func.stack.var.BakedStackVariable;
 
 public class FunctionBaker {
+    /** Used for testing: adds an effectively null step in between every other step showing where it is, what the stack
+     * looks like etc. */
+    public static boolean step = false;
+
     private static final String VALID_CHARACHTERS = "abcdefghijklmnopqrstuvwxyz_'";
     private static final String DECIMAL_DIGITS = "0123456789";
     private static final String HEX_DIGITS = DECIMAL_DIGITS + "abcdef";
@@ -56,7 +61,13 @@ public class FunctionBaker {
     private static int getType(String chr) {
         if (chr.startsWith("0x"))
             return 0;
-        if (chr.startsWith("{")) // {0} means take the first argument, {1} means take the second argument etc
+        if (chr.startsWith("{"))                                             // {0} means take the first argument, {1}
+            // means
+            // take
+            // the
+            // second
+            // argument
+            // etc
             return 2;
         if (VALID_CHARACHTERS.contains(chr))
             return 1;
@@ -77,41 +88,29 @@ public class FunctionBaker {
     private static IBakedStackFunction getForToken(String token) {
         if (token.equals("+")) {
             return new BakedStackOperationAddition();
-        }
-        else if (token.equals("-")) {
+        } else if (token.equals("-")) {
             return (new BakedStackOperationSubtraction());
-        }
-        else if (token.equals("*")) {
+        } else if (token.equals("*")) {
             return new BakedStackOperationMultiply();
-        }
-        else if (token.equals("/")) {
+        } else if (token.equals("/")) {
             return new BakedStackOperationDivision();
-        }
-        else if (token.equals("^")) {
+        } else if (token.equals("^")) {
             return new BakedStackOperationPower();
-        }
-        else if (token.equals("=")) {
+        } else if (token.equals("=")) {
             return new BakedStackOperationEquality();
-        }
-        else if (token.equals("?")) {
+        } else if (token.equals("?")) {
             return new BakedStackOperationConditional();
-        }
-        else if (token.equals("<")) {
+        } else if (token.equals("<")) {
             return new BakedStackOperationLess();
-        }
-        else if (token.equals(">")) {
+        } else if (token.equals(">")) {
             return new BakedStackOperationGreater();
-        }
-        else if (token.equals("<=")) {
+        } else if (token.equals("<=")) {
             return new BakedStackOperationLessOrEqual();
-        }
-        else if (token.equals(">=")) {
+        } else if (token.equals(">=")) {
             return new BakedStackOperationGreaterOrEqual();
-        }
-        else if (token.equals("&")) {
+        } else if (token.equals("&")) {
             return new BakedStackOperationAnd();
-        }
-        else if (token.equals("|")) {
+        } else if (token.equals("|")) {
             return new BakedStackOperationOr();
         }
         throw new Error(token + " was not a valid token!");
@@ -140,8 +139,7 @@ public class FunctionBaker {
                         token += atPos;
                         pos++;
                         continue;
-                    }
-                    else {
+                    } else {
                         token += "'";
                         break;
                     }
@@ -157,14 +155,12 @@ public class FunctionBaker {
                     token += atPos;
                     pos++;
                     break;
-                }
-                else
+                } else
                     type = getType(atPos);
                 if (type != lastType) {
                     // lastType = type;
                     break;
-                }
-                else
+                } else
                     token += atPos;
                 if (SINGLE_LETTER_OPERATORS.contains(token))
                     break;
@@ -176,40 +172,31 @@ public class FunctionBaker {
                 if (token.startsWith("0x")) {// Hex => should transform to normal integer, then push itself
                     int value = Integer.parseInt(token.substring(2), 16);
                     list.add(new BakedStackValue<Double>((double) value));
-                }
-                else
+                } else
                     list.add(new BakedStackValue<Double>(Double.valueOf(token)));
-            }
-            else if (lastType == 1) {
+            } else if (lastType == 1) {
                 if (token.startsWith("'") && token.endsWith("'") && token.length() > 1) {
                     list.add(new BakedStackValue<String>(token.substring(1, token.length() - 1)));
-                }
-                else if (token.equals("integer")) {
+                } else if (token.equals("integer")) {
                     list.add(new BakedStackCastInteger());
-                }
-                else if (token.equals("variable")) {
+                } else if (token.equals("variable")) {
                     list.add(new BakedStackVariable());
-                }
-                else if (token.equals("super")) {
+                } else if (token.equals("super")) {
                     throw new Error("Found a 'super' token, this function is not available in the current context!");
-                }
-                else {
+                } else {
                     // doThing(5,6,1) + 15
                     BakedFunction<?> function = getFunctionIgnoreCase(functions, token);
                     if (function == null)
                         throw new Error("The function cannot be null!");
                     if (!StringUtils.isEmpty(infix) && infix.substring(0, 1).equals("(")) {
                         stack.push(token);
-                    }
-                    else
+                    } else
                         list.add(new BakedStackFunctionCaller(function));
                 }
-            }
-            else if (lastType == 2) {
+            } else if (lastType == 2) {
                 if (token.equals("(")) {
                     stack.push(token);
-                }
-                else if (token.equals(":"))
+                } else if (token.equals(":"))
                     ;// Ignore colons, as these are used for spacing stuffs. OK fine, this isn't great in terms of
                      // functions, but until sin(argument) like stuff is properly implemented, this is all you get
                      // We don't ignore commas here as they need to have a precedence level slightly greater than
@@ -221,8 +208,7 @@ public class FunctionBaker {
                         String onStack = stack.pop();
                         if (!onStack.equals("(") && !onStack.equals(",")) {
                             list.add(getForToken(onStack));
-                        }
-                        else if (onStack.equals("(")) {
+                        } else if (onStack.equals("(")) {
                             if (stack.isEmpty())
                                 break;
                             String lowerDown = stack.peek();
@@ -234,24 +220,19 @@ public class FunctionBaker {
                             break;
                         }
                     }
-                }
-                else if (token.startsWith("{")) {
+                } else if (token.startsWith("{")) {
                     if (!token.endsWith("}")) {
                         throw new Error("Found the start of an argument seperator, but not the end! (" + token + ")(" + origonal + ")");
-                    }
-                    else if (token.length() > 2) {
+                    } else if (token.length() > 2) {
                         String inner = token.substring(1, token.length() - 1);
                         int i = Integer.parseInt(inner);
-                        list.add(BakedStackArgument.createBakedStackArgument(i));
-                    }
-                    else {
+                        list.add(new BakedStackArgument(i));
+                    } else {
                         throw new Error("Found the start and end of an argument seperator, but no middle!");
                     }
-                }
-                else if (stack.isEmpty()) {
+                } else if (stack.isEmpty()) {
                     stack.add(token);
-                }
-                else {
+                } else {
                     while (!stack.isEmpty()) {
                         int stackPrec = getPrecedence(stack.peek());
                         int tokenPrec = getPrecedence(token);
@@ -260,11 +241,11 @@ public class FunctionBaker {
                         if (minus)
                             ;// FIXME: FunctionBaker cannot take "-32" as a negative number (etc)
 
-                        if (tokenPrec >= stackPrec)
+                        if (tokenPrec > stackPrec)
                             break;
                         else {
                             String popped = stack.pop();
-                            if (!popped.equals(","))// Ignore commas
+                            if (!popped.equals(","))                                            // Ignore commas
                                 list.add(getForToken(popped));
                         }
                     }
@@ -298,10 +279,26 @@ public class FunctionBaker {
             for (int i = 0; i < arguments.length; i++) {
                 String argString = ARGUMENT_STRING.replace(".", Integer.toString(i));
                 // So {0}, {1},...,{123456} etc
-                actual = actual.replace(arguments[i], argString);
+                if (arguments[i] != null) {
+                    // So we can initialise the arguments with "new String[2]" if we define them in code.
+                    actual = actual.replace(arguments[i], argString);
+                }
             }
         List<IBakedStackFunction> postfix = infixToPostfix(actual, functions);
-        return new BakedPostFixFunction<T>(postfix, function, arguments.length);
+        final BakedPostFixFunction<T> bakedPostFixFunction = new BakedPostFixFunction<T>(postfix, function, arguments.length);
+        BakedPostFixFunction<T> returned = bakedPostFixFunction;
+        if (step) {
+            int i = 0;
+            List<IBakedStackFunction> actuals = Lists.newLinkedList();
+            actuals.add(new BakedStackDebug(-1, bakedPostFixFunction));
+            for (IBakedStackFunction func : postfix) {
+                final int index = i++;
+                actuals.add(func);
+                actuals.add(new BakedStackDebug(index, bakedPostFixFunction));
+            }
+            returned = new BakedPostFixFunction<T>(actuals, function, arguments.length);
+        }
+        return returned;
     }
 
     public static <T> BakedFunction<T> bakeFunction(String function, Map<String, BakedFunction<?>> functions) {

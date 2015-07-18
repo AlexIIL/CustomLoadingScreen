@@ -10,8 +10,8 @@ public class BakedStackOperationAddition extends BakedStackFunction {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void doOperation(Deque stack, RenderingStatus status) throws StackFunctionException {
-        Object one = stack.pop();
-        Object two = stack.pop();
+        Object one = popObject(stack);
+        Object two = popObject(stack);
         if (one instanceof Double && two instanceof Double)
             stack.push((Double) one + (Double) two);
         else

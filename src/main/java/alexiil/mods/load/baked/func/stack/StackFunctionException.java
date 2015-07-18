@@ -16,9 +16,11 @@ public class StackFunctionException extends Exception {
         lines += "Stack:\n";
         for (Object o : currentStack)
             lines += "  - " + o + " (" + o.getClass().getName() + ")" + "\n";
-        lines += "Variable Map:\n";
-        for (Entry<String, Object> entry : status.tempVariables.entrySet())
-            lines += "  - " + entry.getKey() + " = " + entry.getValue();
+        if (status != null && status.tempVariables != null) {
+            lines += "Variable Map:\n";
+            for (Entry<String, Object> entry : status.tempVariables.entrySet())
+                lines += "  - " + entry.getKey() + " = " + entry.getValue();
+        }
         return lines;
     }
 

@@ -1,31 +1,17 @@
 package alexiil.mods.load.baked.func.stack;
 
 import java.util.Deque;
-import java.util.Map;
-
-import com.google.common.collect.Maps;
+import java.util.Iterator;
 
 import alexiil.mods.load.baked.func.BakedPostFixFunction.IBakedStackFunction;
 import alexiil.mods.load.render.RenderingStatus;
 
 public class BakedStackArgument implements IBakedStackFunction {
-    // Cache the stack objects as they
-    private static final Map<Integer, BakedStackArgument> map = Maps.newHashMap();
-
-    public static BakedStackArgument createBakedStackArgument(int arg) {
-        if (arg < 0)
-            throw new Error("Cannot call an argument less than 0!");
-        if (map.containsKey(arg))
-            return map.get(arg);
-
-        BakedStackArgument bsa = new BakedStackArgument(arg);
-        map.put(arg, bsa);
-        return bsa;
-    }
-
     private final int argument;
 
-    private BakedStackArgument(int arg) {
+    public BakedStackArgument(int arg) {
+        if (arg < 0)
+            throw new IllegalArgumentException("Cannot call argument number " + arg + ", as it was less than 0!");
         argument = arg;
     }
 
@@ -35,7 +21,9 @@ public class BakedStackArgument implements IBakedStackFunction {
         int i = 0;
         Object arg = null;
         boolean hasFound = false;
-        for (Object o : stack) {
+        Iterator iter = stack.descendingIterator();
+        while (iter.hasNext()) {
+            Object o = iter.next();
             if (i == argument) {
                 arg = o;
                 hasFound = true;
@@ -47,5 +35,10 @@ public class BakedStackArgument implements IBakedStackFunction {
             stack.push(arg);
         else
             throw new StackFunctionException("Did not find argument #" + argument + "!");
+    }
+
+    @Override
+    public String toString() {
+        return "Argument #" + argument + " [] -> [(Any)]";
     }
 }
