@@ -18,7 +18,7 @@ alexiillib.config.tech.button=Edit the technology tree
 alexiillib.config.help=Help, why is this not a configuration? And what do all the colours mean?
 alexiillib.config.closeHelp=Close Help
 
-#This is a list, so adding "civcraft.gui.config.help3=..." is fine (and etc) 
+#This is a list, so adding "alexiillib.gui.config.help3=..." is fine (and etc) 
 alexiillib.gui.config.help.0=The config can be accessed by the buttons at the top left (don't worry, the configs are still there)
 alexiillib.gui.config.help.1=On the left side is a list of all the people who have put some time and effort into this mod
 alexiillib.gui.config.help.2=On the right side is a changelog of this mod, where gold represents the current version you are using, blue is the start of a new changelog, and green is when a built jar is available on CurseForge.
