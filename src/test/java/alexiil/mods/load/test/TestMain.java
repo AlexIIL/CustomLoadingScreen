@@ -8,10 +8,10 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.util.ResourceLocation;
 
-import alexiil.mods.load.BLSLog;
-import alexiil.mods.load.baked.func.BakedFunction;
-import alexiil.mods.load.json.JsonFunction;
-import alexiil.mods.load.render.RenderingStatus;
+import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.baked.func.BakedFunction;
+import alexiil.mc.mod.load.json.JsonFunction;
+import alexiil.mc.mod.load.render.RenderingStatus;
 
 public class TestMain {
     public static void main(String[] args) {
@@ -40,17 +40,13 @@ public class TestMain {
                 functions.put(func.name, bf);
 
                 Object o = null;
-                if (bf.numArgs() > 0)
-                    o = bf.call(status, 0D, 1D);
-                else
-                    o = bf.call(status);
+                if (bf.numArgs() > 0) o = bf.call(status, 0D, 1D);
+                else o = bf.call(status);
                 BLSLog.info(func.function + " = " + o);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 BLSLog.warn(func.name + " failed because ", t);
                 throw new Error("Tests failed");
             }
-
         }
     }
 }

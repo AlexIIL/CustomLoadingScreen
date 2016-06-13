@@ -1,3 +1,6 @@
+// DON'T TOUCH THE BUILDSCRIPT[] BLOCK
+// its special, and it is only there to make ForgeGradle work correctly.
+
 buildscript {
     repositories {
         mavenCentral()
@@ -14,15 +17,24 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
     }
 }
 
-repositories {
-	mavenLocal()
-}
+apply plugin: "net.minecraftforge.gradle.forge" // adds the forge dependency
+apply plugin: 'maven' // for uploading to a maven repo
 
-apply plugin: "net.minecraftforge.gradle.forge"
+version = "1.4.0"
+// Feel free to rename this at some point
+group= "alexiil.mods.load"
+archivesBaseName = "BetterLoadingScreen"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    testCompile "junit:junit:4.12"
+}
 
 ext.configFile = file "build.properties"
 configFile.withReader {
@@ -32,23 +44,20 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-group= "alexiil.mods.load" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "BetterLoadingScreen"
-
 def buildNumber = System.getenv("DRONE_BUILD_NUMBER") ?: config.fallback_build_number
 
 version = "${project.config.mc_version}-${project.config.mod_version}." + buildNumber
 
 minecraft {
     version = config.mc_version + "-" + config.forge_version
-    runDir = "eclipse"
+    runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20141130"
+    mappings = "snapshot_20160123"
 
     replaceIn "alexiil/mods/load/Lib.java"
     replace "@VERSION@", "${project.config.mod_version}." + buildNumber
@@ -56,39 +65,8 @@ minecraft {
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    compile "alexiil.mods.lib:AlexIILLib:"+config.mc_version+"-"+config.alexiil_lib_version+":developer"
     testCompile "junit:junit:4.12"
 }
-
-// --------------------
-// extra jar section
-// -------------------
-
-// add a source jar
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'source-code'
-}
-
-// because the normal output has been made to be obfuscated
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'developer'
-}
-
-build.dependsOn sourceJar, deobfJar
 
 processResources
 {
@@ -115,6 +93,6 @@ jar
 	manifest
 	{
 		attributes 'FMLCorePluginContainsFMLMod': 'true'
-		attributes 'FMLCorePlugin': 'alexiil.mods.load.coremod.LoadingScreenLoadPlugin'
+		attributes 'FMLCorePlugin': 'alexiil.mc.mod.load.coremod.LoadingScreenLoadPlugin'
 	}
 }

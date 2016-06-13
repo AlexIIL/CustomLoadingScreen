@@ -15,23 +15,12 @@ import javax.imageio.ImageIO;
 import com.google.common.base.Throwables;
 
 import org.apache.commons.lang3.StringUtils;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.*;
+import org.objectweb.asm.tree.*;
 
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import alexiil.mods.lib.AlexIILMod;
 
 public class TestModExporter implements Opcodes {
     public static void dumpMods() {
@@ -68,8 +57,7 @@ public class TestModExporter implements Opcodes {
 
                 fos.flush();
                 fos.close();
-            }
-            catch (IOException io) {
+            } catch (IOException io) {
                 io.printStackTrace();
             }
         }
@@ -82,8 +70,7 @@ public class TestModExporter implements Opcodes {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", out);
-        }
-        catch (IOException shouldnthappen) {
+        } catch (IOException shouldnthappen) {
             throw Throwables.propagate(shouldnthappen);
         }
         return out.toByteArray();
@@ -111,8 +98,8 @@ public class TestModExporter implements Opcodes {
         AnnotationVisitor av0;
         MethodNode mn;
 
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, "alexiil/mods/test/BasicTestMod_" + num, null, Type.getInternalName(AlexIILMod.class),
-            null);
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, "alexiil/mods/test/BasicTestMod_" + num, null, Type.getInternalName(Object.class),
+                null);
 
         cw.visitSource("SYNTHETIC[TestModExporter]", null);
 
@@ -146,7 +133,8 @@ public class TestModExporter implements Opcodes {
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new InsnNode(DUP));
             list.add(new VarInsnNode(ALOAD, 1));
-            list.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(AlexIILMod.class), "preInit", "(" + preInit + ")V", false));
+            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "preInit", "(Ljava.lang.Object;" + preInit + ")V",
+                    false));
             // list.add(new MethodInsnNode(INVOKESTATIC));
             mn.accept(cw);
         }
@@ -159,7 +147,8 @@ public class TestModExporter implements Opcodes {
             InsnList list = mn.instructions;
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new VarInsnNode(ALOAD, 1));
-            list.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(AlexIILMod.class), "postInit", "(" + postInit + ")V", false));
+            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "postInit", "(Ljava.lang.Object;" + postInit + ")V",
+                    false));
             mn.accept(cw);
         }
         cw.visitEnd();

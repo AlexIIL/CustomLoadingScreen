@@ -1,5 +1,6 @@
 /bin/
 /testing/
+/run/
 /.gradle/
 /.project
 /.classpath
@@ -7,10 +8,11 @@
 /eclipse/
 /serverTest/
 
-
 /BetterLoadingScreen.iml
 /BetterLoadingScreen.ipr
 /BetterLoadingScreen.iws
 /out/
 /build/
 /VersionInfo/
+
+*.launch
