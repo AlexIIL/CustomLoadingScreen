@@ -13,12 +13,6 @@ If you are on linux, run:
     
 Otherwise you need to run:
 
-    git submodule init
-    git submodule update
-    cd ./AlexIILLib
-    ./gradlew setupCIWorkspace
-    ./gradlew build
-    cd ..
     ./gradlew setupCIWorkspace
     ./gradlew build
     
@@ -31,16 +25,10 @@ Clone the forked repository into an empty folder
 
 If you are on linux run
 
-    ./setupWorkspace build
+    ./setupWorkspace
     
 Otherwise you need to run
 
-    git submodule init
-    git submodule update
-    cd ./AlexIILLib
-    ./gradlew setupCIWorkspace
-    ./gradlew build
-    cd ..
     ./gradlew setupDecompWorkspace
     
 If you use eclipse...
