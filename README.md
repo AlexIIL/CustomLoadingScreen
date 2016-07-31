@@ -1,11 +1,11 @@
-# BetterLoadingScreen
+# CustomLoadingScreen
 Drone.io: [![Build Status](https://drone.io/github.com/AlexIIL/BetterLoadingScreen/status.png)](https://drone.io/github.com/AlexIIL/BetterLoadingScreen/latest)
 
 ## Building from scratch
 Clone this repository into an empty folder
 
-    git clone https://github.com/AlexIIL/BetterLoadingScreen.git
-    cd BetterLoadingScreen
+    git clone https://github.com/AlexIIL/CustomLoadingScreen.git
+    cd CustomLoadingScreen
 
 If you are on linux, run:
 
