@@ -107,10 +107,11 @@ public class ProgressDisplayer {
 
     public static void start(File coremodLocation) {
         coreModLocation = coremodLocation;
-        if (coreModLocation == null)
+        if (coreModLocation == null) {
             /* Assume this is a dev environment, and that the build dir is in bin, and the test dir has the same parent
              * as the bin dir... */
             coreModLocation = new File("./../bin/");
+        }
         ModMetadata md = new ModMetadata();
         md.name = Lib.Mod.NAME;
         md.modId = Lib.Mod.ID;
@@ -131,18 +132,16 @@ public class ProgressDisplayer {
             }
         };
         ConfigAccess ca = ConfigAccess.get(new File("./config/betterloadingscreen.cfg"), null);
-        Configuration cfg = ca.cfg();
+        cfg = ca.cfg();
 
         boolean useMinecraft = isClient();
         if (useMinecraft) {
-            String comment =
-                "Whether or not to use minecraft's display to show the progress. This looks better, but there is a possibilty of not being ";
+            String comment = "Whether or not to use minecraft's display to show the progress. This looks better, but there is a possibilty of not being ";
             comment += "compatible, so if you do have any strange crash reports or compatability issues, try setting this to false";
             useMinecraft = cfg.getBoolean("useMinecraft", "general", true, comment);
         }
 
-        String comment =
-            "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
+        String comment = "Whether or not to show a window seperate to minecraft to show the loading time -this will automatically display above all windows, so you can see it even if you alt-tab to another window.";
         boolean showFrame = cfg.getBoolean("showFrame", "general", false, comment);
 
         // playSound = cfg.getBoolean("playSound", "general", true,

@@ -8,13 +8,13 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import alexiil.mc.mod.load.ProgressDisplayer;
 import alexiil.mc.mod.load.Translation;
 
-@IFMLLoadingPlugin.MCVersion("1.8.9")
+@IFMLLoadingPlugin.MCVersion("1.10.2")
 @IFMLLoadingPlugin.TransformerExclusions({ "alexiil.mc.mod.load.coremod" })
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE - 80)
-public class LoadingScreenLoadPlugin implements IFMLLoadingPlugin {
+public class ClsPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] { "alexiil.mc.mod.load.coremod.BetterLoadingScreenTransformer" };
+        return new String[] { ClsTransformer.class.getName() };
     }
 
     @Override
@@ -38,5 +38,4 @@ public class LoadingScreenLoadPlugin implements IFMLLoadingPlugin {
     public String getAccessTransformerClass() {
         return null;
     }
-
 }
