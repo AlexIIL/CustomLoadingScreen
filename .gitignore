@@ -1,18 +1,18 @@
-/bin/
-/testing/
-/run/
-/.gradle/
-/.project
-/.classpath
-/.settings/
-/eclipse/
-/serverTest/
+bin/
+testing/
+run/
+.gradle/
+.project
+.classpath
+.settings/
+eclipse/
+serverTest/
 
-/BetterLoadingScreen.iml
-/BetterLoadingScreen.ipr
-/BetterLoadingScreen.iws
-/out/
-/build/
-/VersionInfo/
+*.iml
+*.ipr
+*.iws
+out/
+build/
+VersionInfo/
 
 *.launch
