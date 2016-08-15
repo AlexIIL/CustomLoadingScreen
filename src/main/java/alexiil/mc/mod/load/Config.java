@@ -18,7 +18,7 @@ public class Config extends GuiConfig {
 
     private static List<IConfigElement> getConfigElements() {
         List<IConfigElement> elements = new ArrayList<IConfigElement>();
-        Configuration cfg = CustomLoadingScreen.cfg;
+        Configuration cfg = CustomLoadingScreen.CFG;
         for (String name : cfg.getCategoryNames()) {
             ConfigCategory cat = cfg.getCategory(name);
             if (!cat.isChild()) elements.add(new ConfigElement(cfg.getCategory(name)));

@@ -40,13 +40,10 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
         if (name.equals("alexiil.mc.mod.load.render.MainSplashRenderer")) {
             return transformMainSplashRenderer(basicClass);
         }
-
-        out(basicClass, transformedName);
         return basicClass;
     }
 
     private static byte[] transformSplashProgress(byte[] before) {
-        System.out.println("transformSplashProgress");
         ClassNode classNode = new ClassNode();
         ClassReader reader = new ClassReader(before);
         reader.accept(classNode, 0);
@@ -61,30 +58,26 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
             if (m.name.equals("finish")) {
                 InsnList list = new InsnList();
 
-                list.add(new LdcInsnNode(Integer.valueOf(1)));
-
                 String owner = OWNER_MAIN_SPLASH_RENDERER;
-                String name = "done";
-                String desc = "Z";
-                list.add(new FieldInsnNode(PUTSTATIC, owner, name, desc));
+                String name = "finish";
+                String desc = "()V";
+                list.add(new MethodInsnNode(INVOKESTATIC, owner, name, desc, false));
 
-                m.instructions.insert(list);
+                AbstractInsnNode from = null;
 
-                // Now remove all the "textureX.delete();" as they are null
-                //
-                // ListIterator<AbstractInsnNode> iter = m.instructions.iterator();
-                // while (iter.hasNext()) {
-                // AbstractInsnNode node = iter.next();
-                // if (node instanceof MethodInsnNode) {
-                // MethodInsnNode method = (MethodInsnNode) node;
-                // if (method.name.equals("delete") & iter.hasPrevious()) {
-                // iter.remove();
-                // // Also remove the "load texture object"
-                // iter.previous();
-                // iter.remove();
-                // }
-                // }
-                // }
+                ListIterator<AbstractInsnNode> iter = m.instructions.iterator();
+                while (iter.hasNext()) {
+                    AbstractInsnNode node = iter.next();
+                    if (node instanceof MethodInsnNode) {
+                        MethodInsnNode method = (MethodInsnNode) node;
+                        if (method.name.equals("checkThreadState")) {
+                            from = node;
+                            break;
+                        }
+                    }
+                }
+
+                m.instructions.insert(from, list);
 
             } else if (m.name.equals("pause")) {
                 InsnList list = new InsnList();
@@ -118,7 +111,6 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformSplashProgress_3(byte[] before) {
-        System.out.println("transformSplashProgress_3");
         ClassNode classNode = new ClassNode();
         ClassReader reader = new ClassReader(before);
         reader.accept(classNode, 0);
@@ -183,7 +175,6 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformSplashProgress_Texture(byte[] before) {
-        System.out.println("transformSplashProgress_Texture");
         ClassNode classNode = new ClassNode();
         ClassReader reader = new ClassReader(before);
         reader.accept(classNode, 0);
@@ -196,7 +187,6 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformMainSplashRenderer(byte[] before) {
-        System.out.println("transformMainSplashRenderer");
         ClassNode classNode = new ClassNode();
         ClassReader reader = new ClassReader(before);
         reader.accept(classNode, 0);
@@ -260,9 +250,5 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
             return n.getOpcode() + " " + n.var;
         }
         return (ins.getOpcode() + ":" + ins.getClass().getSimpleName());
-    }
-
-    private static void out(byte[] data, String clazzName) {
-
     }
 }

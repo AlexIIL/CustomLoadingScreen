@@ -18,10 +18,11 @@ import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
+import alexiil.mc.mod.load.CustomLoadingScreen;
+
 public class MainSplashRenderer {
     // These are all written to by the transformed ClsTransformer
     public static ResourceLocation fontLoc;
-    public static volatile boolean done = false;
     public static volatile boolean pause = false;
     public static DummyTexture mojangLogoTex;
 
@@ -31,11 +32,11 @@ public class MainSplashRenderer {
 
     private static final long start = System.currentTimeMillis();
     private static long diff;
+    private static volatile boolean finishedLoading = false;
 
     static {
         lock = get(SplashProgress.class, "lock");
         mutex = get(SplashProgress.class, "mutex");
-        System.out.println("Got the concurrent fields");
     }
 
     @SuppressWarnings("unchecked")
@@ -49,12 +50,20 @@ public class MainSplashRenderer {
         }
     }
 
+    // This is called by SplashProgress.finish
+    public static void finish() {
+        finishedLoading = true;
+        lock.lock();
+        CustomLoadingScreen.finish();
+    }
+
     // This is called instead of SplashProgress$3.run
     public static void run() {
         fontRenderer = get(SplashProgress.class, "fontRenderer");
-        System.out.println("run");
 
-        while (!done) {
+        boolean transitionOutDone = false;
+
+        while (!transitionOutDone) {
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -71,15 +80,17 @@ public class MainSplashRenderer {
             diff = System.currentTimeMillis() - start;
             if (diff < 2000) {
                 renderMojangFrame();
-            } else {
+            } else if (!finishedLoading) {
                 renderFrame();
+            } else {
+                transitionOutDone = renderTransitionFrame();
             }
 
             mutex.acquireUninterruptibly();
             Display.update();
             mutex.release();
 
-            if (pause) {
+            if (pause & !finishedLoading) {
                 clearGL();
                 setGL();
             }
@@ -113,7 +124,6 @@ public class MainSplashRenderer {
     }
 
     private static void renderFrame() {
-
         // Actual drawing
         Iterator<ProgressBar> i = ProgressManager.barIterator();
         int y = 0;
@@ -140,6 +150,10 @@ public class MainSplashRenderer {
 
         glDisable(GL_TEXTURE_2D);
         glPopMatrix();
+    }
+
+    private static boolean renderTransitionFrame() {
+        return true;
     }
 
     private static final int NUM_GAPS = 8;

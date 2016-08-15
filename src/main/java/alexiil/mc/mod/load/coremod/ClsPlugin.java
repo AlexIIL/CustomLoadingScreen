@@ -29,9 +29,7 @@ public class ClsPlugin implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        File coremodLocation = (File) data.get("coremodLocation");
-        Translation.addTranslations(coremodLocation);
-        ProgressDisplayer.start(coremodLocation);
+
     }
 
     @Override

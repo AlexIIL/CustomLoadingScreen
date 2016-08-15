@@ -13,9 +13,12 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 
+import alexiil.mc.mod.load.frame.FrameDisplayer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerWrapper;
 
+@Deprecated
 public class ProgressDisplayer {
+    @Deprecated
     public interface IDisplayer {
 
         void open(Configuration cfg);
@@ -33,51 +36,6 @@ public class ProgressDisplayer {
         void pause();
 
         void resume();
-    }
-
-    public static class FrameDisplayer implements IDisplayer {
-        public LoadingFrame frame = null;
-
-        @Override
-        public void open(Configuration cfg) {
-            frame = LoadingFrame.openWindow();
-            if (frame != null) {
-                frame.setMessage("Minecraft Forge Starting");
-                frame.setProgress(0);
-            }
-        }
-
-        @Override
-        public void updateProgress(String text, double percent) {
-            if (frame == null) return;
-            frame.setMessage(text);
-            frame.setProgress(percent * 100D);
-            frame.repaint();
-        }
-
-        @Override
-        public void close() {
-            if (frame != null) frame.dispose();
-        }
-
-        @Override
-        public void pause() {}
-
-        @Override
-        public void resume() {}
-
-        @Override
-        public void pushProgress() {
-            if (frame != null) frame.pushProgress();
-        }
-
-        @Override
-        public void popProgress() {
-            if (frame != null) frame.popProgress();
-        }
-
-        @Override
-        public void addFuture(String text, double percent) {}
     }
 
     private static List<IDisplayer> displayers = new ArrayList<IDisplayer>();
@@ -131,8 +89,7 @@ public class ProgressDisplayer {
                 return Lib.Mod.ID;
             }
         };
-        ConfigAccess ca = ConfigAccess.get(new File("./config/betterloadingscreen.cfg"), null);
-        cfg = ca.cfg();
+        cfg = CustomLoadingScreen.CONFIG;
 
         boolean useMinecraft = isClient();
         if (useMinecraft) {
@@ -148,7 +105,7 @@ public class ProgressDisplayer {
         // "Play a sound after Minecraft has finished starting up");
 
         if (useMinecraft) displayers.add(new MinecraftDisplayerWrapper());
-        if (showFrame) displayers.add(new FrameDisplayer());
+//        if (showFrame) displayers.add(new FrameDisplayer());
 
         for (IDisplayer displayer : displayers)
             displayer.open(cfg);
