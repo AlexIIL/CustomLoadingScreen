@@ -30,7 +30,7 @@ public class MainSplashRenderer {
     private static final Lock lock;
     private static final Semaphore mutex;
 
-    private static final long start = System.currentTimeMillis();
+    private static long start;
     private static long diff;
     private static volatile boolean finishedLoading = false;
 
@@ -52,9 +52,9 @@ public class MainSplashRenderer {
 
     // This is called by SplashProgress.finish
     public static void finish() {
+        CustomLoadingScreen.finish();
         finishedLoading = true;
         lock.lock();
-        CustomLoadingScreen.finish();
     }
 
     // This is called instead of SplashProgress$3.run
@@ -62,6 +62,7 @@ public class MainSplashRenderer {
         fontRenderer = get(SplashProgress.class, "fontRenderer");
 
         boolean transitionOutDone = false;
+        start = System.currentTimeMillis();
 
         while (!transitionOutDone) {
             glClearColor(1, 1, 1, 1);
@@ -78,7 +79,7 @@ public class MainSplashRenderer {
             glLoadIdentity();
 
             diff = System.currentTimeMillis() - start;
-            if (diff < 2000) {
+            if (diff < 3000) {
                 renderMojangFrame();
             } else if (!finishedLoading) {
                 renderFrame();
@@ -95,6 +96,10 @@ public class MainSplashRenderer {
                 setGL();
             }
             Display.sync(100);
+            
+            if (true) {
+                throw new Error("lol test");
+            }
         }
         clearGL();
     }
@@ -114,13 +119,6 @@ public class MainSplashRenderer {
         glVertex2f(256, -256);
         glEnd();
         glDisable(GL_TEXTURE_2D);
-    }
-
-    // All references to this class are replaced with SplashProgress.Texture by ASM
-    public static class DummyTexture {
-        public void bind() {}
-
-        public void texCoord(int i, float f, float f2) {}
     }
 
     private static void renderFrame() {
@@ -153,6 +151,7 @@ public class MainSplashRenderer {
     }
 
     private static boolean renderTransitionFrame() {
+        renderFrame();
         return true;
     }
 
@@ -210,5 +209,12 @@ public class MainSplashRenderer {
         } finally {
             lock.unlock();
         }
+    }
+
+    // All references to this class are replaced with SplashProgress.Texture by ASM
+    public static class DummyTexture {
+        public void bind() {}
+
+        public void texCoord(int i, float f, float f2) {}
     }
 }

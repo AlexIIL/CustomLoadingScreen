@@ -105,6 +105,9 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
             }
         }
 
+        // Ensure our changes are obvious
+        changeLineNumbers(classNode);
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         return cw.toByteArray();
@@ -169,6 +172,9 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
             }
         }
 
+        // Ensure our changes are obvious
+        changeLineNumbers(classNode);
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         return cw.toByteArray();
@@ -218,9 +224,29 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
             }
         }
 
+        // Ensure our changes are obvious
+        changeLineNumbers(classNode);
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
         return cw.toByteArray();
+    }
+
+    private static void changeLineNumbers(ClassNode node) {
+        for (MethodNode m : node.methods) {
+            changeLineNumbers(m);
+        }
+    }
+
+    private static void changeLineNumbers(MethodNode m) {
+        ListIterator<AbstractInsnNode> iter = m.instructions.iterator();
+        while (iter.hasNext()) {
+            AbstractInsnNode insn = iter.next();
+            if (insn instanceof LineNumberNode) {
+                LineNumberNode ln = (LineNumberNode) insn;
+                ln.line += 10_000;
+            }
+        }
     }
 
     protected static void showMethod(MethodNode m, int from) {
