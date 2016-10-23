@@ -36,8 +36,7 @@ public class BLSLog {
     }
 
     private static Logger log() {
-        if (log == null)
-            log = LogManager.getLogger("BetterLoadingScreen");
+        if (log == null) log = LogManager.getLogger("BetterLoadingScreen");
         return log;
     }
 
@@ -58,8 +57,7 @@ public class BLSLog {
 
     private static int getStack() {
         Integer i = stack.get();
-        if (i == null)
-            return 0;
+        if (i == null) return 0;
         return i;
     }
 
@@ -81,20 +79,17 @@ public class BLSLog {
                 s = "\n" + spaces + "  " + s + "\n" + spaces;
             }
 
-            if (arg instanceof String)
-                s = "\"" + s + "\"";
+            if (arg instanceof String) s = "\"" + s + "\"";
 
             arguments += s;
-            if (i < args.length - 1)
-                arguments += ", ";
+            if (i < args.length - 1) arguments += ", ";
         }
         arguments += ")";
         logThing(place, arguments, 4);
     }
 
     private static String makeNewLine(String string) {
-        if (string.length() < 30)
-            return string;
+        if (string.length() < 30) return string;
         String spaces = StringUtils.repeat("  ", getStack() + 28);
         string = string.replace("\n", "\n" + spaces + "  ");
         if (string.length() > 30) {

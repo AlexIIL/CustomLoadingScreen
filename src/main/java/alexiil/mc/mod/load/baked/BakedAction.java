@@ -1,40 +1,37 @@
 package alexiil.mc.mod.load.baked;
 
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public abstract class BakedAction extends BakedTickable {
-    protected final BakedFunction<Boolean> conditionStart, conditionEnd;
+    protected final INodeBoolean conditionStart, conditionEnd;
     private boolean started = false;
 
-    public BakedAction(BakedFunction<Boolean> conditionStart, BakedFunction<Boolean> conditionEnd) {
+    public BakedAction(INodeBoolean conditionStart, INodeBoolean conditionEnd) {
         this.conditionStart = conditionStart;
         this.conditionEnd = conditionEnd;
     }
 
     @Override
-    public void tick(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        if (!started && conditionStart.call(status)) {
+    public void tick(MinecraftDisplayerRenderer renderer) {
+        if (!started && conditionStart.evaluate()) {
             started = true;
-            start(status);
+            start();
+        } else if (started) {
+            tick();
         }
-        else if (started) {
-            tick(status);
-        }
-        if (started && conditionEnd.call(status)) {
+        if (started && conditionEnd.evaluate()) {
             started = false;
-            end(status);
+            end();
         }
     }
 
     /** Called the first time conditionStart resolves to true */
-    protected abstract void start(RenderingStatus status) throws FunctionException;
+    protected abstract void start();
 
     /** Called once per tick after start() has been called, and before stop() has been called */
-    protected abstract void tick(RenderingStatus status) throws FunctionException;
+    protected abstract void tick();
 
     /** Called whenever conditionEnd resolves to true, provided that start() has already been called */
-    protected abstract void end(RenderingStatus status) throws FunctionException;
+    protected abstract void end();
 }

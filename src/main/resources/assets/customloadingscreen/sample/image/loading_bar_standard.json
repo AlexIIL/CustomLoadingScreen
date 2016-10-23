@@ -1,0 +1,17 @@
+{
+  "image": "customloadingscreen:textures/progressBars.png",
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "position": {
+    "x": "0",
+    "y": "50",
+    "width": "182",
+    "height": "5"
+  },
+  "texture": {
+    "x": "0",
+    "y": "0",
+    "width": "182",
+    "height": "5"
+  }
+}

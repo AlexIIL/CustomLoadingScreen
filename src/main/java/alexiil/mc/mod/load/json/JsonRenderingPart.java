@@ -2,15 +2,17 @@ package alexiil.mc.mod.load.json;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.BakedRender;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionBaker;
 import alexiil.mc.mod.load.baked.insn.BakedInstruction;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
+import alexiil.mc.mod.load.expression.node.value.NodeImmutableBoolean;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
  * or not it should render at this time */
@@ -27,11 +29,14 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
     }
 
     @Override
-    protected BakedRenderingPart actuallyBake(Map<String, BakedFunction<?>> functions) {
+    protected BakedRenderingPart actuallyBake(FunctionContext functions) throws InvalidExpressionException {
         List<BakedInstruction> args = new ArrayList<BakedInstruction>();
 
         JsonImage element = ConfigManager.getAsImage(image).getConsolidated();
 
+        functions = new FunctionContext(functions);
+
+        BakedRender actualRender = element.bake(functions);
         args.addAll(element.bakeInstructions(functions));
 
         if (instructions != null) {
@@ -42,8 +47,14 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
         }
 
         BakedInstruction[] instructions = args.toArray(new BakedInstruction[args.size()]);
-        BakedRender actualRender = element.bake(functions);
-        BakedFunction<Boolean> shouldRenderFunc = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
+
+        INodeBoolean shouldRenderFunc;
+        // = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
+        if (shouldRender == null) {
+            shouldRenderFunc = NodeImmutableBoolean.TRUE;
+        } else {
+            shouldRenderFunc = GenericExpressionCompiler.compileExpressionBoolean(shouldRender, functions).derive(null);
+        }
 
         return new BakedRenderingPart(instructions, actualRender, shouldRenderFunc);
     }
@@ -51,14 +62,12 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
     @Override
     protected JsonRenderingPart actuallyConsolidate() {
         // If this has already been consolidated or doesn't have any parents, don't try to consolidate
-        if (StringUtils.isEmpty(parent))
-            return this;
+        if (StringUtils.isEmpty(parent)) return this;
 
         JsonRenderingPart parent = ConfigManager.getAsRenderingPart(this.parent);
         // If the parent wasn't null, but the parent did not exist, then just return this as the error has already been
         // logged by the ConfigManager
-        if (parent == null)
-            return this;
+        if (parent == null) return this;
 
         parent = parent.getConsolidated();
         String image = overrideObject(this.image, parent.image, null);

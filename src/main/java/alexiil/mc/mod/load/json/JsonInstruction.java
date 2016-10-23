@@ -1,10 +1,11 @@
 package alexiil.mc.mod.load.json;
 
-import java.util.Map;
-
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionBaker;
 import alexiil.mc.mod.load.baked.insn.*;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
+import alexiil.mc.mod.load.expression.node.value.NodeImmutableDouble;
 
 public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInstruction> {
     public final String function;
@@ -18,43 +19,34 @@ public class JsonInstruction extends JsonConfigurable<JsonInstruction, BakedInst
 
     // TODO: Convert JsonInstruction to use parents for rotation, scaling, colour and position
     @Override
-    public BakedInstruction actuallyBake(Map<String, BakedFunction<?>> functions) {
+    public BakedInstruction actuallyBake(FunctionContext functions) throws InvalidExpressionException {
         if (function.equalsIgnoreCase("rotate")) {
-            BakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
-            BakedFunction<Double> z = FunctionBaker.bakeFunctionDouble(arguments[3], functions);
+            INodeDouble angle = GenericExpressionCompiler.compileExpressionDouble(arguments[0], functions).derive(null);
+            INodeDouble x = GenericExpressionCompiler.compileExpressionDouble(arguments[1], functions).derive(null);
+            INodeDouble y = GenericExpressionCompiler.compileExpressionDouble(arguments[2], functions).derive(null);
+            INodeDouble z = GenericExpressionCompiler.compileExpressionDouble(arguments[3], functions).derive(null);
             return new BakedRotationFunctional(angle, x, y, z);
-        }
-        else if (function.equalsIgnoreCase("scale")) {
-            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            BakedFunction<Double> z;
-            if (arguments.length == 3)
-                z = FunctionBaker.bakeFunctionDouble("1");
-            else
-                z = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
+        } else if (function.equalsIgnoreCase("scale")) {
+            INodeDouble x = GenericExpressionCompiler.compileExpressionDouble(arguments[0], functions).derive(null);
+            INodeDouble y = GenericExpressionCompiler.compileExpressionDouble(arguments[1], functions).derive(null);
+            INodeDouble z;
+            if (arguments.length == 3) z = new NodeImmutableDouble(1);
+            else z = GenericExpressionCompiler.compileExpressionDouble(arguments[2], functions).derive(null);
             return new BakedScaleFunctional(x, y, z);
-        }
-        else if (function.equalsIgnoreCase("colour")) {
-            BakedFunction<Double> r = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            BakedFunction<Double> g = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            BakedFunction<Double> b = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
-            BakedFunction<Double> alpha;
-            if (arguments.length == 3)
-                alpha = FunctionBaker.bakeFunctionDouble("1");
-            else
-                alpha = FunctionBaker.bakeFunctionDouble(arguments[3], functions);
+        } else if (function.equalsIgnoreCase("colour")) {
+            INodeDouble r = GenericExpressionCompiler.compileExpressionDouble(arguments[0], functions).derive(null);
+            INodeDouble g = GenericExpressionCompiler.compileExpressionDouble(arguments[1], functions).derive(null);
+            INodeDouble b = GenericExpressionCompiler.compileExpressionDouble(arguments[2], functions).derive(null);
+            INodeDouble alpha;
+            if (arguments.length == 3) alpha = new NodeImmutableDouble(1);
+            else alpha = GenericExpressionCompiler.compileExpressionDouble(arguments[3], functions).derive(null);
             return new BakedColourFunctional(r, g, b, alpha);
-        }
-        else if (function.equalsIgnoreCase("position")) {
-            BakedFunction<Double> x = FunctionBaker.bakeFunctionDouble(arguments[0], functions);
-            BakedFunction<Double> y = FunctionBaker.bakeFunctionDouble(arguments[1], functions);
-            BakedFunction<Double> z;
-            if (arguments.length == 2)
-                z = FunctionBaker.bakeFunctionDouble("0");
-            else
-                z = FunctionBaker.bakeFunctionDouble(arguments[2], functions);
+        } else if (function.equalsIgnoreCase("position")) {
+            INodeDouble x = GenericExpressionCompiler.compileExpressionDouble(arguments[0], functions).derive(null);
+            INodeDouble y = GenericExpressionCompiler.compileExpressionDouble(arguments[1], functions).derive(null);
+            INodeDouble z;
+            if (arguments.length == 2) z = new NodeImmutableDouble(0);
+            else z = GenericExpressionCompiler.compileExpressionDouble(arguments[2], functions).derive(null);
             return new BakedPositionFunctional(x, y, z);
         }
         return null;

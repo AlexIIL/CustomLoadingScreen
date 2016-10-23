@@ -13,12 +13,12 @@ import net.minecraftforge.fml.client.config.IConfigElement;
 
 public class Config extends GuiConfig {
     public Config(GuiScreen screen) {
-        super(screen, getConfigElements(), Lib.Mod.ID, false, false, "BetterLoadingScreen");
+        super(screen, getConfigElements(), Lib.Mod.ID, false, false, "CustomLoadingScreen");
     }
 
     private static List<IConfigElement> getConfigElements() {
-        List<IConfigElement> elements = new ArrayList<IConfigElement>();
-        Configuration cfg = CustomLoadingScreen.CFG;
+        List<IConfigElement> elements = new ArrayList<>();
+        Configuration cfg = CustomLoadingScreen.CONFIG;
         for (String name : cfg.getCategoryNames()) {
             ConfigCategory cat = cfg.getCategory(name);
             if (!cat.isChild()) elements.add(new ConfigElement(cfg.getCategory(name)));

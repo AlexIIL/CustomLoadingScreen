@@ -20,20 +20,14 @@ public enum EPosition {
     }
 
     public String getFunctionX(String width, String argument) {
-        if (x == -1)
-            return argument;
-        else if (x == 0)
-            return "(" + width + ") / 2 - (" + argument + ")";
-        else
-            return "(" + width + ") - (" + argument + ")";
+        if (x == -1) return argument;
+        else if (x == 0) return "(" + width + ") / 2 - (" + argument + ")";
+        else return "(" + width + ") - (" + argument + ")";
     }
 
     public String getFunctionY(String height, String argument) {
-        if (y == -1)
-            return argument;
-        else if (y == 0)
-            return "(" + height + ") / 2 - (" + argument + ")";
-        else
-            return "(" + height + ") - (" + argument + ")";
+        if (y == -1) return argument;
+        else if (y == 0) return "(" + height + ") / 2 - (" + argument + ")";
+        else return "(" + height + ") - (" + argument + ")";
     }
 }

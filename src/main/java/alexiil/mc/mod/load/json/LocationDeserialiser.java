@@ -25,11 +25,8 @@ public class LocationDeserialiser<T extends JsonConfigurable<T, ?>> implements J
         if (json.isJsonPrimitive()) { // Get the value from the config
             String location = json.getAsString();
             return ConfigManager.getAsT(type, location);
-        }
-        else if (json.isJsonObject()) {
+        } else if (json.isJsonObject()) {
             return ConfigManager.getGsonExcluding(clazz).fromJson(json, clazz);
-        }
-        else
-            throw new JsonParseException("Must either be a string of the location, or the actual object definition!");
+        } else throw new JsonParseException("Must either be a string of the location, or the actual object definition!");
     }
 }

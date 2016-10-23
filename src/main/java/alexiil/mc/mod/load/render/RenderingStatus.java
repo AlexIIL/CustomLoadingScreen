@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.minecraft.client.gui.ScaledResolution;
 
+@Deprecated
 public class RenderingStatus {
     public static class FieldState<T> {
         /** One particular state of the changed field */
@@ -37,8 +38,7 @@ public class RenderingStatus {
 
         /** Starts ticking this field.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         public FieldState<T> start(double now) {
             start = now;
             return this;
@@ -46,35 +46,30 @@ public class RenderingStatus {
 
         /** Stops this field from ticking, and ends it. If this field has not been started yet then it starts it too.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         public FieldState<T> end(double now) {
-            if (start == -1)
-                start = now;
+            if (start == -1) start = now;
             end = now;
             return this;
         }
 
         /** How long ago, in seconds, this was created
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getLength(double now) {
             return end == -1 ? now - start : end - start;
         }
 
         /** How long ago, in seconds, this has been ended for. Returns -1 if it has not ended yet.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getEndDiff(double now) {
             return end == -1 ? -1 : now - end;
         }
 
         /** How long ago, in seconds, this has been started for. Returns -1 if it has not started yet.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for */
+         * @param now How long, in seconds, the loading screen has been ticking for */
         private double getStartDiff(double now) {
             return start == -1 ? -1 : now - start;
         }
@@ -86,8 +81,7 @@ public class RenderingStatus {
 
         /** Change the field immediately, ending the old one and starting a new one
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void changeField(T field, double now) {
             addFuture(field);
             moveOn(now);
@@ -95,8 +89,7 @@ public class RenderingStatus {
 
         /** End the current field immediately.
          *
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void endCurrent(double now) {
             if (current != -1) {
                 FieldState<T> currentField = history.get(current);
@@ -106,12 +99,10 @@ public class RenderingStatus {
 
         /** End the current field (if it has not already been ended) and start the next one immediately.
          * 
-         * @param now
-         *            How long, in seconds, the loading screen has been ticking for. */
+         * @param now How long, in seconds, the loading screen has been ticking for. */
         public void moveOn(double now) {
             endCurrent(now);
-            if (history.size() == current + 1)
-                return;
+            if (history.size() == current + 1) return;
             current++;
             history.get(current).start(now);
         }
@@ -125,10 +116,8 @@ public class RenderingStatus {
         }
 
         private FieldState<T> getChanged(int diff) {
-            if (current + diff < 0)
-                return FieldState.getEmptyState();
-            if (current + diff > history.size())
-                return FieldState.getEmptyState();
+            if (current + diff < 0) return FieldState.getEmptyState();
+            if (current + diff > history.size()) return FieldState.getEmptyState();
             return history.get(current + diff);
         }
 
@@ -167,10 +156,8 @@ public class RenderingStatus {
         public final double percentage;
 
         public ProgressPair(String status, double percentage) {
-            if (status == null)
-                throw new IllegalArgumentException("Cannot have an empty progress!");
-            if (percentage < 0 || percentage > 1)
-                new IllegalArgumentException("Percentage should be between 0 and 1! (was " + percentage + ")").printStackTrace();
+            if (status == null) throw new IllegalArgumentException("Cannot have an empty progress!");
+            if (percentage < 0 || percentage > 1) new IllegalArgumentException("Percentage should be between 0 and 1! (was " + percentage + ")").printStackTrace();
             this.status = status;
             this.percentage = percentage;
         }
@@ -242,8 +229,7 @@ public class RenderingStatus {
 
         public void popChild(double now) {
             ProgressState prevChild = children.getCurrent();
-            if (prevChild == null)
-                return;
+            if (prevChild == null) return;
             while (prevChild.progress.hasMore())
                 prevChild.progress.moveOn(now);
         }

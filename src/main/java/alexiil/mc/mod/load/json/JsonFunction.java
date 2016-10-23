@@ -1,14 +1,14 @@
 package alexiil.mc.mod.load.json;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.func.BakedFunction;
 import alexiil.mc.mod.load.baked.func.FunctionBaker;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
 
+// FIXME: This doesn;t work this way any more!
 public class JsonFunction extends JsonConfigurable<JsonFunction, BakedFunction<?>> {
-    // TODO: rethink functions to allow for arguments
     public final String name, function;
     public final String[] arguments;
 
@@ -20,18 +20,19 @@ public class JsonFunction extends JsonConfigurable<JsonFunction, BakedFunction<?
     }
 
     @Override
-    protected BakedFunction<?> actuallyBake(Map<String, BakedFunction<?>> functions) {
+    protected BakedFunction<?> actuallyBake(FunctionContext functions) throws InvalidExpressionException {
+
+        String start = "{";
+
         return FunctionBaker.bakeFunction(function, functions, arguments);
     }
 
     @Override
     protected JsonFunction actuallyConsolidate() {
-        if (StringUtils.isEmpty(parent))
-            return this;
+        if (StringUtils.isEmpty(parent)) return this;
 
         JsonFunction func = ConfigManager.getAsFunction(parent);
-        if (func == null)
-            return this;
+        if (func == null) return this;
 
         func = func.getConsolidated();
 

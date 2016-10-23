@@ -1,8 +1,8 @@
 [
 {
-  "modid": "betterloadingscreen",
-  "name": "Better Loading Screen",
-  "description": "Simple mod that shows you the state FML is at while loading minecraft",
+  "modid": "customloadingscreen",
+  "name": "Custom Loading Screen",
+  "description": "Simple mod that shows you the stage forge is at while loading minecraft",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
@@ -11,6 +11,6 @@
   "credits": "",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": ["required-after:alexiillib"]
+  "dependencies": []
 }
 ]

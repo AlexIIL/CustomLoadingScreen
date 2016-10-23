@@ -1,8 +1,6 @@
 package alexiil.mc.mod.load.json;
 
-import java.util.Map;
-
-import alexiil.mc.mod.load.baked.func.BakedFunction;
+import alexiil.mc.mod.load.expression.FunctionContext;
 
 public class JsonVariable {
     public final String name;
@@ -13,7 +11,7 @@ public class JsonVariable {
         this.initialValue = initialValue;
     }
 
-    public void bake(Map<String, BakedFunction<?>> functions) {
+    public void bake(FunctionContext functions) {
 
     }
 }

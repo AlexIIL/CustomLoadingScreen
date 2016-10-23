@@ -16,8 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 import alexiil.mc.mod.load.baked.BakedConfig;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
@@ -39,9 +39,7 @@ public class TextureAnimator {
                 textureMilliSeconds = Integer.MAX_VALUE;
                 for (int i = 0; i < images.length; i++)
                     bindFrame(i);
-            }
-            else if (totalPixels <= TEXTURE_PIXEL_CAP)
-                textureMilliSeconds = TEXTURE_MILLI_SECONDS;
+            } else if (totalPixels <= TEXTURE_PIXEL_CAP) textureMilliSeconds = TEXTURE_MILLI_SECONDS;
             else {
                 // If this image is that big, expire frames quicker, relative to how big it actually is
                 int higherPower = MathHelper.calculateLogBaseTwo(totalPixels / TEXTURE_PIXEL_CAP);
@@ -52,8 +50,7 @@ public class TextureAnimator {
         public void uploadFramesAhead(int frame, int number) {
             for (int f = frame + 1; f < frame + number; f++) {
                 int wf = f >= images.length ? f - images.length : f;
-                if (wf >= images.length)
-                    break;// We have wrapped back around, twice (woops!)
+                if (wf >= images.length) break;// We have wrapped back around, twice (woops!)
                 if (ids[wf] == -1) {
                     ids[wf] = TextureUtil.glGenTextures();
                     TextureUtil.uploadTextureImage(ids[wf], images[wf]);
@@ -64,8 +61,7 @@ public class TextureAnimator {
         public void bindFrame(int frame) {
             if (ids[frame] != -1) {
                 GlStateManager.bindTexture(ids[frame]);
-            }
-            else {
+            } else {
                 ids[frame] = TextureUtil.glGenTextures();
                 TextureUtil.uploadTextureImage(ids[frame], images[frame]);
                 GlStateManager.bindTexture(ids[frame]);
@@ -76,8 +72,7 @@ public class TextureAnimator {
 
         public void delete() {
             for (int i = 0; i < ids.length; i++)
-                if (ids[i] != -1)
-                    deleteFrame(i);
+                if (ids[i] != -1) deleteFrame(i);
         }
 
         /** This assumes that the frame is currently uploaded to the GPU in the first place ( (ids[frame] != -1) is
@@ -124,14 +119,11 @@ public class TextureAnimator {
                     boolean animated = reader.getNumImages(true) > 1;
                     reader.dispose();
                     return animated;
-                }
-                catch (IOException ignored) {}
-                finally {
+                } catch (IOException ignored) {} finally {
                     reader.dispose();
                 }
             }
-        }
-        catch (IOException ignored) {}
+        } catch (IOException ignored) {}
         return false;
     }
 
@@ -156,16 +148,13 @@ public class TextureAnimator {
                             animatedTextures.put(resource, new AnimatedTexture(frames, size));
                             reader.dispose();
                             break;
-                        }
-                        catch (IOException e) {
+                        } catch (IOException e) {
                             // TODO: do something about this!
-                        }
-                        finally {
+                        } finally {
                             reader.dispose();
                         }
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     // TODO: do something about this!
                 }
             }

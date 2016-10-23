@@ -2,14 +2,12 @@ package alexiil.mc.mod.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
-import alexiil.mc.mod.load.render.RenderingStatus;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedRotationFunctional extends BakedInstruction {
-    private final BakedFunction<Double> angle, x, y, z;
+    private final INodeDouble angle, x, y, z;
 
-    public BakedRotationFunctional(BakedFunction<Double> angle, BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> z) {
+    public BakedRotationFunctional(INodeDouble angle, INodeDouble x, INodeDouble y, INodeDouble z) {
         this.angle = angle;
         this.x = x;
         this.y = y;
@@ -17,11 +15,11 @@ public class BakedRotationFunctional extends BakedInstruction {
     }
 
     @Override
-    public void render(RenderingStatus status) throws FunctionException {
-        double angle = this.angle.call(status);
-        double x = this.x.call(status);
-        double y = this.y.call(status);
-        double z = this.z.call(status);
+    public void render() {
+        double angle = this.angle.evaluate();
+        double x = this.x.evaluate();
+        double y = this.y.evaluate();
+        double z = this.z.evaluate();
         GL11.glRotated(angle, x, y, z);
     }
 }

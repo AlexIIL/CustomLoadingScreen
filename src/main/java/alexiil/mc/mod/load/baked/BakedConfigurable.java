@@ -11,8 +11,7 @@ public abstract class BakedConfigurable {
 
     /** This should ONLY be called by JsonConfigurable.bake() */
     public void setOrigin(ResourceLocation location) {
-        if (origin != null)
-            origin = location;
+        if (origin != null) origin = location;
     }
 
     protected void throwError(Throwable t) throws Throwable {
@@ -20,8 +19,7 @@ public abstract class BakedConfigurable {
     }
 
     protected Throwable reportError(Throwable t) {
-        if (t == null)
-            throw new Error(origin + " failed, but did not provide a cause!");
+        if (t == null) throw new Error(origin + " failed, but did not provide a cause!");
         return new Throwable(origin + " failed!", t);
     }
 }

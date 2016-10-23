@@ -1,31 +1,29 @@
 package alexiil.mc.mod.load.baked.insn;
 
-import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mc.mod.load.baked.func.BakedFunction;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
 import alexiil.mc.mod.load.json.EPosition;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public class BakedPositionSimple extends BakedInstruction {
     private final double x, y;
 
-    public static BakedInstruction bake(EPosition general, EPosition specific, String x, String y, Map<String, BakedFunction<?>> functions) {
-        if (general != EPosition.TOP_LEFT || specific != EPosition.TOP_LEFT || isInvalid(x) || isInvalid(y)) {
-            // String xFunc = general.getFunctionX(specific.getFunctionX(x));
-            // String yFunc = general.getFunctionY(specific.getFunctionY(y));
-            // return BakedPositionFunctional.bake(xFunc, yFunc, functions);
-        }
-        return new BakedPositionSimple(Double.parseDouble(x), Double.parseDouble(y));
+    public static BakedInstruction bake(EPosition general, EPosition specific, String x, String y, FunctionContext functions) throws InvalidExpressionException {
+        // if (general != EPosition.TOP_LEFT || specific != EPosition.TOP_LEFT || isInvalid(x) || isInvalid(y)) {
+        // String xFunc = general.getFunctionX(specific.getFunctionX(x));
+        // String yFunc = general.getFunctionY(specific.getFunctionY(y));
+        // return BakedPositionFunctional.bake(xFunc, yFunc, functions);
+        return BakedPositionFunctional.bake(x, y, functions);
+        // }
+        // return new BakedPositionSimple(Double.parseDouble(x), Double.parseDouble(y));
     }
 
     private static boolean isInvalid(String d) {
         try {
             Double.parseDouble(d);
             return false;
-        }
-        catch (Throwable ignored) {
+        } catch (Throwable ignored) {
             return true;
         }
     }
@@ -36,7 +34,7 @@ public class BakedPositionSimple extends BakedInstruction {
     }
 
     @Override
-    public void render(RenderingStatus status) {
+    public void render() {
         GL11.glTranslated(x, y, 0);
     }
 }

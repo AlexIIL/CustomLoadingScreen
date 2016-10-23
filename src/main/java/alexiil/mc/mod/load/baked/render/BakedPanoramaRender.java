@@ -3,27 +3,24 @@ package alexiil.mc.mod.load.baked.render;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public class BakedPanoramaRender extends BakedRender {
     /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */
     private double actualAngle;
-    private final BakedFunction<Double> angleFunc;
+    private final INodeDouble angleFunc;
     private final ResourceLocation[] cubeSides;
 
-    public BakedPanoramaRender(BakedFunction<Double> angle, String resourceLocation) {
+    public BakedPanoramaRender(INodeDouble angle, String resourceLocation) {
         String[] strings = new String[6];
         for (int i = 0; i < 6; i++)
             strings[i] = resourceLocation.replace("_x", "_" + i);
@@ -36,15 +33,15 @@ public class BakedPanoramaRender extends BakedRender {
     /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
      * customizability added. TODO: Add customizability */
     @Override
-    public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        actualAngle = angleFunc.call(status);
+    public void render(MinecraftDisplayerRenderer renderer) {
+        actualAngle = angleFunc.evaluate();
         drawPanorama(renderer);
     }
 
     private void drawPanorama(MinecraftDisplayerRenderer renderer) {
-        Minecraft mc = Minecraft.getMinecraft();
         Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer wr = tessellator.getWorldRenderer();
+        VertexBuffer vb = tessellator.getBuffer();
+
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
@@ -90,14 +87,14 @@ public class BakedPanoramaRender extends BakedRender {
                 }
 
                 renderer.textureManager.bindTexture(cubeSides[l]);
-                wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
                 int rgb = 0xFF;
                 int alpha = 255 / (k + 1);
                 float f4 = 0.0F;
-                wr.pos(-1.0D, -1.0D, 1.0D).tex(0.0F + f4, 0.0F + f4).color(rgb, rgb, rgb, alpha).endVertex();
-                wr.pos(1.0D, -1.0D, 1.0D).tex(1.0F - f4, 0.0F + f4).color(rgb, rgb, rgb, alpha).endVertex();
-                wr.pos(1.0D, 1.0D, 1.0D).tex(1.0F - f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
-                wr.pos(-1.0D, 1.0D, 1.0D).tex(0.0F + f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
+                vb.pos(-1.0D, -1.0D, 1.0D).tex(0.0F + f4, 0.0F + f4).color(rgb, rgb, rgb, alpha).endVertex();
+                vb.pos(1.0D, -1.0D, 1.0D).tex(1.0F - f4, 0.0F + f4).color(rgb, rgb, rgb, alpha).endVertex();
+                vb.pos(1.0D, 1.0D, 1.0D).tex(1.0F - f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
+                vb.pos(-1.0D, 1.0D, 1.0D).tex(0.0F + f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
                 tessellator.draw();
                 GlStateManager.popMatrix();
             }
@@ -106,7 +103,7 @@ public class BakedPanoramaRender extends BakedRender {
             GlStateManager.colorMask(true, true, true, false);
         }
 
-        wr.setTranslation(0.0D, 0.0D, 0.0D);
+        vb.setTranslation(0.0D, 0.0D, 0.0D);
         GlStateManager.colorMask(true, true, true, true);
         GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
         GlStateManager.matrixMode(GL11.GL_PROJECTION);

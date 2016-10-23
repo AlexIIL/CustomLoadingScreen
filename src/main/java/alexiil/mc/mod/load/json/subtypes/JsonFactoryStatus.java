@@ -1,11 +1,11 @@
 package alexiil.mc.mod.load.json.subtypes;
 
-import java.util.Map;
-
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.factory.BakedFactoryStatus;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionBaker;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.JsonRenderingPart;
@@ -22,8 +22,8 @@ public class JsonFactoryStatus extends JsonFactory {
     }
 
     @Override
-    public BakedFactoryStatus actuallyBake(Map<String, BakedFunction<?>> functions) {
-        BakedFunction<Boolean> shouldDestroy = FunctionBaker.bakeFunctionBoolean(this.shouldDestroy, functions);
+    public BakedFactoryStatus actuallyBake(FunctionContext functions) throws InvalidExpressionException {
+        INodeBoolean destroy = GenericExpressionCompiler.compileExpressionBoolean(shouldDestroy, functions).derive(null);
 
         JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate);
         if (jrp == null) {
@@ -32,7 +32,7 @@ public class JsonFactoryStatus extends JsonFactory {
         }
         jrp = jrp.getConsolidated();
         BakedRenderingPart component = jrp.bake(functions);
-        return new BakedFactoryStatus(shouldDestroy, component);
+        return new BakedFactoryStatus(destroy, component);
     }
 
     /** This is overridden just so that the correct type is returned, with no casting needed. Note that the children

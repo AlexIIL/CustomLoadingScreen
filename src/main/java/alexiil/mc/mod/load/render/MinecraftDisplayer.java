@@ -5,16 +5,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.google.common.collect.Maps;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.audio.SoundEventAccessorComposite;
+import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.IResourcePack;
@@ -29,13 +24,12 @@ import alexiil.mc.mod.load.BLSLog;
 import alexiil.mc.mod.load.ProgressDisplayer;
 import alexiil.mc.mod.load.ProgressDisplayer.IDisplayer;
 import alexiil.mc.mod.load.baked.BakedConfig;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
-import alexiil.mc.mod.load.baked.func.var.*;
+import alexiil.mc.mod.load.expression.FunctionContext;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
 import alexiil.mc.mod.load.render.RenderingStatus.ProgressPair;
 
+@Deprecated
 public class MinecraftDisplayer implements IDisplayer {
     // private static Logger log = LogManager.getLogger("BetterLoadingScreen");
     private static String sound;
@@ -54,18 +48,18 @@ public class MinecraftDisplayer implements IDisplayer {
     public static void playFinishedSound() {
         SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
         ResourceLocation location = new ResourceLocation(sound);
-        SoundEventAccessorComposite snd = soundHandler.getSound(location);
+        SoundEventAccessor snd = soundHandler.getAccessor(location);
         if (snd == null) {
             BLSLog.warn("The sound given (" + sound + ") did not give a valid sound!");
             location = new ResourceLocation(defaultSound);
-            snd = soundHandler.getSound(location);
+            snd = soundHandler.getAccessor(location);
         }
         if (snd == null) {
             BLSLog.warn("Default sound did not give a valid sound!");
             return;
         }
-        ISound sound = PositionedSoundRecord.create(location);
-        soundHandler.playSound(sound);
+        // ISound sound = PositionedSoundRecord.create(snd);
+        // soundHandler.playSound(sound);
     }
 
     @SuppressWarnings("unchecked")
@@ -84,17 +78,14 @@ public class MinecraftDisplayer implements IDisplayer {
         return null;
     }
 
-    private static Map<String, BakedFunction<?>> getDefaultMap() {
-        Map<String, BakedFunction<?>> functions = Maps.newHashMap();
+    private static FunctionContext getDefaultMap() {
+        FunctionContext functions = new FunctionContext();
 
-        functions.put("true", new BakedFunctionConstant<Boolean>(true));
-        functions.put("false", new BakedFunctionConstant<Boolean>(false));
-
-        functions.put("status", new BakedVariableStatus());
-        functions.put("percentage", new BakedVariablePercentage());
-        functions.put("screenwidth", new BakedVariableScreenWidth());
-        functions.put("screenheight", new BakedVariableScreenHeight());
-        functions.put("seconds", new BakedVariableSeconds());
+        functions.getOrAddString("status").value = "Unknown";
+        functions.getOrAddDouble("percentage").value = 0.34;
+        functions.getOrAddLong("screenwidth").value = 1280;
+        functions.getOrAddLong("screenheight").value = 720;
+        functions.getOrAddDouble("seconds").value = 1.5;
 
         return functions;
     }
@@ -110,9 +101,7 @@ public class MinecraftDisplayer implements IDisplayer {
         String comment = "What sound to play when loading is complete. Default is the level up sound (" + defaultSound + ")";
         sound = cfg.getString("sound", "general", defaultSound, comment);
 
-        comment =
-            "The loading screen configuration json file. Some presets are ['sample/default', 'sample/bland', 'sample/rotating_cakes', 'sample/']."
-                + " You can use your own by creating a file in ";
+        comment = "The loading screen configuration json file. Some presets are ['sample/default', 'sample/bland', 'sample/rotating_cakes', 'sample/']." + " You can use your own by creating a file in ";
         // TODO: Create a way to have a folder with custom loading screen JSON parts (add a FileResourcePack)
         // TODO: Create sample/default that looks similar to the one with the world background
         // (Panorama, Darkened_blur_horizontal_strip, White status + percentage text + boss loading bar)
@@ -147,7 +136,7 @@ public class MinecraftDisplayer implements IDisplayer {
         final MinecraftDisplayerRenderer render = new MinecraftDisplayerRenderer(this, baked, animator);
 
         // Open the rendering thread
-        new Timer("BLS|Renderer").scheduleAtFixedRate(new TimerTask() {
+        new Timer("CLS|Renderer").scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (!isOpen) {// TODO: allow for post loading transitions
@@ -161,9 +150,7 @@ public class MinecraftDisplayer implements IDisplayer {
 
                 animator.tick();
                 try {
-                    render.tick();
-                } catch (FunctionException fe) {
-                    throw new RuntimeException("A function failed!", fe);
+                    render.render();
                 } catch (Throwable t) {
                     throw new RuntimeException("Something unexpected happened!", t);
                 }

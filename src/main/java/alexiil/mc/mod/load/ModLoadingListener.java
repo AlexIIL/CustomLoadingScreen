@@ -7,11 +7,7 @@ import com.google.common.eventbus.Subscribe;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 
 public class ModLoadingListener {
     public enum State {
@@ -42,8 +38,7 @@ public class ModLoadingListener {
         }
 
         public String translate() {
-            if (translatedName != null)
-                return translatedName;
+            if (translatedName != null) return translatedName;
             String failure = name.replaceAll("_", " ");
             String[] split = failure.split(" ");
             failure = "";
@@ -77,20 +72,16 @@ public class ModLoadingListener {
             if (ind == listeners.size() || s.isLoneState) {
                 ind = 0;
                 int ord = s.ordinal() + 1;
-                if (ord == State.values().length)
-                    return null;
+                if (ord == State.values().length) return null;
                 s = State.values()[ord];
-                if (s.shouldSkip)
-                    return new ModStage(s, ind).getNext();
+                if (s.shouldSkip) return new ModStage(s, ind).getNext();
             }
             return new ModStage(s, ind);
         }
 
         public String getDisplayText() {
-            if (state.isLoneState)
-                return state.translate();
-            return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " " + listeners.get(index).mod
-                .getName();
+            if (state.isLoneState) return state.translate();
+            return state.translate() + ": " + Translation.translate("betterloadingscreen.loading", "loading") + " " + listeners.get(index).mod.getName();
         }
 
         public float getProgress() {
@@ -109,8 +100,7 @@ public class ModLoadingListener {
 
     public ModLoadingListener(ModContainer mod) {
         this.mod = mod;
-        if (listeners.isEmpty())
-            MinecraftForge.EVENT_BUS.register(this);
+        if (listeners.isEmpty()) MinecraftForge.EVENT_BUS.register(this);
         listeners.add(this);
     }
 
@@ -147,7 +137,6 @@ public class ModLoadingListener {
 
         try {
             Thread.sleep(20);
-        }
-        catch (Throwable t) {}
+        } catch (Throwable t) {}
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.json.subtypes.JsonActionSound;
 import alexiil.mc.mod.load.json.subtypes.JsonFactoryStatus;
 import alexiil.mc.mod.load.json.subtypes.JsonImagePanorama;
@@ -44,7 +45,7 @@ public class ConfigManager {
             this.clazz = clazz;
             this.resourceBase = resourceBase;
             types.put(clazz, this);
-            excluded = new LocationDeserialiser<T>(this, clazz);
+            excluded = new LocationDeserialiser<>(this, clazz);
         }
     }
 
@@ -57,80 +58,53 @@ public class ConfigManager {
      * indervidualy. */
     public static Gson getGsonExcluding(Class<?> clazz) {
         GsonBuilder builder = new GsonBuilder();
-        BLSLog.info("Getting Json Excluding " + clazz);
         for (EType type : EType.values()) {
             if (clazz != type.clazz) {
                 // We cannot really do much about this warning, as enums cannot have generic types
                 builder.registerTypeAdapter(type.clazz, new LocationDeserialiser(type, clazz));
-                BLSLog.info("  - " + type.clazz);
             }
         }
         return builder.create();
     }
 
-    private static String getFirst(ResourceLocation res, boolean firstAttempt) {
-        if (res == null) {
-            NullPointerException npe = new NullPointerException("Resource provided shouldn't have been null!");
-            BLSLog.warn("", npe);
-            return null;
-        }
-        IResource resource;
-        try {
-            resource = resManager.getResource(res);
-        }
-        catch (IOException e) {
+    private static String getFirst(ResourceLocation identifier, boolean firstAttempt) {
+        if (identifier == null) throw new NullPointerException("Identifier provided shouldn't have been null!");
+        try (IResource res = ClsManager.getResource(identifier)) {
+            try (InputStream stream = res.getInputStream()) {
+                return IOUtils.toString(stream);
+            } catch (IOException e) {
+                BLSLog.warn("Tried to access \"" + identifier + "\", but an IO exception occoured!", e);
+                return null;
+            }
+        } catch (IOException e) {
             if (firstAttempt) {
-                BLSLog.warn("Tried to get the resource but failed! (" + res + ") because " + e.getClass());
+                BLSLog.warn("Tried to get the resource but failed! (" + identifier + ") because " + e.getClass());
             }
             return null;
         }
-        if (resource == null) {
-            if (firstAttempt) {
-                BLSLog.warn("Tried to access \"" + res + "\", but the resource was null! (Does it even exist?)");
-            }
-            return null;
-        }
-        InputStream stream = resource.getInputStream();
-        if (stream == null) {
-            if (firstAttempt) {
-                BLSLog.warn("Tried to access \"" + res + "\", but the resulting stream was null!");
-            }
-            return null;
-        }
-
-        try {
-            return IOUtils.toString(stream);
-        }
-        catch (IOException e) {
-            BLSLog.warn("Tried to access \"" + res + "\", but an IO exception occoured!", e);
-        }
-        return null;
     }
 
-    private static String getTextResource(ResourceLocation res) {
-        if (res == null)
-            throw new NullPointerException("Cannot (and should not) get a null resource!");
-        if (cache.containsKey(res)) {
-            return cache.get(res);
+    private static String getTextResource(ResourceLocation identifier) {
+        if (identifier == null) throw new NullPointerException("Identifier provided shouldn't have been null!");
+        if (cache.containsKey(identifier)) {
+            return cache.get(identifier);
         }
-        if (failedCache.containsKey(res)) {
-            String attempt = getFirst(res, false);
+        if (failedCache.containsKey(identifier)) {
+            String attempt = getFirst(identifier, false);
             if (attempt != null) {
-                failedCache.remove(res);
-                cache.put(res, attempt);
+                failedCache.remove(identifier);
+                cache.put(identifier, attempt);
             }
             return attempt;
         }
-        String actual = getFirst(res, true);
-        if (actual == null)
-            failedCache.put(res, null);
-        else
-            cache.put(res, actual);
+        String actual = getFirst(identifier, true);
+        if (actual == null) failedCache.put(identifier, null);
+        else cache.put(identifier, actual);
         return actual;
     }
 
     /** This makes the assumption that the type.clazz is the same as T or a subclass of T. Because this is a
-     * package-protected function, this is known and so it will NEVER throw a class cast exception. */
+     * package-protected function this is known and so it will NEVER throw a class cast exception. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     /* For some reason, using <T extends JsonConfigurable<T, ?>> didn't compile. (But it did in eclipse? What?) */
     static <T extends JsonConfigurable> T getAsT(EType type, String location) {
@@ -158,9 +132,7 @@ public class ConfigManager {
             if (ji != null) {
                 jrp = new JsonRenderingPart(location, new String[0], "true", "");
                 jrp.resourceLocation = getLocation(EType.RENDERING_PART, location);
-            }
-            else
-                throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
+            } else throw new NullPointerException("Neither the imagemeta, nor an image was found for " + location);
         }
         return jrp;
     }
@@ -176,10 +148,8 @@ public class ConfigManager {
 
     public static JsonImage getAsImage(String location) {
         if (isBuiltIn(location)) {
-            if (location.equalsIgnoreCase("builtin/text"))
-                return new JsonImageText(getLocation(EType.IMAGE, location), "textures/font/ascii.png", null, null, null, null, null, null);
-            else if (location.equalsIgnoreCase("builtin/panorama"))
-                return new JsonImagePanorama(getLocation(EType.IMAGE, location), "textures/gui/title/background/panorama_x.png");
+            if (location.equalsIgnoreCase("builtin/text")) return new JsonImageText(getLocation(EType.IMAGE, location), "textures/font/ascii.png", null, null, null, null, null, null);
+            else if (location.equalsIgnoreCase("builtin/panorama")) return new JsonImagePanorama(getLocation(EType.IMAGE, location), "textures/gui/title/background/panorama_x.png");
         }
         return getAsT(EType.IMAGE, location);
     }
@@ -190,8 +160,7 @@ public class ConfigManager {
 
     public static JsonAction getAsAction(String location) {
         if (isBuiltIn(location)) {
-            if (location.equalsIgnoreCase("builtin/sound"))
-                return new JsonActionSound(getLocation(EType.ACTION, location), null, null, null);
+            if (location.equalsIgnoreCase("builtin/sound")) return new JsonActionSound(getLocation(EType.ACTION, location), null, null, null);
         }
         return getAsT(EType.ACTION, location);
     }
@@ -213,7 +182,7 @@ public class ConfigManager {
     }
 
     public static void getAsScript(String location) {
-        // TODO: Support for LuaJ scripts that can do arbitrary things for displaying
+        // TODO: Support for scripts that can do arbitrary things for displaying
         // Scripts should run once each tick for each thing they are associated with
         // (Scripts could just be for the config, for a specific image or more created by factories)
     }
@@ -222,15 +191,13 @@ public class ConfigManager {
         String path;
         if (StringUtils.startsWith(base, "builtin/")) {
             path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
-        }
-        else if (base.startsWith("sample/")) {
+        } else if (base.startsWith("sample/")) {
             path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
-        }
-        else {
+        } else {
             path = "custom/" + type.resourceBase + "/" + base + ".json";
         }
 
-        return new ResourceLocation("betterloadingscreen", path);
+        return new ResourceLocation("customloadingscreen", path);
     }
 
     private static boolean isBuiltIn(String location) {

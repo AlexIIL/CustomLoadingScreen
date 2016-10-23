@@ -1,12 +1,8 @@
 package alexiil.mc.mod.load.coremod;
 
-import java.io.File;
 import java.util.Map;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-
-import alexiil.mc.mod.load.ProgressDisplayer;
-import alexiil.mc.mod.load.Translation;
 
 @IFMLLoadingPlugin.MCVersion("1.10.2")
 @IFMLLoadingPlugin.TransformerExclusions({ "alexiil.mc.mod.load.coremod" })

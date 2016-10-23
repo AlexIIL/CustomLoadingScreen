@@ -1,12 +1,6 @@
 package alexiil.mc.mod.load.json;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,18 +23,14 @@ public class JsonConfigLoader<T> {
             writer = new BufferedWriter(new FileWriter(file));
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(defaultConfig));
             writer.close();
-        }
-        catch (IOException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
-        }
-        finally {
-            if (writer != null)
-                try {
-                    writer.close();
-                }
-                catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+        } finally {
+            if (writer != null) try {
+                writer.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
@@ -49,18 +39,14 @@ public class JsonConfigLoader<T> {
         try {
             reader = new BufferedReader(new FileReader(file));
             return new Gson().fromJson(reader, clazz);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             createNew();
-        }
-        finally {
-            if (reader != null)
-                try {
-                    reader.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
+        } finally {
+            if (reader != null) try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return defaultConfig;
     }

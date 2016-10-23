@@ -1,8 +1,6 @@
 package alexiil.mc.mod.load.baked;
 
-import alexiil.mc.mod.load.baked.func.FunctionException;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public class BakedConfig extends BakedTickable {
     public final BakedRenderingPart[] renderingParts;
@@ -16,7 +14,7 @@ public class BakedConfig extends BakedTickable {
     }
 
     @Override
-    public void tick(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
+    public void tick(MinecraftDisplayerRenderer renderer) {
         // NO-OP
         // This is handled specially by MinecraftDisplayerRenderer
     }

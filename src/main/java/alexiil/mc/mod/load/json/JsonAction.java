@@ -1,11 +1,10 @@
 package alexiil.mc.mod.load.json;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.BakedAction;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
 import alexiil.mc.mod.load.json.subtypes.JsonActionSound;
 
 public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
@@ -21,14 +20,13 @@ public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
     }
 
     @Override
-    protected BakedAction actuallyBake(Map<String, BakedFunction<?>> functions) {
+    protected BakedAction actuallyBake(FunctionContext functions) throws InvalidExpressionException {
         throw new IllegalArgumentException("You cannot bake an action wth no parent!");
     }
 
     @Override
     protected JsonAction actuallyConsolidate() {
-        if (StringUtils.isEmpty(parent))
-            return this;
+        if (StringUtils.isEmpty(parent)) return this;
 
         JsonAction jParent = ConfigManager.getAsAction(parent).getConsolidated();
         String conditionStart = consolidateFunction(this.conditionStart, jParent.conditionStart, "false");

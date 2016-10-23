@@ -8,19 +8,19 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import alexiil.mc.mod.load.frame.FrameDisplayer;
+import alexiil.mc.mod.load.render.MainSplashRenderer;
 
 @Mod(modid = Lib.Mod.ID, guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory", acceptableRemoteVersions = "*", clientSideOnly = true)
 public class CustomLoadingScreen {
     public static final Configuration CONFIG;
 
     public static final Property PROP_FRAME;
+    public static final Property PROP_SCREEN;
 
     private static FrameDisplayer displayer;
 
@@ -28,6 +28,7 @@ public class CustomLoadingScreen {
         CONFIG = new Configuration(new File("./config/customloadingscreen.cfg"));
 
         PROP_FRAME = CONFIG.get("general", "use_frame", true);
+        PROP_SCREEN = CONFIG.get("general", "screen_config", "sample/default");
 
         if (PROP_FRAME.getBoolean()) {
             displayer = new FrameDisplayer();
@@ -46,14 +47,13 @@ public class CustomLoadingScreen {
     }
 
     @EventHandler
-    public static void preInit(FMLPreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(CustomLoadingScreen.class);
+    public static void construct(FMLConstructionEvent event) {
+        MainSplashRenderer.onReachConstruct();
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
-    public static void serverAboutToStart(FMLServerAboutToStartEvent event) {
-
+    public static void preInit(FMLPreInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(CustomLoadingScreen.class);
     }
 
     @SubscribeEvent

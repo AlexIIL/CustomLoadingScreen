@@ -20,8 +20,7 @@ public class MinecraftDisplayerWrapper implements IDisplayer {
             try {
                 mcDisp = new MinecraftDisplayer();
                 mcDisp.open(cfg);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 System.out.println("Failed to load Minecraft Displayer!");
                 t.printStackTrace();
                 mcDisp = null;
@@ -29,14 +28,12 @@ public class MinecraftDisplayerWrapper implements IDisplayer {
             }
             cfg.save();
         }
-        if (mcDisp != null)
-            mcDisp.updateProgress(text, percent);
+        if (mcDisp != null) mcDisp.updateProgress(text, percent);
     }
 
     @Override
     public void close() {
-        if (mcDisp != null)
-            mcDisp.close();
+        if (mcDisp != null) mcDisp.close();
     }
 
     public static void playFinishedSound() {
@@ -45,31 +42,26 @@ public class MinecraftDisplayerWrapper implements IDisplayer {
 
     @Override
     public void pause() {
-        if (mcDisp != null)
-            mcDisp.pause();
+        if (mcDisp != null) mcDisp.pause();
     }
 
     @Override
     public void resume() {
-        if (mcDisp != null)
-            mcDisp.resume();
+        if (mcDisp != null) mcDisp.resume();
     }
 
     @Override
     public void addFuture(String text, double percent) {
-        if (mcDisp != null)
-            mcDisp.addFuture(text, percent);
+        if (mcDisp != null) mcDisp.addFuture(text, percent);
     }
 
     @Override
     public void pushProgress() {
-        if (mcDisp != null)
-            mcDisp.pushProgress();
+        if (mcDisp != null) mcDisp.pushProgress();
     }
 
     @Override
     public void popProgress() {
-        if (mcDisp != null)
-            mcDisp.popProgress();
+        if (mcDisp != null) mcDisp.popProgress();
     }
 }

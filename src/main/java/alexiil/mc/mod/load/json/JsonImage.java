@@ -2,18 +2,20 @@ package alexiil.mc.mod.load.json;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionBaker;
 import alexiil.mc.mod.load.baked.insn.BakedColourSimple;
 import alexiil.mc.mod.load.baked.insn.BakedInstruction;
 import alexiil.mc.mod.load.baked.insn.BakedPositionFunctional;
 import alexiil.mc.mod.load.baked.render.BakedAnimatedRender;
 import alexiil.mc.mod.load.baked.render.BakedImageRender;
+import alexiil.mc.mod.load.expression.FunctionContext;
+import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
+import alexiil.mc.mod.load.expression.InvalidExpressionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
+import alexiil.mc.mod.load.expression.node.value.NodeImmutableDouble;
 import alexiil.mc.mod.load.json.subtypes.JsonImagePanorama;
 import alexiil.mc.mod.load.json.subtypes.JsonImageText;
 import alexiil.mc.mod.load.render.TextureAnimator;
@@ -28,8 +30,7 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     public final String text;
     public final String frame;
 
-    public JsonImage(String parent, String image, EPosition positionType, EPosition offsetPos, Area texture, Area position, String colour,
-            String text, String frame) {
+    public JsonImage(String parent, String image, EPosition positionType, EPosition offsetPos, Area texture, Area position, String colour, String text, String frame) {
         super(parent);
         this.image = image;
         this.positionType = positionType;
@@ -42,13 +43,11 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     }
 
     public int getColour() {
-        if (colour == null)
-            return 0xFFFFFF;
+        if (colour == null) return 0xFFFFFF;
         else {
             try {
                 return Integer.parseInt(colour, 16);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 return 0xFFFFFF;
             }
         }
@@ -72,12 +71,10 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
 
     @Override
     protected JsonImage actuallyConsolidate() {
-        if (StringUtils.isEmpty(parent))
-            return this;
+        if (StringUtils.isEmpty(parent)) return this;
 
         JsonImage parent = ConfigManager.getAsImage(this.parent);
-        if (parent == null)
-            return this;
+        if (parent == null) return this;
         parent = parent.getConsolidated();
 
         String image = overrideObject(this.image, parent.image, null);
@@ -100,62 +97,26 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     }
 
     @Override
-    protected BakedRender actuallyBake(Map<String, BakedFunction<?>> functions) {
-        BakedFunction<Double> xFunc = FunctionBaker.bakeFunctionDouble(position.x, functions);
-        BakedFunction<Double> yFunc = FunctionBaker.bakeFunctionDouble(position.y, functions);
-        BakedFunction<Double> widthFunc = FunctionBaker.bakeFunctionDouble(position.width, functions);
-        BakedFunction<Double> heightFunc = FunctionBaker.bakeFunctionDouble(position.height, functions);
+    protected BakedRender actuallyBake(FunctionContext functions) throws InvalidExpressionException {
+        INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, functions).derive(null);
+        INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, functions).derive(null);
+        INodeDouble widthFunc = GenericExpressionCompiler.compileExpressionDouble(position.width, functions).derive(null);
+        INodeDouble heightFunc = GenericExpressionCompiler.compileExpressionDouble(position.height, functions).derive(null);
 
-        BakedFunction<Double> uFunc = FunctionBaker.bakeFunctionDouble(texture.x, functions);
-        BakedFunction<Double> vFunc = FunctionBaker.bakeFunctionDouble(texture.y, functions);
-        BakedFunction<Double> uWidthFunc = FunctionBaker.bakeFunctionDouble(texture.width, functions);
-        BakedFunction<Double> vHeightFunc = FunctionBaker.bakeFunctionDouble(texture.height, functions);
+        INodeDouble uFunc = GenericExpressionCompiler.compileExpressionDouble(texture.x, functions).derive(null);
+        INodeDouble vFunc = GenericExpressionCompiler.compileExpressionDouble(texture.y, functions).derive(null);
+        INodeDouble uWidthFunc = GenericExpressionCompiler.compileExpressionDouble(texture.width, functions).derive(null);
+        INodeDouble vHeightFunc = GenericExpressionCompiler.compileExpressionDouble(texture.height, functions).derive(null);
         if (TextureAnimator.isAnimated(resourceLocation.toString())) {
-            BakedFunction<Double> frameFunc = FunctionBaker.bakeFunctionDouble(frame, functions);
+            INodeDouble frameFunc = GenericExpressionCompiler.compileExpressionDouble(frame, functions).derive(null);
             return new BakedAnimatedRender(image, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc, frameFunc);
-        }
-        else
+        } else {
             return new BakedImageRender(image, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc);
-
-        // switch (type) {
-        // case DYNAMIC_PERCENTAGE: {
-        // String width = "percentage * (" + position.width + ")";
-        // String uWidth = "percentage * (" + texture.width + ")";
-        // return imageRender(position.x, position.y, width, position.height, texture.x, texture.y, uWidth,
-        // texture.height, functions, "0");
-        // }
-        // case DYNAMIC_TEXT_PERCENTAGE: {
-        // return textRender("(percentage * 100) integer + '%'", position.x, position.y, colour, functions);
-        // }
-        // case DYNAMIC_TEXT_STATUS: {
-        // return textRender("status", position.x, position.y, colour, functions);
-        // }
-        // case DYNAMIC_PANORAMA: {
-        // return panoramaRender(functions);
-        // }
-        // case STATIC: {
-        // return imageRender(position.x, position.y, position.width, position.height, texture.x, texture.y,
-        // texture.width, texture.height,
-        // functions, frame);
-        // }
-        // case STATIC_TEXT: {
-        // return textRender(text, position.x, position.y, colour, functions);
-        // }
-        // default:
-        // throw new Error("Blame whoever added a type to EType without editing ImageRender.bake()! (type = " + type +
-        // ")");
-        // }
-        // throw new Error(type + " needs to be baked!");
+        }
     }
 
-    // private BakedPanoramaRender panoramaRender(Map<String, IBakedFunction<?>> functions) {
-    // IBakedFunction<Double> angle = FunctionBaker.bakeFunctionDouble(frame == null ? "seconds * 20" : frame,
-    // functions);
-    // return new BakedPanoramaRender(angle, image);
-    // }
-
-    public List<BakedInstruction> bakeInstructions(Map<String, BakedFunction<?>> functions) {
-        List<BakedInstruction> list = new ArrayList<BakedInstruction>();
+    public List<BakedInstruction> bakeInstructions(FunctionContext functions) throws InvalidExpressionException {
+        List<BakedInstruction> list = new ArrayList<>();
         if (getColour() != 0xFFFFFF) {
             list.add(new BakedColourSimple(getRed(), getGreen(), getBlue(), 1));
         }
@@ -163,8 +124,11 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
         String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX(position.width, "0"/* position.x */));
         String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY(position.height, "0"/* position.y */));
 
-        list.add(new BakedPositionFunctional(FunctionBaker.bakeFunctionDouble(x, functions), FunctionBaker.bakeFunctionDouble(y, functions),
-            FunctionBaker.bakeFunctionDouble("0")));
+        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions).derive(null);
+        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions).derive(null);
+        INodeDouble expZ = new NodeImmutableDouble(0);
+
+        list.add(new BakedPositionFunctional(expX, expY, expZ));
 
         return list;
     }

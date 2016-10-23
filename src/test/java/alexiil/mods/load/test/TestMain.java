@@ -22,7 +22,7 @@ public class TestMain {
     }
 
     private static void testFunctions() {
-        Map<String, BakedFunction<?>> functions = Maps.newHashMap();
+        FunctionContext functions = Maps.newHashMap();
 
         List<JsonFunction> temp = Lists.newArrayList();
         temp.add(new JsonFunction("operators", "1+2*4-7/2", new String[0]));
@@ -40,8 +40,8 @@ public class TestMain {
                 functions.put(func.name, bf);
 
                 Object o = null;
-                if (bf.numArgs() > 0) o = bf.call(status, 0D, 1D);
-                else o = bf.call(status);
+                if (bf.numArgs() > 0) o = bf.call(0D, 1D);
+                else o = bf.evaluate();
                 BLSLog.info(func.function + " = " + o);
             } catch (Throwable t) {
                 BLSLog.warn(func.name + " failed because ", t);

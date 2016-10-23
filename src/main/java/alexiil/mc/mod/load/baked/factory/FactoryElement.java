@@ -3,13 +3,11 @@ package alexiil.mc.mod.load.baked.factory;
 import alexiil.mc.mod.load.baked.BakedFactory;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedTickable;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public class FactoryElement extends BakedTickable {
-    public final BakedFunction<Boolean> shouldDestroy;
+    public final INodeBoolean shouldDestroy;
     public final BakedRenderingPart component;
 
     public FactoryElement(BakedFactory factory) {
@@ -17,19 +15,17 @@ public class FactoryElement extends BakedTickable {
         this.component = factory.component;
     }
 
-    public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        component.render(status, renderer);
+    public void render(MinecraftDisplayerRenderer renderer) {
+        component.render(renderer);
     }
 
-    public boolean shouldBeRemoved(RenderingStatus status) throws FunctionException {
-        return shouldDestroy.call(status);
+    public boolean shouldBeRemoved() {
+        return shouldDestroy.evaluate();
     }
 
     @Override
-    public void tick(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        if (shouldBeRemoved(status))
-            renderer.elements.remove(this);
-        else
-            render(status, renderer);
+    public void tick(MinecraftDisplayerRenderer renderer) {
+        if (shouldBeRemoved()) renderer.elements.remove(this);
+        else render(renderer);
     }
 }

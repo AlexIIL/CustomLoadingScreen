@@ -2,8 +2,6 @@ package alexiil.mc.mod.load.baked.insn;
 
 import net.minecraft.client.renderer.GlStateManager;
 
-import alexiil.mc.mod.load.render.RenderingStatus;
-
 public class BakedColourSimple extends BakedInstruction {
     private final float r, g, b, a;
 
@@ -19,7 +17,7 @@ public class BakedColourSimple extends BakedInstruction {
     }
 
     @Override
-    public void render(RenderingStatus status) {
+    public void render() {
         GlStateManager.color(r, g, b, a);
     }
 }

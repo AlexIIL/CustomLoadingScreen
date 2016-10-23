@@ -9,18 +9,27 @@ import java.util.concurrent.locks.Lock;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
+import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
+import alexiil.mc.mod.load.SingleProgressBarTracker;
 
 public class MainSplashRenderer {
+    private static boolean enableCustom = false;
+
     // These are all written to by the transformed ClsTransformer
     public static ResourceLocation fontLoc;
     public static volatile boolean pause = false;
@@ -32,11 +41,16 @@ public class MainSplashRenderer {
 
     private static long start;
     private static long diff;
+    private static volatile boolean reachedConstruct = false;
     private static volatile boolean finishedLoading = false;
 
     static {
         lock = get(SplashProgress.class, "lock");
         mutex = get(SplashProgress.class, "mutex");
+    }
+
+    public static long getTotalTime() {
+        return diff;
     }
 
     @SuppressWarnings("unchecked")
@@ -47,6 +61,13 @@ public class MainSplashRenderer {
             return (T) fld.get(null);
         } catch (Throwable t) {
             throw new Error(t);
+        }
+    }
+
+    public static void onReachConstruct() {
+        if (!reachedConstruct) {
+            reachedConstruct = true;
+            enableCustom = ClsManager.load();
         }
     }
 
@@ -79,7 +100,7 @@ public class MainSplashRenderer {
             glLoadIdentity();
 
             diff = System.currentTimeMillis() - start;
-            if (diff < 3000) {
+            if (diff < 3000 || !reachedConstruct) {
                 renderMojangFrame();
             } else if (!finishedLoading) {
                 renderFrame();
@@ -91,14 +112,13 @@ public class MainSplashRenderer {
             Display.update();
             mutex.release();
 
-            if (pause & !finishedLoading) {
+            boolean grabUngrab = pause & !finishedLoading;
+            if (grabUngrab) {
                 clearGL();
-                setGL();
             }
             Display.sync(100);
-            
-            if (true) {
-                throw new Error("lol test");
+            if (grabUngrab) {
+                setGL();
             }
         }
         clearGL();
@@ -122,55 +142,70 @@ public class MainSplashRenderer {
     }
 
     private static void renderFrame() {
-        // Actual drawing
-        Iterator<ProgressBar> i = ProgressManager.barIterator();
-        int y = 0;
-        glColor3d(0, 0, 0);
-        glPushMatrix();
-        glScalef(2, 2, 1);
-        glEnable(GL_TEXTURE_2D);
+        if (enableCustom) {
+            ClsManager.renderFrame();
+        } else {
+            // Actual drawing
+            int y = 0;
+            glColor3d(0, 0, 0);
+            glPushMatrix();
+            glScalef(2, 2, 1);
+            glEnable(GL_TEXTURE_2D);
 
-        String s = ((diff / 100L) / 10.0) + "s";
-        fontRenderer.drawString(s, 0, -10, 0);
+            String s = ((diff / 100L) / 10.0) + "s";
+            fontRenderer.drawString(s, 0, -10, 0);
 
-        while (i.hasNext()) {
-            ProgressBar b = i.next();
+            s = SingleProgressBarTracker.getText();
+            fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -40, 0);
+            String bar = getProgress(12, SingleProgressBarTracker.getProgress());
+            fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, -30, 0);
 
-            int startWidth = fontRenderer.getStringWidth(b.getTitle() + " ");
+            Iterator<ProgressBar> i = ProgressManager.barIterator();
+            while (i.hasNext()) {
+                ProgressBar b = i.next();
 
-            fontRenderer.drawString(b.getTitle() + " ", -startWidth, y, 0);
-            fontRenderer.drawString("- " + b.getMessage(), 0, y, 0);
-            String bar = getProgress(b);
-            fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, y + 14, 0);
+                int startWidth = fontRenderer.getStringWidth(b.getTitle() + " ");
 
-            y += 30;
+                fontRenderer.drawString(b.getTitle() + " ", -startWidth, y, 0);
+                fontRenderer.drawString("- " + b.getMessage(), 0, y, 0);
+                bar = getProgress(b);
+                fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, y + 14, 0);
+
+                y += 30;
+            }
+
+            glDisable(GL_TEXTURE_2D);
+            glPopMatrix();
         }
-
-        glDisable(GL_TEXTURE_2D);
-        glPopMatrix();
     }
 
     private static boolean renderTransitionFrame() {
-        renderFrame();
-        return true;
+        if (enableCustom) {
+            return ClsManager.renderTransitionFrame();
+        } else {
+            renderFrame();
+            return true;
+        }
     }
 
-    private static final int NUM_GAPS = 8;
-
     private static String getProgress(ProgressBar bar) {
+        return getProgress(8, bar.getStep() / (double) bar.getSteps());
+    }
+
+    private static String getProgress(int gaps, double perc) {
         // Builds a string like [=====---] or [==>-----]
         String s = "[";
-        double val = NUM_GAPS * bar.getStep() / (double) bar.getSteps();
+        double val = gaps * perc;
         int count = (int) val;
         boolean endBig = val % 1 > 0.5;
         for (int i = 0; i < count; i++) {
             s += "=";
         }
-        if (endBig & count < NUM_GAPS) {
+        if (endBig & count < gaps) {
             count++;
             s += ">";
         }
-        for (int i = count; i < NUM_GAPS; i++) {
+        for (int i = count; i < gaps; i++) {
             s += "-";
         }
         return s + "]";

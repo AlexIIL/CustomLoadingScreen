@@ -1,20 +1,21 @@
 package alexiil.mc.mod.load.baked.render;
 
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
-import alexiil.mc.mod.load.render.RenderingStatus;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeLong;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeString;
+import alexiil.mc.mod.load.expression.node.value.NodeMutableLong;
+import alexiil.mc.mod.load.expression.node.value.NodeMutableString;
 
 public class BakedTextRenderStatic extends BakedTextRender {
-    private final BakedFunction<String> text;
+    private final INodeString text;
 
-    public BakedTextRenderStatic(BakedFunction<String> text, BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> colour,
-            String fontTexture) {
-        super(x, y, colour, fontTexture);
+    public BakedTextRenderStatic(NodeMutableString varText, NodeMutableLong varWidth, NodeMutableLong varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture, INodeString text) {
+        super(varText, varWidth, varHeight, x, y, colour, fontTexture);
         this.text = text;
     }
 
     @Override
-    public String getText(RenderingStatus status) throws FunctionException {
-        return text.call(status);
+    public String getText() {
+        return text.evaluate();
     }
 }

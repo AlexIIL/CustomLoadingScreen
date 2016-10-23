@@ -4,41 +4,43 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.baked.func.BakedFunction;
-import alexiil.mc.mod.load.baked.func.FunctionException;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
+import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeLong;
+import alexiil.mc.mod.load.expression.node.value.NodeMutableLong;
+import alexiil.mc.mod.load.expression.node.value.NodeMutableString;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mc.mod.load.render.RenderingStatus;
 
 public abstract class BakedTextRender extends BakedRender {
-    private final BakedFunction<Double> x, y, colour;
+    private final NodeMutableString varText;
+    private final NodeMutableLong varWidth, varHeight;
+    private final INodeDouble x, y;
+    private final INodeLong colour;
     private final String fontTexture;
 
-    public BakedTextRender(BakedFunction<Double> x, BakedFunction<Double> y, BakedFunction<Double> colour, String font) {
+    public BakedTextRender(NodeMutableString varText, NodeMutableLong varWidth, NodeMutableLong varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
+        this.varText = varText;
+        this.varWidth = varWidth;
+        this.varHeight = varHeight;
         this.x = x;
         this.y = y;
         this.colour = colour;
-        fontTexture = font;
+        this.fontTexture = fontTexture;
     }
 
     @Override
-    public void render(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
+    public void render(MinecraftDisplayerRenderer renderer) {
         FontRenderer font = renderer.fontRenderer(fontTexture);
-        String text = (String) status.tempVariables.get("text");
-        font.drawString(text, (float) (double) x.call(status), (float) (double) y.call(status), (int) (double) colour.call(status), false);
+        String text = getText();
+        int width = font.getStringWidth(text);
+        varText.value = text;
+        varWidth.value = width;
+        varHeight.value = font.FONT_HEIGHT;
+
+        font.drawString(text, (float) x.evaluate(), (float) y.evaluate(), 0xFF_00_00_00  /*|(int) colour.evaluate()*/, false);
         GlStateManager.color(1, 1, 1, 1);
     }
 
-    @Override
-    public void populateVariableMap(RenderingStatus status, MinecraftDisplayerRenderer renderer) throws FunctionException {
-        FontRenderer font = renderer.fontRenderer(fontTexture);
-        String text = getText(status);
-        int width = font.getStringWidth(text);
-        status.tempVariables.put("text", text);
-        status.tempVariables.put("textwidth", (double) width);
-        status.tempVariables.put("textheight", (double) font.FONT_HEIGHT);
-    }
-
-    public abstract String getText(RenderingStatus status) throws FunctionException;
+    public abstract String getText();
 
     @Override
     public String getLocation() {

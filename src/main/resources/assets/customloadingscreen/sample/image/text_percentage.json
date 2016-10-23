@@ -1,0 +1,14 @@
+{
+  "parent": "builtin/text",
+  "image": "textures/font/ascii.png",
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "text": "((percentage * 100)) + '%'",
+  "position": {
+    "x": "0",
+    "y": "40",
+    "width": "0",
+    "height": "0"
+  },
+  "colour":"0x000000"
+}

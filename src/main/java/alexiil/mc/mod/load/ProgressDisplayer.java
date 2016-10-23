@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 
-import alexiil.mc.mod.load.frame.FrameDisplayer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerWrapper;
 
 @Deprecated
@@ -105,7 +104,7 @@ public class ProgressDisplayer {
         // "Play a sound after Minecraft has finished starting up");
 
         if (useMinecraft) displayers.add(new MinecraftDisplayerWrapper());
-//        if (showFrame) displayers.add(new FrameDisplayer());
+        // if (showFrame) displayers.add(new FrameDisplayer());
 
         for (IDisplayer displayer : displayers)
             displayer.open(cfg);
