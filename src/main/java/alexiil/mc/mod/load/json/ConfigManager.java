@@ -26,7 +26,7 @@ import alexiil.mc.mod.load.json.subtypes.JsonImageText;
 public class ConfigManager {
     public enum EType {
         FACTORY(JsonFactory.class, "factory"),
-        FUNCTION(JsonFunction.class, "function"),
+//        FUNCTION(JsonFunction.class, "function"),
         ACTION(JsonAction.class, "action"),
         RENDERING_PART(JsonRenderingPart.class, "imagemeta"),
         IMAGE(JsonImage.class, "image"),
@@ -167,17 +167,17 @@ public class ConfigManager {
         return getAsT(EType.ACTION, location);
     }
 
-    public static JsonFunction getAsFunction(String location) {
-        if (location == null) {
-            CLSLog.warn("Location was given as null!", new Throwable());
-            return null;
-        }
-        ResourceLocation loc = getLocation(EType.FUNCTION, location);
-        String text = getTextResource(loc);
-        JsonFunction t = new Gson().fromJson(text, JsonFunction.class);
-        t.resourceLocation = loc;
-        return t;
-    }
+//    public static JsonFunction getAsFunction(String location) {
+//        if (location == null) {
+//            CLSLog.warn("Location was given as null!", new Throwable());
+//            return null;
+//        }
+//        ResourceLocation loc = getLocation(EType.FUNCTION, location);
+//        String text = getTextResource(loc);
+//        JsonFunction t = new Gson().fromJson(text, JsonFunction.class);
+//        t.resourceLocation = loc;
+//        return t;
+//    }
 
     public static JsonConfig getAsConfig(String location) {
         return getAsT(EType.CONFIG, location);

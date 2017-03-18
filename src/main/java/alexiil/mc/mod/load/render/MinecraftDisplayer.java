@@ -82,11 +82,11 @@ public class MinecraftDisplayer implements IDisplayer {
     private static FunctionContext getDefaultMap() {
         FunctionContext functions = new FunctionContext();
 
-        functions.getOrAddString("status").value = "Unknown";
-        functions.getOrAddDouble("percentage").value = 0.34;
-        functions.getOrAddLong("screenwidth").value = 1280;
-        functions.getOrAddLong("screenheight").value = 720;
-        functions.getOrAddDouble("seconds").value = 1.5;
+        functions.putVariableString("status").value = "Unknown";
+        functions.putVariableDouble("percentage").value = 0.34;
+        functions.putVariableLong("screenwidth").value = 1280;
+        functions.putVariableLong("screenheight").value = 720;
+        functions.putVariableDouble("seconds").value = 1.5;
 
         return functions;
     }
@@ -98,7 +98,7 @@ public class MinecraftDisplayer implements IDisplayer {
         ScaledResolution res = new ScaledResolution(mc);
         status = new RenderingStatus(res.getScaledWidth(), res.getScaledWidth());
         // Open the normal config
-
+/*
         String comment = "What sound to play when loading is complete. Default is the level up sound (" + defaultSound + ")";
         sound = cfg.getString("sound", "general", defaultSound, comment);
 
@@ -156,7 +156,7 @@ public class MinecraftDisplayer implements IDisplayer {
                     throw new RuntimeException("Something unexpected happened!", t);
                 }
             }
-        }, 0, 17);
+        }, 0, 17);*/
     }
 
     private void loadResourceLoader() {
