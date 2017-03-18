@@ -1,4 +1,4 @@
 {
   "name": "item_rotation",
-  "function": "seconds * 50"
+  "function": "time * 50"
 }

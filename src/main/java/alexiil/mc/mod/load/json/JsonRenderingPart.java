@@ -8,11 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 import alexiil.mc.mod.load.baked.BakedRender;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.insn.BakedInstruction;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
-import alexiil.mc.mod.load.expression.node.value.NodeImmutableBoolean;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
+import buildcraft.lib.expression.node.value.NodeConstantBoolean;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
  * or not it should render at this time */
@@ -30,7 +31,7 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
 
     @Override
     protected BakedRenderingPart actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        List<BakedInstruction> args = new ArrayList<BakedInstruction>();
+        List<BakedInstruction> args = new ArrayList<>();
 
         JsonImage element = ConfigManager.getAsImage(image).getConsolidated();
 
@@ -51,9 +52,9 @@ public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, Baked
         INodeBoolean shouldRenderFunc;
         // = FunctionBaker.bakeFunctionBoolean(shouldRender == null ? "true" : shouldRender, functions);
         if (shouldRender == null) {
-            shouldRenderFunc = NodeImmutableBoolean.TRUE;
+            shouldRenderFunc = NodeConstantBoolean.TRUE;
         } else {
-            shouldRenderFunc = GenericExpressionCompiler.compileExpressionBoolean(shouldRender, functions).derive(null);
+            shouldRenderFunc = GenericExpressionCompiler.compileExpressionBoolean(shouldRender, functions);
         }
 
         return new BakedRenderingPart(instructions, actualRender, shouldRenderFunc);

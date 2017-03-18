@@ -1,5 +1,5 @@
 {
-  "image": "customloadingscreen:textures/progressBars.png",
+  "image": "customloadingscreen:textures/progress_bars.png",
   "positionType": "CENTER",
   "offsetPos": "CENTER",
   "position": {

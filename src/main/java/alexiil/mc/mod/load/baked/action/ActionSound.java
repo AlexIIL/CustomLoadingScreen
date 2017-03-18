@@ -6,8 +6,9 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.baked.BakedAction;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeString;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
+import buildcraft.lib.expression.api.IExpressionNode.INodeString;
 
 public class ActionSound extends BakedAction {
     public static final SoundHandler sndHandler = Minecraft.getMinecraft().getSoundHandler();

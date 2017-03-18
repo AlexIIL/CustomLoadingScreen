@@ -3,10 +3,10 @@
   "image": "textures/font/ascii.png",
   "positionType": "CENTER",
   "offsetPos": "CENTER",
-  "text": "(floor(percentage * 100)) + '%'",
+  "text": "is_reloading ? sub_status : ''",
   "position": {
     "x": "0",
-    "y": "40",
+    "y": "60",
     "width": "0",
     "height": "0"
   },

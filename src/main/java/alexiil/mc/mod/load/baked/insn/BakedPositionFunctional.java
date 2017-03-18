@@ -2,19 +2,19 @@ package alexiil.mc.mod.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
-import alexiil.mc.mod.load.expression.node.value.NodeImmutableDouble;
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.node.value.NodeConstantDouble;
 
 public class BakedPositionFunctional extends BakedInstruction {
     private final INodeDouble x, y, z;
 
     public static BakedPositionFunctional bake(String x, String y, FunctionContext functions) throws InvalidExpressionException {
-        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions).derive(null);
-        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions).derive(null);
-        return new BakedPositionFunctional(expX, expY, new NodeImmutableDouble(0));
+        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions);
+        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions);
+        return new BakedPositionFunctional(expX, expY, NodeConstantDouble.ZERO);
     }
 
     public BakedPositionFunctional(INodeDouble x, INodeDouble y, INodeDouble z) {
@@ -25,9 +25,6 @@ public class BakedPositionFunctional extends BakedInstruction {
 
     @Override
     public void render() {
-        double x = this.x.evaluate();
-        double y = this.y.evaluate();
-        double z = this.z.evaluate();
-        GL11.glTranslated(x, y, z);
+        GL11.glTranslated(x.evaluate(), y.evaluate(), z.evaluate());
     }
 }

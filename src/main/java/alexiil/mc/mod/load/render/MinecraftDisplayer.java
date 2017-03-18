@@ -20,14 +20,15 @@ import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.client.FMLFolderResourcePack;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ProgressDisplayer;
 import alexiil.mc.mod.load.ProgressDisplayer.IDisplayer;
 import alexiil.mc.mod.load.baked.BakedConfig;
-import alexiil.mc.mod.load.expression.FunctionContext;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
 import alexiil.mc.mod.load.render.RenderingStatus.ProgressPair;
+
+import buildcraft.lib.expression.FunctionContext;
 
 @Deprecated
 public class MinecraftDisplayer implements IDisplayer {
@@ -50,12 +51,12 @@ public class MinecraftDisplayer implements IDisplayer {
         ResourceLocation location = new ResourceLocation(sound);
         SoundEventAccessor snd = soundHandler.getAccessor(location);
         if (snd == null) {
-            BLSLog.warn("The sound given (" + sound + ") did not give a valid sound!");
+            CLSLog.warn("The sound given (" + sound + ") did not give a valid sound!");
             location = new ResourceLocation(defaultSound);
             snd = soundHandler.getAccessor(location);
         }
         if (snd == null) {
-            BLSLog.warn("Default sound did not give a valid sound!");
+            CLSLog.warn("Default sound did not give a valid sound!");
             return;
         }
         // ISound sound = PositionedSoundRecord.create(snd);
@@ -166,9 +167,9 @@ public class MinecraftDisplayer implements IDisplayer {
             Method m = resLoaderClass.getMethod("preInit", FMLPreInitializationEvent.class);
             m.invoke(instance, new Object[] { null });
         } catch (ClassNotFoundException ex) {
-            BLSLog.info("Resource loader not loaded, not initialising early");
+            CLSLog.info("Resource loader not loaded, not initialising early");
         } catch (Throwable t) {
-            BLSLog.warn("Resource Loader Compat FAILED!", t);
+            CLSLog.warn("Resource Loader Compat FAILED!", t);
         }
     }
 

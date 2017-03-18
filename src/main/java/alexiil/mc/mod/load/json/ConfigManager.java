@@ -16,7 +16,7 @@ import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
-import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.json.subtypes.JsonActionSound;
 import alexiil.mc.mod.load.json.subtypes.JsonFactoryStatus;
@@ -73,12 +73,12 @@ public class ConfigManager {
             try (InputStream stream = res.getInputStream()) {
                 return IOUtils.toString(stream);
             } catch (IOException e) {
-                BLSLog.warn("Tried to access \"" + identifier + "\", but an IO exception occoured!", e);
+                CLSLog.warn("Tried to access \"" + identifier + "\", but an IO exception occoured!", e);
                 return null;
             }
         } catch (IOException e) {
             if (firstAttempt) {
-                BLSLog.warn("Tried to get the resource but failed! (" + identifier + ") because " + e.getClass());
+                CLSLog.warn("Tried to get the resource but failed! (" + identifier + ") because " + e.getClass());
             }
             return null;
         }
@@ -109,17 +109,19 @@ public class ConfigManager {
     /* For some reason, using <T extends JsonConfigurable<T, ?>> didn't compile. (But it did in eclipse? What?) */
     static <T extends JsonConfigurable> T getAsT(EType type, String location) {
         if (StringUtils.isEmpty(location)) {
-            BLSLog.warn("Location was given as null!", new Throwable());
+            CLSLog.warn("Location was given as null!", new Throwable());
             return null;
         }
+        CLSLog.info("Getting " + location + " as " + type);
         ResourceLocation loc = getLocation(type, location);
         String text = getTextResource(loc);
         if (text == null) {
-            BLSLog.warn("The text inside of \"" + loc + "\" was null!");
+            CLSLog.warn("The text inside of \"" + loc + "\" was null!");
             return null;
         }
         T t = (T) getGsonExcluding(type.clazz).fromJson(text, type.clazz);
         t.resourceLocation = loc;
+        CLSLog.info(text);
         return t;
     }
 
@@ -167,7 +169,7 @@ public class ConfigManager {
 
     public static JsonFunction getAsFunction(String location) {
         if (location == null) {
-            BLSLog.warn("Location was given as null!", new Throwable());
+            CLSLog.warn("Location was given as null!", new Throwable());
             return null;
         }
         ResourceLocation loc = getLocation(EType.FUNCTION, location);

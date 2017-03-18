@@ -7,7 +7,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.json.ConfigManager.EType;
 
 public class LocationDeserialiser<T extends JsonConfigurable<T, ?>> implements JsonDeserializer<T> {
@@ -21,7 +21,7 @@ public class LocationDeserialiser<T extends JsonConfigurable<T, ?>> implements J
 
     @Override
     public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        BLSLog.info("Deserializing " + json + " as " + typeOfT);
+        CLSLog.info("Deserializing " + json + " as " + typeOfT);
         if (json.isJsonPrimitive()) { // Get the value from the config
             String location = json.getAsString();
             return ConfigManager.getAsT(type, location);

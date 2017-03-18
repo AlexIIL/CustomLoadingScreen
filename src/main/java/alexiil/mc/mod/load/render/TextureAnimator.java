@@ -42,7 +42,7 @@ public class TextureAnimator {
             } else if (totalPixels <= TEXTURE_PIXEL_CAP) textureMilliSeconds = TEXTURE_MILLI_SECONDS;
             else {
                 // If this image is that big, expire frames quicker, relative to how big it actually is
-                int higherPower = MathHelper.calculateLogBaseTwo(totalPixels / TEXTURE_PIXEL_CAP);
+                int higherPower = MathHelper.log2(totalPixels / TEXTURE_PIXEL_CAP);
                 textureMilliSeconds = TEXTURE_MILLI_SECONDS >> higherPower;
             }
         }

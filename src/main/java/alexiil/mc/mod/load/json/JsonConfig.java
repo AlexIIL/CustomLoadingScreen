@@ -4,7 +4,9 @@ import alexiil.mc.mod.load.baked.BakedAction;
 import alexiil.mc.mod.load.baked.BakedConfig;
 import alexiil.mc.mod.load.baked.BakedFactory;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
-import alexiil.mc.mod.load.expression.FunctionContext;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
 
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final String[] renders;
@@ -23,14 +25,14 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     }
 
     @Override
-    protected BakedConfig actuallyBake(FunctionContext functions) {
-//        for (String func : this.functions) {
-//            JsonFunction function = ConfigManager.getAsFunction(func);
-//            if (function != null) {
-//                BakedFunction<?> bf = function.bake(functions);
-//                functions.put(function.name, bf);
-//            }
-//        }
+    protected BakedConfig actuallyBake(FunctionContext functions) throws InvalidExpressionException {
+        // for (String func : this.functions) {
+        // JsonFunction function = ConfigManager.getAsFunction(func);
+        // if (function != null) {
+        // BakedFunction<?> bf = function.bake(functions);
+        // functions.put(function.name, bf);
+        // }
+        // }
 
         BakedRenderingPart[] array = new BakedRenderingPart[this.renders.length];
         for (int i = 0; i < this.renders.length; i++) {

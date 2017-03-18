@@ -8,7 +8,7 @@ import org.objectweb.asm.Opcodes;
 
 /** This is just a few methods to reduce the size of logging calls. None of them are complex and just delegate methods
  * for Logger.log. */
-public class BLSLog {
+public class CLSLog {
     private static Logger log;
 
     public static void info(String toLog) {
@@ -35,8 +35,8 @@ public class BLSLog {
         log().log(level, message, t);
     }
 
-    private static Logger log() {
-        if (log == null) log = LogManager.getLogger("BetterLoadingScreen");
+    public static Logger log() {
+        if (log == null) log = LogManager.getLogger("CustomLoadingScreen");
         return log;
     }
 

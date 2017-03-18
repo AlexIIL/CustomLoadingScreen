@@ -1,24 +1,8 @@
-betterloadingscreen.state.minecraft_init=Инициализация ресурсов Minecraft
-betterloadingscreen.state.construction=Сборка
-betterloadingscreen.state.pre_initialization=Пре-инициализация
-betterloadingscreen.state.initialization=Инициализация
-betterloadingscreen.state.post_initialization=Пост-инициализация
-betterloadingscreen.state.completed=Завершено
-betterloadingscreen.state.reloading_resource_packs=Перезагрузка пакетов ресурсов
-betterloadingscreen.loading=Загрузка
-
-alexiillib.gui.contributors=Вкладчики
-alexiillib.gui.commits=История изменений
-alexiillib.gui.connectExternallyDisabled=Внешнее подключение отключено, поэтому список вкладчиков и изменения не могут быть показаны
-
-alexiillib.config.title=Основной файл конфигурации
-alexiillib.config.button=Редактировать основную конфигурацию
-alexiillib.config.tech.title=Ветка технологии
-alexiillib.config.tech.button=Редактировать ветку технологии
-alexiillib.config.help=Помогите, почему это не конфигурация? И что значат все эти цвета?
-alexiillib.config.closeHelp=Закрыть помощь
-
-#This is a list, so adding "alexiillib.gui.config.help3=..." is fine (and etc) 
-alexiillib.gui.config.help.0=Доступ к конфигурации можно получить через кнопки в левом верхнем углу (не волнуйтесь, настройки всё ещё здесь)
-alexiillib.gui.config.help.1=С левой стороны находится список всех людей, которые внесли какой-либо вклад в данную модификацию
-alexiillib.gui.config.help.2=С правой стороны находится список изменений данной модификации, где золотой цвет обозначает версию, которую используете Вы, синий обозначает начало разработки новой версии и зелёный обозначает новую версию, доступную на CurseForge.
+customloadingscreen.modstate.minecraft_init=Инициализация ресурсов Minecraft
+customloadingscreen.modstate.construction=Сборка
+customloadingscreen.modstate.pre_initialization=Пре-инициализация
+customloadingscreen.modstate.initialization=Инициализация
+customloadingscreen.modstate.post_initialization=Пост-инициализация
+customloadingscreen.modstate.completed=Завершено
+customloadingscreen.modstate.reloading_resource_packs=Перезагрузка пакетов ресурсов
+customloadingscreen.loading=Загрузка

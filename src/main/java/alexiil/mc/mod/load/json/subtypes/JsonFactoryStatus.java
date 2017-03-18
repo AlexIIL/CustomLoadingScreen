@@ -2,13 +2,14 @@ package alexiil.mc.mod.load.json.subtypes;
 
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.factory.BakedFactoryStatus;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.JsonRenderingPart;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 
 public class JsonFactoryStatus extends JsonFactory {
     public JsonFactoryStatus(String shouldDestroy, String toCreate) {
@@ -23,7 +24,7 @@ public class JsonFactoryStatus extends JsonFactory {
 
     @Override
     public BakedFactoryStatus actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        INodeBoolean destroy = GenericExpressionCompiler.compileExpressionBoolean(shouldDestroy, functions).derive(null);
+        INodeBoolean destroy = GenericExpressionCompiler.compileExpressionBoolean(shouldDestroy, functions);
 
         JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate);
         if (jrp == null) {

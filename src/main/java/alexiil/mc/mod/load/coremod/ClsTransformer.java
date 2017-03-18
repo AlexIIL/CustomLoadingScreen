@@ -17,26 +17,24 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
     public static final Logger LOG = LogManager.getLogger("cls.transform");
 
     private static final String OWNER_MAIN_SPLASH_RENDERER;
+    private static final String OWNER_ASM_CALLBACKS;
 
     static {
         OWNER_MAIN_SPLASH_RENDERER = "alexiil/mc/mod/load/render/MainSplashRenderer";
+        OWNER_ASM_CALLBACKS = "alexiil/mc/mod/load/coremod/Callbacks";
     }
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-
         if (name.equals("net.minecraftforge.fml.client.SplashProgress")) {
             return transformSplashProgress(basicClass);
         }
-
         if (name.equals("net.minecraftforge.fml.client.SplashProgress$3")) {
             return transformSplashProgress_3(basicClass);
         }
-
         if (name.equals("net.minecraftforge.fml.client.SplashProgress$Texture")) {
             return transformSplashProgress_Texture(basicClass);
         }
-
         if (name.equals("alexiil.mc.mod.load.render.MainSplashRenderer")) {
             return transformMainSplashRenderer(basicClass);
         }
@@ -233,9 +231,9 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
     }
 
     private static void changeLineNumbers(ClassNode node) {
-        for (MethodNode m : node.methods) {
-            changeLineNumbers(m);
-        }
+        // for (MethodNode m : node.methods) {
+        // changeLineNumbers(m);
+        // }
     }
 
     private static void changeLineNumbers(MethodNode m) {

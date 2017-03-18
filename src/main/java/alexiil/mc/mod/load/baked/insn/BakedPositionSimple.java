@@ -2,9 +2,10 @@ package alexiil.mc.mod.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
 import alexiil.mc.mod.load.json.EPosition;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
 
 public class BakedPositionSimple extends BakedInstruction {
     private final double x, y;

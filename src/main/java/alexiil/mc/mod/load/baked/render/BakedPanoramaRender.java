@@ -11,8 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedPanoramaRender extends BakedRender {
     /** Timer used to rotate the panorama, increases every minecraft tick. (20tps) */

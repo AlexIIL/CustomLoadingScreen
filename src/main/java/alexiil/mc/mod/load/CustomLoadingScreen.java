@@ -15,7 +15,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import alexiil.mc.mod.load.frame.FrameDisplayer;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 
-@Mod(modid = Lib.Mod.ID, guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory", acceptableRemoteVersions = "*", clientSideOnly = true)
+@Mod(//
+    modid = Lib.Mod.ID,//
+    guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory",//
+    acceptableRemoteVersions = "*",//
+    clientSideOnly = true,//
+    dependencies = "required-after:buildcraftlib"//
+)
 public class CustomLoadingScreen {
     public static final Configuration CONFIG;
 
@@ -49,6 +55,7 @@ public class CustomLoadingScreen {
     @EventHandler
     public static void construct(FMLConstructionEvent event) {
         MainSplashRenderer.onReachConstruct();
+        ModLoadingListener.setup();
     }
 
     @EventHandler

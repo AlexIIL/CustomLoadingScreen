@@ -105,7 +105,7 @@ public class TestModExporter implements Opcodes {
 
         {
             av0 = cw.visitAnnotation("Lnet/minecraftforge/fml/common/Mod;", true);
-            av0.visit("modid", "emptyTestMod_" + num);
+            av0.visit("modid", "empty_test_mod_" + num);
             av0.visit("name", "Empty Test Mod " + num);
             av0.visit("version", "0.1");
             av0.visitEnd();

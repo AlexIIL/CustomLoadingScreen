@@ -9,14 +9,9 @@ import java.util.concurrent.locks.Lock;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.SplashProgress;
@@ -26,6 +21,7 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
 import alexiil.mc.mod.load.SingleProgressBarTracker;
+import alexiil.mc.mod.load.Translation;
 
 public class MainSplashRenderer {
     private static boolean enableCustom = false;
@@ -111,8 +107,13 @@ public class MainSplashRenderer {
             mutex.acquireUninterruptibly();
             Display.update();
             mutex.release();
+            
+            if (finishedLoading && ! reachedConstruct) {
+                // We crashed
+                break;
+            }
 
-            boolean grabUngrab = pause & !finishedLoading;
+            boolean grabUngrab = pause ;//& !finishedLoading;
             if (grabUngrab) {
                 clearGL();
             }
@@ -174,9 +175,33 @@ public class MainSplashRenderer {
                 y += 30;
             }
 
+            long max = Runtime.getRuntime().maxMemory();
+            long total = Runtime.getRuntime().totalMemory();
+            long free = Runtime.getRuntime().freeMemory();
+            long used = total - free;
+
+            String[] list = { //
+                String.format("Mem: % 2d%% %03d/%03dMB", used * 100L / max, bytesToMb(used), bytesToMb(max)),//
+                String.format("Allocated: % 2d%% %03dMB", total * 100L / max, bytesToMb(total)) //
+            };
+
+            int w = Display.getWidth();
+            int h = Display.getHeight();
+
+            int x = -w / 4;
+            y = -h / 4;
+            for (String s2 : list) {
+                fontRenderer.drawString(s2, x, y, 0);
+                y += 20;
+            }
+
             glDisable(GL_TEXTURE_2D);
             glPopMatrix();
         }
+    }
+
+    private static long bytesToMb(long bytes) {
+        return bytes / 1024L / 1024L;
     }
 
     private static boolean renderTransitionFrame() {

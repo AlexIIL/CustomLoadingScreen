@@ -4,8 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.func.BakedFunction;
 import alexiil.mc.mod.load.baked.func.FunctionBaker;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
 
 // FIXME: This doesn;t work this way any more!
 public class JsonFunction extends JsonConfigurable<JsonFunction, BakedFunction<?>> {

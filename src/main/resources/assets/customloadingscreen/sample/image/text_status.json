@@ -3,7 +3,7 @@
   "image": "textures/font/ascii.png",
   "positionType": "CENTER",
   "offsetPos": "CENTER",
-  "text": "status",
+  "text": "is_reloading ? status : (status  + ': ' + sub_status)",
   "position": {
     "x": "0",
     "y": "30",

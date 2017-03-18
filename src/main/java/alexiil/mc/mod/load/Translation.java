@@ -1,24 +1,20 @@
 package alexiil.mc.mod.load;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class Translation {
-    private static Map<String, Translation> translators = new HashMap<String, Translation>();
+    private static Map<String, Translation> translators = new HashMap<>();
     private static Translation currentTranslation = null;
-    private Map<String, String> translations = new HashMap<String, String>();
+    private Map<String, String> translations = new HashMap<>();
+    private Set<String> failedTranslations = new HashSet<>();
 
     public static String translate(String toTranslate) {
-        return translate(toTranslate, toTranslate);
-    }
-
-    public static String translate(String toTranslate, String failure) {
-        if (currentTranslation != null) return currentTranslation.translateInternal(toTranslate, failure);
-        return failure;
+        if (currentTranslation != null) return currentTranslation.translateInternal(toTranslate);
+        CLSLog.log().warn("We don't have a translator!");
+        return toTranslate;
     }
 
     public static void addTranslations(File modLocation) {
@@ -28,8 +24,13 @@ public class Translation {
             File langFolder = new File(modLocation, lookingFor);
             System.out.println(langFolder.getAbsolutePath() + ", " + langFolder.isDirectory());
             for (File f : langFolder.listFiles()) {
-                if (f != null) System.out.println(f.getAbsolutePath());
-                else System.out.println("null");
+                if (f.getName().endsWith(".lang")) {
+                    try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+                        addTranslation(f.getName().replace(".lang", ""), br);
+                    } catch (IOException e) {
+                        System.out.println(e);
+                    }
+                }
             }
         } else if (modLocation.isFile()) {
             try (JarFile modJar = new JarFile(modLocation)) {
@@ -53,9 +54,7 @@ public class Translation {
         // Lastly, set the current locale
         File options = new File("./options.txt");
         String language = "en_US";
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(options));
+        try (BufferedReader reader = new BufferedReader(new FileReader(options))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
@@ -63,14 +62,8 @@ public class Translation {
                     language = parts[1];
                 }
             }
-        } catch (IOException ignored) {
-
-        } finally {
-            if (reader != null) try {
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         if (translators.containsKey(language)) currentTranslation = translators.get(language);
         else if (translators.containsKey("en_US")) {
@@ -110,8 +103,11 @@ public class Translation {
         }
     }
 
-    private String translateInternal(String toTranslate, String failure) {
+    private String translateInternal(String toTranslate) {
         if (translations.containsKey(toTranslate)) return translations.get(toTranslate);
-        return failure;
+        if (failedTranslations.add(toTranslate)) {
+            CLSLog.log().warn("Failed to translate " + toTranslate);
+        }
+        return toTranslate;
     }
 }

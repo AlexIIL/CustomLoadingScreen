@@ -1,15 +1,14 @@
 package alexiil.mc.mod.load.json;
 
-import java.util.Map;
-
 import com.google.common.collect.ObjectArrays;
 
 import net.minecraft.util.ResourceLocation;
 
-import alexiil.mc.mod.load.BLSLog;
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.baked.BakedConfigurable;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
 
 /** @param <C> The class that extends this. This is what it should consolidate down to.
  * @param <B> The class that this is baked to. */
@@ -29,21 +28,16 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
     /** Bakes this into something that can be ticked quickly. This is a potentially expensive function, so don't call
      * this more than you need to. (This does not cache, as this could potentially be called with a different map of
      * functions) */
-    public final B bake(FunctionContext functions) {
+    public final B bake(FunctionContext functions) throws InvalidExpressionException {
         if (resourceLocation == null) throw new NullPointerException();
-        try {
-            B b = getConsolidated().actuallyBake(functions);
-            b.setOrigin(resourceLocation);
-            return b;
-        } catch (Throwable t) {
-            BLSLog.warn(resourceLocation + " failed to bake!", t);
-            return null;
-        }
+        B b = getConsolidated().actuallyBake(functions);
+        b.setOrigin(resourceLocation);
+        return b;
     }
 
     /** Bakes this object into something that will process quickly. Only call this on a consolidated object! (Use
-     * {@link #bake(Map)} instead of this) */
-    protected abstract B actuallyBake(FunctionContext functions) throws InvalidExpressionException;
+     * {@link #bake(buildcraft.lib.expression.FunctionContext)} instead of this) */
+    protected abstract B actuallyBake(FunctionContext functions) throws buildcraft.lib.expression.InvalidExpressionException;
 
     /** ALWAYS call this as opposed to {@link #actuallyConsolidate()}, as this caches the result. */
     public final C getConsolidated() {
@@ -53,7 +47,7 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
                 consolidated = actuallyConsolidate();
                 if (consolidated.resourceLocation == null) consolidated.resourceLocation = resourceLocation;
             } catch (Throwable t) {
-                BLSLog.warn(resourceLocation + " failed to consolidate!", t);
+                CLSLog.warn(resourceLocation + " failed to consolidate!", t);
             }
         }
         return consolidated;

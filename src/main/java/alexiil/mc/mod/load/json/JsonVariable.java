@@ -1,6 +1,6 @@
 package alexiil.mc.mod.load.json;
 
-import alexiil.mc.mod.load.expression.FunctionContext;
+import buildcraft.lib.expression.FunctionContext;
 
 public class JsonVariable {
     public final String name;

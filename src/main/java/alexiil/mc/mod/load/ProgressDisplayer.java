@@ -175,7 +175,7 @@ public class ProgressDisplayer {
         stepsCurrent.push(current);
         double numSteps = (double) stepsQueue.peek();
         if (current > numSteps) {
-            BLSLog.warn("Current (" + current + ") was greater than num steps(" + numSteps + ")!");
+            CLSLog.warn("Current (" + current + ") was greater than num steps(" + numSteps + ")!");
             current = (int) numSteps;
         }
         displayProgress(message, current / numSteps);

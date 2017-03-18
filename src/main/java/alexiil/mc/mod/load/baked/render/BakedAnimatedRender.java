@@ -1,7 +1,8 @@
 package alexiil.mc.mod.load.baked.render;
 
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedAnimatedRender extends BakedImageRender {
     private final String resourceLocation;

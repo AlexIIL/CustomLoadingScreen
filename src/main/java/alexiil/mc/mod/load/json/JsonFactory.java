@@ -4,11 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.BakedFactory;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.json.subtypes.JsonFactoryStatus;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 
 public class JsonFactory extends JsonConfigurable<JsonFactory, BakedFactory> {
     public final String shouldCreate, shouldDestroy, toCreate;
@@ -22,8 +23,8 @@ public class JsonFactory extends JsonConfigurable<JsonFactory, BakedFactory> {
 
     @Override
     public BakedFactory actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        INodeBoolean create = GenericExpressionCompiler.compileExpressionBoolean(this.shouldCreate, functions).derive(null);
-        INodeBoolean destroy = GenericExpressionCompiler.compileExpressionBoolean(this.shouldDestroy, functions).derive(null);
+        INodeBoolean create = GenericExpressionCompiler.compileExpressionBoolean(this.shouldCreate, functions);
+        INodeBoolean destroy = GenericExpressionCompiler.compileExpressionBoolean(this.shouldDestroy, functions);
         JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(toCreate).getConsolidated();
         BakedRenderingPart component = jrp.bake(functions);
         return new BakedFactory(create, destroy, component);

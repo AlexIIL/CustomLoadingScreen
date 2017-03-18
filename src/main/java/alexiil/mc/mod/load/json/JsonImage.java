@@ -11,14 +11,15 @@ import alexiil.mc.mod.load.baked.insn.BakedInstruction;
 import alexiil.mc.mod.load.baked.insn.BakedPositionFunctional;
 import alexiil.mc.mod.load.baked.render.BakedAnimatedRender;
 import alexiil.mc.mod.load.baked.render.BakedImageRender;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
-import alexiil.mc.mod.load.expression.node.value.NodeImmutableDouble;
 import alexiil.mc.mod.load.json.subtypes.JsonImagePanorama;
 import alexiil.mc.mod.load.json.subtypes.JsonImageText;
 import alexiil.mc.mod.load.render.TextureAnimator;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.node.value.NodeConstantDouble;
 
 public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
     public final String image;
@@ -98,17 +99,17 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
 
     @Override
     protected BakedRender actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, functions).derive(null);
-        INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, functions).derive(null);
-        INodeDouble widthFunc = GenericExpressionCompiler.compileExpressionDouble(position.width, functions).derive(null);
-        INodeDouble heightFunc = GenericExpressionCompiler.compileExpressionDouble(position.height, functions).derive(null);
+        INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, functions);
+        INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, functions);
+        INodeDouble widthFunc = GenericExpressionCompiler.compileExpressionDouble(position.width, functions);
+        INodeDouble heightFunc = GenericExpressionCompiler.compileExpressionDouble(position.height, functions);
 
-        INodeDouble uFunc = GenericExpressionCompiler.compileExpressionDouble(texture.x, functions).derive(null);
-        INodeDouble vFunc = GenericExpressionCompiler.compileExpressionDouble(texture.y, functions).derive(null);
-        INodeDouble uWidthFunc = GenericExpressionCompiler.compileExpressionDouble(texture.width, functions).derive(null);
-        INodeDouble vHeightFunc = GenericExpressionCompiler.compileExpressionDouble(texture.height, functions).derive(null);
+        INodeDouble uFunc = GenericExpressionCompiler.compileExpressionDouble(texture.x, functions);
+        INodeDouble vFunc = GenericExpressionCompiler.compileExpressionDouble(texture.y, functions);
+        INodeDouble uWidthFunc = GenericExpressionCompiler.compileExpressionDouble(texture.width, functions);
+        INodeDouble vHeightFunc = GenericExpressionCompiler.compileExpressionDouble(texture.height, functions);
         if (TextureAnimator.isAnimated(resourceLocation.toString())) {
-            INodeDouble frameFunc = GenericExpressionCompiler.compileExpressionDouble(frame, functions).derive(null);
+            INodeDouble frameFunc = GenericExpressionCompiler.compileExpressionDouble(frame, functions);
             return new BakedAnimatedRender(image, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc, frameFunc);
         } else {
             return new BakedImageRender(image, xFunc, yFunc, widthFunc, heightFunc, uFunc, uWidthFunc, vFunc, vHeightFunc);
@@ -124,9 +125,9 @@ public class JsonImage extends JsonConfigurable<JsonImage, BakedRender> {
         String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX(position.width, "0"/* position.x */));
         String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY(position.height, "0"/* position.y */));
 
-        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions).derive(null);
-        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions).derive(null);
-        INodeDouble expZ = new NodeImmutableDouble(0);
+        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions);
+        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions);
+        INodeDouble expZ = NodeConstantDouble.ZERO;
 
         list.add(new BakedPositionFunctional(expX, expY, expZ));
 

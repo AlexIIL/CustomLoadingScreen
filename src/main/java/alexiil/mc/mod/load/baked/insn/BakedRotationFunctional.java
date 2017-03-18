@@ -2,7 +2,7 @@ package alexiil.mc.mod.load.baked.insn;
 
 import org.lwjgl.opengl.GL11;
 
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedRotationFunctional extends BakedInstruction {
     private final INodeDouble angle, x, y, z;

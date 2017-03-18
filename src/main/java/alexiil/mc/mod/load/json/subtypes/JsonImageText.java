@@ -8,18 +8,19 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mc.mod.load.baked.insn.BakedInstruction;
 import alexiil.mc.mod.load.baked.insn.BakedPositionFunctional;
 import alexiil.mc.mod.load.baked.render.BakedTextRenderStatic;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeLong;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeString;
-import alexiil.mc.mod.load.expression.node.value.NodeImmutableDouble;
-import alexiil.mc.mod.load.expression.node.value.NodeMutableLong;
-import alexiil.mc.mod.load.expression.node.value.NodeMutableString;
 import alexiil.mc.mod.load.json.Area;
 import alexiil.mc.mod.load.json.EPosition;
 import alexiil.mc.mod.load.json.JsonImage;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
+import buildcraft.lib.expression.api.IExpressionNode.INodeString;
+import buildcraft.lib.expression.node.value.NodeConstantDouble;
+import buildcraft.lib.expression.node.value.NodeVariableLong;
+import buildcraft.lib.expression.node.value.NodeVariableString;
 
 public class JsonImageText extends JsonImage {
     public JsonImageText(ResourceLocation resourceLocation, String image, EPosition positionType, EPosition offsetPos, Area texture, Area position, String colour, String text) {
@@ -34,14 +35,14 @@ public class JsonImageText extends JsonImage {
 
     @Override
     protected BakedTextRenderStatic actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        NodeMutableString varText = functions.getOrAddString("text");
-        NodeMutableLong varWidth = functions.getOrAddLong("textwidth");
-        NodeMutableLong varHeight = functions.getOrAddLong("textheight");
+        NodeVariableString varText = functions.putVariableString("text");
+        NodeVariableLong varWidth = functions.putVariableLong("textwidth");
+        NodeVariableLong varHeight = functions.putVariableLong("textheight");
 
-        INodeString textFunc = GenericExpressionCompiler.compileExpressionString(text, functions).derive(null);
-        INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, functions).derive(null);
-        INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, functions).derive(null);
-        INodeLong colourFunc = GenericExpressionCompiler.compileExpressionLong(colour, functions).derive(null);
+        INodeString textFunc = GenericExpressionCompiler.compileExpressionString(text, functions);
+        INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, functions);
+        INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, functions);
+        INodeLong colourFunc = GenericExpressionCompiler.compileExpressionLong(colour, functions);
         return new BakedTextRenderStatic(varText, varWidth, varHeight, xFunc, yFunc, colourFunc, image, textFunc);
     }
 
@@ -55,9 +56,9 @@ public class JsonImageText extends JsonImage {
         String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX("textWidth", "0"));
         String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY("textHeight", "0"));
 
-        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions).derive(null);
-        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions).derive(null);
-        INodeDouble expZ = new NodeImmutableDouble(0);
+        INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, functions);
+        INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, functions);
+        INodeDouble expZ = NodeConstantDouble.ZERO;
         list.add(new BakedPositionFunctional(expX, expY, expZ));
 
         return list;

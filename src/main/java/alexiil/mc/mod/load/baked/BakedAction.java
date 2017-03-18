@@ -1,7 +1,8 @@
 package alexiil.mc.mod.load.baked;
 
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 
 public abstract class BakedAction extends BakedTickable {
     protected final INodeBoolean conditionStart, conditionEnd;

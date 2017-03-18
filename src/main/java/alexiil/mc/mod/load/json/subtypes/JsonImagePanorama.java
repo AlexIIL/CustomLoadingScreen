@@ -7,11 +7,12 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.baked.insn.BakedInstruction;
 import alexiil.mc.mod.load.baked.render.BakedPanoramaRender;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.GenericExpressionCompiler;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 import alexiil.mc.mod.load.json.JsonImage;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class JsonImagePanorama extends JsonImage {
 
@@ -27,7 +28,7 @@ public class JsonImagePanorama extends JsonImage {
 
     @Override
     protected BakedPanoramaRender actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        INodeDouble angle = GenericExpressionCompiler.compileExpressionDouble("seconds * 40", functions).derive(null);
+        INodeDouble angle = GenericExpressionCompiler.compileExpressionDouble("time * 40", functions);
         return new BakedPanoramaRender(angle, image);
     }
 

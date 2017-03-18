@@ -4,20 +4,22 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeLong;
-import alexiil.mc.mod.load.expression.node.value.NodeMutableLong;
-import alexiil.mc.mod.load.expression.node.value.NodeMutableString;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
-public abstract class BakedTextRender extends BakedRender {
-    private final NodeMutableString varText;
-    private final NodeMutableLong varWidth, varHeight;
-    private final INodeDouble x, y;
-    private final INodeLong colour;
-    private final String fontTexture;
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
+import buildcraft.lib.expression.node.value.NodeVariableLong;
+import buildcraft.lib.expression.node.value.NodeVariableString;
 
-    public BakedTextRender(NodeMutableString varText, NodeMutableLong varWidth, NodeMutableLong varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
+public abstract class BakedTextRender extends BakedRender {
+    protected final NodeVariableString varText;
+    protected final NodeVariableLong varWidth, varHeight;
+    protected final INodeDouble x;
+    protected final INodeDouble y;
+    protected final INodeLong colour;
+    protected final String fontTexture;
+
+    public BakedTextRender(NodeVariableString varText, NodeVariableLong varWidth, NodeVariableLong varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
         this.varText = varText;
         this.varWidth = varWidth;
         this.varHeight = varHeight;
@@ -36,7 +38,7 @@ public abstract class BakedTextRender extends BakedRender {
         varWidth.value = width;
         varHeight.value = font.FONT_HEIGHT;
 
-        font.drawString(text, (float) x.evaluate(), (float) y.evaluate(), 0xFF_00_00_00  /*|(int) colour.evaluate()*/, false);
+        font.drawString(text, (float) x.evaluate(), (float) y.evaluate(), 0xFF_00_00_00 | (int) colour.evaluate(), false);
         GlStateManager.color(1, 1, 1, 1);
     }
 

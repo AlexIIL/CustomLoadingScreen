@@ -8,8 +8,9 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.baked.BakedRender;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeDouble;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedImageRender extends BakedRender {
     protected final ResourceLocation res;

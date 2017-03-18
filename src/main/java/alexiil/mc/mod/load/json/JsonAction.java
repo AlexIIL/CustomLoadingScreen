@@ -3,9 +3,10 @@ package alexiil.mc.mod.load.json;
 import org.apache.commons.lang3.StringUtils;
 
 import alexiil.mc.mod.load.baked.BakedAction;
-import alexiil.mc.mod.load.expression.FunctionContext;
-import alexiil.mc.mod.load.expression.InvalidExpressionException;
 import alexiil.mc.mod.load.json.subtypes.JsonActionSound;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
 
 public class JsonAction extends JsonConfigurable<JsonAction, BakedAction> {
     public final String conditionStart;

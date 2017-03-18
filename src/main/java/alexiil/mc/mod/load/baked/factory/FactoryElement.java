@@ -3,8 +3,9 @@ package alexiil.mc.mod.load.baked.factory;
 import alexiil.mc.mod.load.baked.BakedFactory;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedTickable;
-import alexiil.mc.mod.load.expression.api.IExpressionNode.INodeBoolean;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
+
+import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 
 public class FactoryElement extends BakedTickable {
     public final INodeBoolean shouldDestroy;
