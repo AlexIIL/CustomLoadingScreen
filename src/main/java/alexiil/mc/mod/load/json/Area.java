@@ -1,5 +1,10 @@
 package alexiil.mc.mod.load.json;
 
+import alexiil.mc.mod.load.baked.render.BakedArea;
+
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.InvalidExpressionException;
+
 public class Area {
     public final String x, y, width, height;
 
@@ -20,5 +25,9 @@ public class Area {
     @Override
     public String toString() {
         return "Area [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
+    }
+
+    public BakedArea bake(FunctionContext context) throws InvalidExpressionException {
+        return new BakedArea(x, y, width, height, context);
     }
 }

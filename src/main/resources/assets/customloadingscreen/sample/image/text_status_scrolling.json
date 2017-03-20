@@ -1,0 +1,14 @@
+{
+  "parent": "builtin/text",
+  "image": "textures/font/ascii.png",
+  "positionType": "BOTTOM_LEFT",
+  "offsetPos": "BOTTOM_LEFT",
+  "text": "factory_status + (factory_index + 1 == factory_count ? ( is_reloading ? ' - ' + sub_status : '') : '')",
+  "position": {
+    "x": "30",
+    "y": "(factory_index - factory_count) * 16 - 4",
+    "width": "0",
+    "height": "0"
+  },
+  "colour": "0xFF_00_00_00 | ( (0xFF - (factory_count - factory_index) * (256 / (screenheight / 2 / 16))) * 0x01_01_01 )"
+}

@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
-public class BakedScaleFunctional extends BakedInstruction {
+public class BakedScaleFunctional extends BakedInsn {
     private final INodeDouble x, y, z;
 
     public BakedScaleFunctional(INodeDouble x, INodeDouble y, INodeDouble z) {

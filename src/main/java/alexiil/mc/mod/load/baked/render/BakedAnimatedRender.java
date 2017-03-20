@@ -3,19 +3,18 @@ package alexiil.mc.mod.load.baked.render;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.node.value.NodeVariableLong;
 
 public class BakedAnimatedRender extends BakedImageRender {
-    private final String resourceLocation;
     private final INodeDouble frame;
 
-    public BakedAnimatedRender(String resourceLocation, INodeDouble x, INodeDouble y, INodeDouble width, INodeDouble height, INodeDouble uMin, INodeDouble uMax, INodeDouble vMin, INodeDouble vMax, INodeDouble frame) {
-        super(resourceLocation, x, y, width, height, uMin, uMax, vMin, vMax);
-        this.resourceLocation = resourceLocation;
+    public BakedAnimatedRender(NodeVariableLong varWidth, NodeVariableLong varHeight, String res, BakedArea pos, BakedArea tex, INodeDouble frame) {
+        super(varWidth, varHeight, res, pos, tex);
         this.frame = frame;
     }
 
     @Override
     public void bindTexture(MinecraftDisplayerRenderer renderer) {
-        renderer.animator.bindTexture(resourceLocation, (int) (double) frame.evaluate());
+        renderer.animator.bindTexture(res.toString(), (int) frame.evaluate());
     }
 }

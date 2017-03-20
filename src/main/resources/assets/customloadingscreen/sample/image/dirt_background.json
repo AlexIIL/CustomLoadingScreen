@@ -1,0 +1,19 @@
+{
+  "parent": "builtin/image",
+  "image": "textures/blocks/dirt.png",
+  "positionType": "CENTER",
+  "offsetPos": "CENTER",
+  "colour": "0xFF_40_40_40",
+  "position": {
+    "x": "0",
+    "y": "0",
+    "width": "64 * 16",
+    "height": "64 * 16"
+  },
+  "texture": {
+  	"x": "0",
+  	"y": "0",
+  	"width": "64",
+  	"height": "64"
+  }
+}

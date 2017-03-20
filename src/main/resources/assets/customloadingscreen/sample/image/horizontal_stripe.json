@@ -1,4 +1,5 @@
 {
+  "parent": "builtin/image",
   "image": "customloadingscreen:textures/generic/darkened_blur_horizontal_strip.png",
   "positionType": "CENTER",
   "offsetPos": "CENTER",
@@ -11,7 +12,7 @@
   "texture": {
     "x": "0",
     "y": "0",
-    "width": "256",
-    "height": "256"
+    "width": "1",
+    "height": "1"
   }
 }

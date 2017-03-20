@@ -1,9 +1,10 @@
 {
+  "parent": "builtin/image",
   "texture": {
     "x": "0",
     "y": "0",
-    "width": "256",
-    "height": "256"
+    "width": "1",
+    "height": "1"
   },
   "shouldRender": "true",
   "frame": "0"

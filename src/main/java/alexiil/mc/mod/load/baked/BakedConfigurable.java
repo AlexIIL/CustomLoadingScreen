@@ -4,22 +4,29 @@ import net.minecraft.util.ResourceLocation;
 
 public abstract class BakedConfigurable {
     private ResourceLocation origin = null;
+    private String rawText;
 
     public ResourceLocation getOrigin() {
         return origin;
     }
 
-    /** This should ONLY be called by JsonConfigurable.bake() */
-    public void setOrigin(ResourceLocation location) {
+    public String getRawText() {
+        return rawText;
+    }
+
+    public final void setOrigin(ResourceLocation location, String src) {
         if (origin != null) origin = location;
+        if (rawText != null) rawText = src;
     }
 
-    protected void throwError(Throwable t) throws Throwable {
-        throw reportError(t);
+    protected void throwError(Throwable cause) throws Error {
+        throw reportError(cause);
     }
 
-    protected Throwable reportError(Throwable t) {
-        if (t == null) throw new Error(origin + " failed, but did not provide a cause!");
-        return new Throwable(origin + " failed!", t);
+    protected Error reportError(Throwable cause) {
+        if (cause == null) {
+            throw new Error(origin + " failed, but did not provide a cause!\n" + rawText);
+        }
+        return new Error(origin + " failed!\n" + rawText, cause);
     }
 }

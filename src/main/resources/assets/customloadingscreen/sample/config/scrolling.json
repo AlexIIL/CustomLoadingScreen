@@ -1,0 +1,17 @@
+{
+	"renders":[
+		"sample/dirt_background",
+		"sample/text_percentage_scrolling"
+	],
+	"functions":[
+		
+	],
+	"factories":[
+		"sample/text_status_scrolling"
+	],
+	"actions":[
+		
+	],
+	"variables":[
+	]
+}

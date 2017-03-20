@@ -1,43 +1,60 @@
 package alexiil.mc.mod.load.json;
 
-import alexiil.mc.mod.load.baked.BakedAction;
-import alexiil.mc.mod.load.baked.BakedConfig;
-import alexiil.mc.mod.load.baked.BakedFactory;
-import alexiil.mc.mod.load.baked.BakedRenderingPart;
+import net.minecraft.util.ResourceLocation;
+
+import alexiil.mc.mod.load.baked.*;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.InvalidExpressionException;
 
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
-    public final String[] renders;
+    public final JsonRenderingPart[] renders;
     public final String[] functions;
-    public final String[] factories;
-    public final String[] actions;
+    public final JsonFactory[] factories;
+    public final JsonAction[] actions;
     public final JsonVariable[] variables;
 
-    public JsonConfig(String parent, String[] render, String[] functions, String[] factories, String[] actions, JsonVariable[] variables) {
-        super(parent);
-        this.renders = render;
+    public JsonConfig(JsonRenderingPart[] renders, String[] functions, JsonFactory[] factories, JsonAction[] actions, JsonVariable[] variables) {
+        this.renders = renders;
         this.functions = functions;
         this.factories = factories;
         this.actions = actions;
         this.variables = variables;
     }
 
+    public JsonConfig(JsonConfig parent, JsonRenderingPart[] renders, String[] functions, JsonFactory[] factories, JsonAction[] actions, JsonVariable[] variables) {
+        this.renders = consolidateArray(parent == null ? null : parent.renders, renders);
+        this.functions = consolidateArray(parent == null ? null : parent.functions, functions);
+        this.factories = consolidateArray(parent == null ? null : parent.factories, factories);
+        this.actions = consolidateArray(parent == null ? null : parent.actions, actions);
+        this.variables = consolidateArray(parent == null ? null : parent.variables, variables);
+    }
+
     @Override
-    protected BakedConfig actuallyBake(FunctionContext functions) throws InvalidExpressionException {
-        // for (String func : this.functions) {
-        // JsonFunction function = ConfigManager.getAsFunction(func);
-        // if (function != null) {
-        // BakedFunction<?> bf = function.bake(functions);
-        // functions.put(function.name, bf);
-        // }
-        // }
+    public void setLocation(ResourceLocation location) {
+        super.setLocation(location);
+        location = this.resourceLocation;
+        for (JsonVariable v : variables)
+            v.setLocation(location);
+        for (JsonRenderingPart p : renders)
+            p.setLocation(location);
+        for (JsonFactory f : factories)
+            f.setLocation(location);
+        for (JsonAction a : actions)
+            a.setLocation(location);
+    }
+
+    @Override
+    protected BakedConfig actuallyBake(FunctionContext context) throws InvalidExpressionException {
+        BakedVariable[] vars = new BakedVariable[variables.length];
+        for (int i = 0; i < variables.length; i++) {
+            vars[i] = variables[i].bake(context);
+        }
 
         BakedRenderingPart[] array = new BakedRenderingPart[this.renders.length];
         for (int i = 0; i < this.renders.length; i++) {
-            JsonRenderingPart jrp = ConfigManager.getAsRenderingPart(this.renders[i]);
-            array[i] = jrp.bake(functions);
+            JsonRenderingPart jrp = this.renders[i];
+            array[i] = jrp.bake(context);
         }
 
         BakedAction[] actions;
@@ -46,8 +63,8 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
         } else {
             actions = new BakedAction[this.actions.length];
             for (int i = 0; i < this.actions.length; i++) {
-                JsonAction ja = ConfigManager.getAsAction(this.actions[i]);
-                actions[i] = ja.bake(functions);
+                JsonAction ja = this.actions[i];
+                actions[i] = ja.bake(context);
             }
         }
 
@@ -57,26 +74,10 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
         } else {
             factories = new BakedFactory[this.factories.length];
             for (int i = 0; i < this.factories.length; i++) {
-                JsonFactory jf = ConfigManager.getAsFactory(this.factories[i]);
-                factories[i] = jf.bake(functions);
+                JsonFactory jf = this.factories[i];
+                factories[i] = jf.bake(context);
             }
         }
-        return new BakedConfig(array, actions, factories);
-    }
-
-    @Override
-    protected JsonConfig actuallyConsolidate() {
-        if (parent == null) return this;
-
-        JsonConfig parent = ConfigManager.getAsConfig(this.parent);
-        if (parent == null) return this;
-
-        String[] renders = consolidateArray(parent.renders, this.renders);
-        String[] functions = consolidateArray(this.functions, parent.functions);
-        String[] factories = consolidateArray(parent.factories, this.factories);
-        String[] actions = consolidateArray(parent.actions, this.actions);
-        JsonVariable[] variables = consolidateArray(parent.variables, this.variables);
-
-        return new JsonConfig("", renders, functions, factories, actions, variables);
+        return new BakedConfig(vars, array, actions, factories);
     }
 }

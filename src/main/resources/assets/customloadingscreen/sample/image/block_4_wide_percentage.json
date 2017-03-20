@@ -4,8 +4,8 @@
   "texture": {
     "x": "0",
     "y": "0",
-    "width": "1024 * percentage",
-    "height": "256"
+    "width": "4 * percentage",
+    "height": "1"
   },
   "position": {
     "x": "(percentage * 128) - 128",

@@ -54,8 +54,8 @@ public class CustomLoadingScreen {
 
     @EventHandler
     public static void construct(FMLConstructionEvent event) {
-        MainSplashRenderer.onReachConstruct();
         ModLoadingListener.setup();
+        MainSplashRenderer.onReachConstruct();
     }
 
     @EventHandler

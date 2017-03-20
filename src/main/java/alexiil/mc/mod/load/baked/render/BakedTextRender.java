@@ -11,18 +11,16 @@ import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
 import buildcraft.lib.expression.node.value.NodeVariableLong;
 import buildcraft.lib.expression.node.value.NodeVariableString;
 
-public abstract class BakedTextRender extends BakedRender {
+public abstract class BakedTextRender extends BakedRenderPositioned {
     protected final NodeVariableString varText;
-    protected final NodeVariableLong varWidth, varHeight;
     protected final INodeDouble x;
     protected final INodeDouble y;
     protected final INodeLong colour;
     protected final String fontTexture;
 
     public BakedTextRender(NodeVariableString varText, NodeVariableLong varWidth, NodeVariableLong varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
+        super(varWidth, varHeight);
         this.varText = varText;
-        this.varWidth = varWidth;
-        this.varHeight = varHeight;
         this.x = x;
         this.y = y;
         this.colour = colour;

@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
-public class BakedRotationFunctional extends BakedInstruction {
+public class BakedRotationFunctional extends BakedInsn {
     private final INodeDouble angle, x, y, z;
 
     public BakedRotationFunctional(INodeDouble angle, INodeDouble x, INodeDouble y, INodeDouble z) {

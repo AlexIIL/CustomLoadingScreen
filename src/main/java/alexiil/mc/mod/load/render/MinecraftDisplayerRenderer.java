@@ -18,15 +18,13 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.ClsManager.Resolution;
-import alexiil.mc.mod.load.baked.BakedAction;
-import alexiil.mc.mod.load.baked.BakedConfig;
-import alexiil.mc.mod.load.baked.BakedFactory;
-import alexiil.mc.mod.load.baked.BakedRenderingPart;
-import alexiil.mc.mod.load.baked.factory.FactoryElement;
+import alexiil.mc.mod.load.baked.*;
+import alexiil.mc.mod.load.baked.BakedFactory.FactoryElement;
 
 public class MinecraftDisplayerRenderer {
     public final TextureAnimator animator;
-    public final List<FactoryElement> elements = Lists.newArrayList();
+    public final List<BakedFactory.FactoryElement> elements = Lists.newArrayList();
+    private final BakedVariable[] variables;
     private final BakedRenderingPart[] renderingParts;
     private final BakedAction[] actions;
     private final BakedFactory[] factories;
@@ -49,6 +47,7 @@ public class MinecraftDisplayerRenderer {
         textureManager.onResourceManagerReload(mc.getResourceManager());
         _font_render_instance.onResourceManagerReload(mc.getResourceManager());
 
+        variables = config.variables;
         renderingParts = config.renderingParts;
         actions = config.actions;
         factories = config.factories;
@@ -81,28 +80,32 @@ public class MinecraftDisplayerRenderer {
 
         GlStateManager.color(1, 1, 1, 1);
 
+        for (BakedVariable variable : variables) {
+            variable.tick(this);
+        }
+
         // Factory logic
         for (FactoryElement element : elements) {
             element.tick(this);
-        }
-
-        for (BakedFactory bf : factories) {
-            bf.tick(this);
         }
 
         // Add all renders to the list
         tempList.clear();
         Collections.addAll(tempList, this.renderingParts);
 
-        for (FactoryElement fe : elements) {
-            tempList.add(fe.component);
-        }
+        // for (FactoryElement fe : elements) {
+        // tempList.add(fe.);
+        // }
 
         // Actually render them
         for (BakedRenderingPart brp : tempList) {
             if (brp != null) {
                 brp.tick(this);
             }
+        }
+
+        for (BakedFactory bf : factories) {
+            bf.tick(this);
         }
 
         // Post render stuffs

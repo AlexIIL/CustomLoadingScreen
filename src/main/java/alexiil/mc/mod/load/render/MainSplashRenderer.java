@@ -21,10 +21,9 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
 import alexiil.mc.mod.load.SingleProgressBarTracker;
-import alexiil.mc.mod.load.Translation;
 
 public class MainSplashRenderer {
-    private static boolean enableCustom = false;
+    private static volatile boolean enableCustom = false;
 
     // These are all written to by the transformed ClsTransformer
     public static ResourceLocation fontLoc;
@@ -62,8 +61,8 @@ public class MainSplashRenderer {
 
     public static void onReachConstruct() {
         if (!reachedConstruct) {
-            reachedConstruct = true;
             enableCustom = ClsManager.load();
+            reachedConstruct = true;
         }
     }
 
@@ -107,13 +106,13 @@ public class MainSplashRenderer {
             mutex.acquireUninterruptibly();
             Display.update();
             mutex.release();
-            
-            if (finishedLoading && ! reachedConstruct) {
+
+            if (finishedLoading && !reachedConstruct) {
                 // We crashed
                 break;
             }
 
-            boolean grabUngrab = pause ;//& !finishedLoading;
+            boolean grabUngrab = pause;// & !finishedLoading;
             if (grabUngrab) {
                 clearGL();
             }

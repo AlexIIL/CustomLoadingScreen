@@ -4,18 +4,18 @@ import org.lwjgl.opengl.GL11;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
-public class BakedColourFunctional extends BakedInstruction {
-    private final INodeDouble red, green, blue, alpha;
+public class BakedColourFunctional extends BakedInsn {
+    private final INodeDouble a, r, g, b;
 
-    public BakedColourFunctional(INodeDouble red, INodeDouble green, INodeDouble blue, INodeDouble alpha) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
+    public BakedColourFunctional(INodeDouble a, INodeDouble r, INodeDouble g, INodeDouble b) {
+        this.a = a;
+        this.r = r;
+        this.g = g;
+        this.b = b;
     }
 
     @Override
     public void render() {
-        GL11.glColor4d(red.evaluate(), green.evaluate(), blue.evaluate(), alpha.evaluate());
+        GL11.glColor4d(r.evaluate(), g.evaluate(), b.evaluate(), a.evaluate());
     }
 }

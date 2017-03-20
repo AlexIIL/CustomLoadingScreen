@@ -9,13 +9,13 @@
     "sample/text_status",
     "sample/text_percentage"
   ],
+  "variables": {
+	"item_rotation": "time * 50"
+  },
   "functions": [
-    "sample/item_rotation"
   ],
   "factories": [
   ],
   "actions": [
-  ],
-  "variables": [
   ]
 }
