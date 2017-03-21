@@ -3,7 +3,7 @@ package alexiil.mc.mod.load.baked.render;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
 import buildcraft.lib.expression.api.IExpressionNode.INodeString;
-import buildcraft.lib.expression.node.value.NodeVariableLong;
+import buildcraft.lib.expression.node.value.NodeVariableDouble;
 import buildcraft.lib.expression.node.value.NodeVariableString;
 
 public class BakedTextRenderStatic extends BakedTextRender {
@@ -11,8 +11,8 @@ public class BakedTextRenderStatic extends BakedTextRender {
 
     public BakedTextRenderStatic(
         NodeVariableString varText,
-        NodeVariableLong varWidth,
-        NodeVariableLong varHeight,
+        NodeVariableDouble varWidth,
+        NodeVariableDouble varHeight,
         INodeDouble x,
         INodeDouble y,
         INodeLong colour,

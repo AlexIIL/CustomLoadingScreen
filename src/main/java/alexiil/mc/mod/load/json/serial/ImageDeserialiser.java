@@ -10,7 +10,9 @@ import alexiil.mc.mod.load.json.subtypes.JsonRenderImage;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderPanorama;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderText;
 
-public enum ImageDeserialiser implements JsonDeserializer<JsonRender> {
+import buildcraft.lib.expression.InvalidExpressionException;
+
+public enum ImageDeserialiser implements IThrowingDeserialiser<JsonRender> {
     INSTANCE;
 
     private static final JsonPrimitive BUILTIN_TEXT = new JsonPrimitive("builtin/text");
@@ -18,7 +20,7 @@ public enum ImageDeserialiser implements JsonDeserializer<JsonRender> {
     private static final JsonPrimitive BUILTIN_PANORAMA = new JsonPrimitive("builtin/panorama");
 
     @Override
-    public JsonRender deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public JsonRender deserialize0(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws InvalidExpressionException {
         if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
             if (obj.has("parent")) {

@@ -21,6 +21,9 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
 import alexiil.mc.mod.load.SingleProgressBarTracker;
+import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
+
+import buildcraft.lib.expression.InvalidExpressionException;
 
 public class MainSplashRenderer {
     private static volatile boolean enableCustom = false;
@@ -61,7 +64,11 @@ public class MainSplashRenderer {
 
     public static void onReachConstruct() {
         if (!reachedConstruct) {
-            enableCustom = ClsManager.load();
+            try {
+                enableCustom = ClsManager.load();
+            } catch (InvalidExpressionException iee) {
+                iee.printStackTrace();
+            }
             reachedConstruct = true;
         }
     }
@@ -145,6 +152,15 @@ public class MainSplashRenderer {
         if (enableCustom) {
             ClsManager.renderFrame();
         } else {
+            String status;
+            String subStatus;
+            double progress;
+            try (LockUnlocker u = SingleProgressBarTracker.lockUpdate()) {
+                status = SingleProgressBarTracker.getStatusText();
+                subStatus = SingleProgressBarTracker.getSubStatus();
+                progress = SingleProgressBarTracker.getProgress() / SingleProgressBarTracker.MAX_PROGRESS_D;
+            }
+
             // Actual drawing
             int y = 0;
             glColor3d(0, 0, 0);
@@ -155,9 +171,9 @@ public class MainSplashRenderer {
             String s = ((diff / 100L) / 10.0) + "s";
             fontRenderer.drawString(s, 0, -10, 0);
 
-            s = SingleProgressBarTracker.getText();
+            s = status + " - " + subStatus;
             fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -40, 0);
-            String bar = getProgress(12, SingleProgressBarTracker.getProgress());
+            String bar = getProgress(12, progress);
             fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, -30, 0);
 
             Iterator<ProgressBar> i = ProgressManager.barIterator();

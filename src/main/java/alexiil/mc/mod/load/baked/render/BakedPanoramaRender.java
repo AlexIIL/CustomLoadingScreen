@@ -31,6 +31,9 @@ public class BakedPanoramaRender extends BakedRender {
         angleFunc = angle;
     }
 
+    @Override
+    public void evaluateVariables(MinecraftDisplayerRenderer renderer) {}
+
     /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
      * customizability added. TODO: Add customizability */
     @Override

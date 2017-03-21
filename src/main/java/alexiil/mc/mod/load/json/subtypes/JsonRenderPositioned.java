@@ -24,22 +24,21 @@ public abstract class JsonRenderPositioned extends JsonRender {
 
     public JsonRenderPositioned(JsonRenderPositioned parent, JsonObject json, JsonDeserializationContext context) {
         super(parent, json, context);
-        positionType = overrideObject(json, "positionType", context, EPosition.class, parent == null ? null : parent.positionType, EPosition.CENTER);
-        offsetPos = overrideObject(json, "offsetPos", context, EPosition.class, parent == null ? null : parent.offsetPos, EPosition.CENTER);
+        positionType = overrideObject(json, "position_type", context, EPosition.class, parent == null ? null : parent.positionType, EPosition.CENTER);
+        offsetPos = overrideObject(json, "offset_pos", context, EPosition.class, parent == null ? null : parent.offsetPos, EPosition.CENTER);
         position = consolidateArea(json, "position", context, parent == null ? null : parent.position);
     }
 
     @Override
     public List<BakedInsn> bakeInstructions(FunctionContext context) throws InvalidExpressionException {
         List<BakedInsn> list = super.bakeInstructions(context);
-        String x = positionType.getFunctionX("screenWidth", offsetPos.getFunctionX("elemWidth", "0"));
-        String y = positionType.getFunctionY("screenHeight", offsetPos.getFunctionY("elemHeight", "0"));
+        String x = positionType.getFunctionX("screen_width", offsetPos.getFunctionX("elem_width", "0"));
+        String y = positionType.getFunctionY("screen_height", offsetPos.getFunctionY("elem_height", "0"));
 
         INodeDouble expX = GenericExpressionCompiler.compileExpressionDouble(x, context);
         INodeDouble expY = GenericExpressionCompiler.compileExpressionDouble(y, context);
         INodeDouble expZ = NodeConstantDouble.ZERO;
         list.add(new BakedTranslateFunctional(expX, expY, expZ));
-
         return list;
     }
 }

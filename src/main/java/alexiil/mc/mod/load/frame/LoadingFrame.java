@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import alexiil.mc.mod.load.SingleProgressBarTracker;
+import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
 
 @SuppressWarnings("serial")
 public class LoadingFrame extends JFrame {
@@ -40,7 +41,7 @@ public class LoadingFrame extends JFrame {
         return new Rectangle((size.width - bounds.width) / 2, (size.height - bounds.height) / 2, bounds.width, bounds.height);
     }
 
-    private final JProgressBar progress;
+    private final JProgressBar jprogress;
 
     /** Create the frame. */
     public LoadingFrame() {
@@ -53,18 +54,28 @@ public class LoadingFrame extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        progress = new JProgressBar(0, 100);
-        contentPane.add(progress, BorderLayout.CENTER);
+        jprogress = new JProgressBar(0, 100);
+        contentPane.add(jprogress, BorderLayout.CENTER);
 
         pack();
         setSize(400, getHeight());
     }
 
     public void setProgress() {
-        setTitle(SingleProgressBarTracker.getText());
+        String status;
+        String subStatus;
+        int progress;
+        boolean isInReload;
+        try (LockUnlocker u = SingleProgressBarTracker.lockUpdate()) {
+            status = SingleProgressBarTracker.getStatusText();
+            subStatus = SingleProgressBarTracker.getSubStatus();
+            progress = SingleProgressBarTracker.getProgress();
+            isInReload = SingleProgressBarTracker.isInReload();
+        }
 
-        double p = SingleProgressBarTracker.getProgress();
-        progress.setValue((int) (p * 100));
-        progress.repaint();
+        setTitle(isInReload ? status : (status + " - " + subStatus));
+        double p = progress / SingleProgressBarTracker.MAX_PROGRESS_D;
+        jprogress.setValue((int) (p * 100));
+        jprogress.repaint();
     }
 }

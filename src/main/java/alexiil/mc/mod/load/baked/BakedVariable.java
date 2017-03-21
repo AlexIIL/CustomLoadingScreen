@@ -3,6 +3,7 @@ package alexiil.mc.mod.load.baked;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 import buildcraft.lib.expression.api.IExpressionNode;
+import buildcraft.lib.expression.api.NodeType;
 import buildcraft.lib.expression.node.value.IVariableNode;
 
 public class BakedVariable extends BakedTickable {
@@ -17,5 +18,9 @@ public class BakedVariable extends BakedTickable {
     @Override
     public void tick(MinecraftDisplayerRenderer renderer) {
         varNode.set(expNode);
+    }
+
+    public BakedVariable copyAsConstant() {
+        return new BakedVariable(varNode, NodeType.createConstantNode(expNode));
     }
 }

@@ -26,6 +26,7 @@ public class BakedRenderingPart extends BakedTickable {
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();
         GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+        render.evaluateVariables(renderer);
         for (BakedInsn insn : instructions) {
             insn.render();
         }

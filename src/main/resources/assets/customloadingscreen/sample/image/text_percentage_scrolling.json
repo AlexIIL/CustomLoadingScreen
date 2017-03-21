@@ -1,7 +1,7 @@
 {
   "parent": "sample/text_percentage",
-  "positionType": "BOTTOM_LEFT",
-  "offsetPos": "BOTTOM_LEFT",
+  "position_type": "BOTTOM_LEFT",
+  "offset_pos": "BOTTOM_LEFT",
   "position": {
   	"x": "5",
     "y": "-20"

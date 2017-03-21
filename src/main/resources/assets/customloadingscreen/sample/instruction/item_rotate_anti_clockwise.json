@@ -1,9 +1,7 @@
 {
-  "function": "rotate",
-  "arguments": [
-    "item_rotation",
-    "0",
-    "0",
-    "-1"
-  ]
+	"parent":"builtin/rotate",
+	"angle": "item_rotation",
+	"x": "0",
+	"y": "0",
+	"z": "-1"
 }

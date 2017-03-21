@@ -13,7 +13,9 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonInsn;
 import alexiil.mc.mod.load.json.JsonInsn.*;
 
-public enum InstructionDeserialiser implements JsonDeserializer<JsonInsn> {
+import buildcraft.lib.expression.InvalidExpressionException;
+
+public enum InstructionDeserialiser implements IThrowingDeserialiser<JsonInsn> {
     INSTANCE;
 
     private static final Map<String, TypeDeserialiser> types = new LinkedHashMap<>();
@@ -32,7 +34,7 @@ public enum InstructionDeserialiser implements JsonDeserializer<JsonInsn> {
     }
 
     @Override
-    public JsonInsn deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public JsonInsn deserialize0(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws InvalidExpressionException {
         if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
             String type = JsonUtils.getString(obj, "parent");

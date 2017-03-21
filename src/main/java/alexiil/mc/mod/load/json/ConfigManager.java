@@ -7,6 +7,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,8 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.json.serial.*;
+
+import buildcraft.lib.expression.InvalidExpressionException;
 
 public class ConfigManager {
     public enum EType {
@@ -42,11 +45,11 @@ public class ConfigManager {
             types.put(clazz, this);
         }
 
-        public JsonConfigurable<?, ?> getNotFound(String location) {
+        public JsonConfigurable<?, ?> getNotFound(String location) throws InvalidExpressionException {
             if (this == EType.RENDERING_PART) {
                 JsonRender ji = getAsImage(location);
                 if (ji != null) {
-                    JsonRenderingPart jrp = new JsonRenderingPart(null, ji, new JsonInsn[0], "true");
+                    JsonRenderingPart jrp = new JsonRenderingPart(ji, new JsonInsn[0], "true");
                     jrp.setSource(("{#-'image':'" + location + "'#}").replace('\'', '"').replace('#', '\n').replace('-', '\t'));
                     return jrp;
                 }
@@ -114,7 +117,7 @@ public class ConfigManager {
     /** This makes the assumption that the type.clazz is the same as T or a subclass of T. Because this is a
      * package-protected function this is known and so it will NEVER throw a class cast exception. */
     /* For some reason, using <T extends JsonConfigurable<T, ?>> didn't compile. (But it did in eclipse? What?) */
-    static <T extends JsonConfigurable> T getAsT(EType type, String location) {
+    static <T extends JsonConfigurable> T getAsT(EType type, String location) throws InvalidExpressionException {
         if (StringUtils.isEmpty(location)) {
             CLSLog.warn("Location was given as null!", new Throwable());
             return null;
@@ -136,34 +139,34 @@ public class ConfigManager {
             t.setLocation(loc);
             t.setSource(text);
             return t;
-        } catch (Throwable t) {
-            throw new Error("Failed to read from " + loc + "\n" + text, t);
+        } catch (JsonSyntaxException t) {
+            throw new InvalidSourceException("Failed to read from " + loc + "\n" + text, t);
         }
     }
 
     /** Rendering parts act slightly differently: if they don't exist, but an image with the same name DOES, then use
      * the image and provide a default rendering part. */
-    public static JsonRenderingPart getAsRenderingPart(String location) {
+    public static JsonRenderingPart getAsRenderingPart(String location) throws InvalidExpressionException {
         return getAsT(EType.RENDERING_PART, location);
     }
 
-    public static JsonFactory getAsFactory(String location) {
+    public static JsonFactory getAsFactory(String location) throws InvalidExpressionException {
         return getAsT(EType.FACTORY, location);
     }
 
-    public static JsonRender getAsImage(String location) {
+    public static JsonRender getAsImage(String location) throws InvalidExpressionException {
         return getAsT(EType.IMAGE, location);
     }
 
-    public static JsonInsn getAsInsn(String location) {
+    public static JsonInsn getAsInsn(String location) throws InvalidExpressionException {
         return getAsT(EType.INSTRUCTION, location);
     }
 
-    public static JsonAction getAsAction(String location) {
+    public static JsonAction getAsAction(String location) throws InvalidExpressionException {
         return getAsT(EType.ACTION, location);
     }
 
-    public static JsonConfig getAsConfig(String location) {
+    public static JsonConfig getAsConfig(String location) throws InvalidExpressionException {
         return getAsT(EType.CONFIG, location);
     }
 
@@ -175,18 +178,14 @@ public class ConfigManager {
 
     public static ResourceLocation getLocation(EType type, String base) {
         String path;
-        if (StringUtils.startsWith(base, "builtin/")) {
+        if (base.startsWith("builtin/")) {
             path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
         } else if (base.startsWith("sample/")) {
             path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
         } else {
-            path = "custom/" + type.resourceBase + "/" + base + ".json";
+            path = type.resourceBase + "/" + base + ".json";
         }
 
         return new ResourceLocation("customloadingscreen", path);
-    }
-
-    private static boolean isBuiltIn(String location) {
-        return StringUtils.startsWith(location, "builtin/");
     }
 }

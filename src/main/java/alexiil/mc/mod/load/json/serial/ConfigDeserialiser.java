@@ -8,18 +8,21 @@ import net.minecraft.util.JsonUtils;
 
 import alexiil.mc.mod.load.json.*;
 
-public enum ConfigDeserialiser implements JsonDeserializer<JsonConfig> {
+import buildcraft.lib.expression.InvalidExpressionException;
+
+public enum ConfigDeserialiser implements IThrowingDeserialiser<JsonConfig> {
     INSTANCE;
 
     @Override
-    public JsonConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public JsonConfig deserialize0(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws InvalidExpressionException {
         if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
             JsonConfig parent = obj.has("parent") ? JsonUtils.deserializeClass(obj, "parent", context, JsonConfig.class) : null;
             JsonRenderingPart[] renders = JsonUtils.deserializeClass(obj, "renders", context, JsonRenderingPart[].class);
             JsonFactory[] factories = JsonUtils.deserializeClass(obj, "factories", context, JsonFactory[].class);
             JsonAction[] actions = JsonUtils.deserializeClass(obj, "actions", context, JsonAction[].class);
-            JsonConfig cfg = new JsonConfig(parent, renders, new String[0], factories, actions, new JsonVariable[0]);
+            JsonVariable[] variables = JsonUtils.deserializeClass(obj, "variables", context, JsonVariable[].class);
+            JsonConfig cfg = new JsonConfig(parent, renders, new String[0], factories, actions, variables);
             cfg.setSource(obj);
             return cfg;
         } else if (json.isJsonPrimitive()) {

@@ -1,10 +1,7 @@
 package alexiil.mc.mod.load.render;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.lwjgl.opengl.GL11;
@@ -19,11 +16,9 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.ClsManager.Resolution;
 import alexiil.mc.mod.load.baked.*;
-import alexiil.mc.mod.load.baked.BakedFactory.FactoryElement;
 
 public class MinecraftDisplayerRenderer {
     public final TextureAnimator animator;
-    public final List<BakedFactory.FactoryElement> elements = Lists.newArrayList();
     private final BakedVariable[] variables;
     private final BakedRenderingPart[] renderingParts;
     private final BakedAction[] actions;
@@ -35,7 +30,6 @@ public class MinecraftDisplayerRenderer {
     public TextureManager textureManager;
     private boolean first = true;
     private SharedDrawable drawable;
-    private final List<BakedRenderingPart> tempList = Lists.newArrayList();
 
     public MinecraftDisplayerRenderer(BakedConfig config, TextureAnimator animator) {
         this.animator = animator;
@@ -84,21 +78,7 @@ public class MinecraftDisplayerRenderer {
             variable.tick(this);
         }
 
-        // Factory logic
-        for (FactoryElement element : elements) {
-            element.tick(this);
-        }
-
-        // Add all renders to the list
-        tempList.clear();
-        Collections.addAll(tempList, this.renderingParts);
-
-        // for (FactoryElement fe : elements) {
-        // tempList.add(fe.);
-        // }
-
-        // Actually render them
-        for (BakedRenderingPart brp : tempList) {
+        for (BakedRenderingPart brp : renderingParts) {
             if (brp != null) {
                 brp.tick(this);
             }
@@ -106,6 +86,10 @@ public class MinecraftDisplayerRenderer {
 
         for (BakedFactory bf : factories) {
             bf.tick(this);
+        }
+
+        for (BakedAction ba : actions) {
+            ba.tick(this);
         }
 
         // Post render stuffs
@@ -116,10 +100,6 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.color(1, 1, 1, 1);
         mc.updateDisplay();
 
-        // Action stuffs
-        for (BakedAction ba : actions) {
-            ba.tick(this);
-        }
     }
 
     public FontRenderer fontRenderer(String fontTexture) {

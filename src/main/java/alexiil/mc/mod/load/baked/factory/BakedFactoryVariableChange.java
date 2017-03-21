@@ -1,10 +1,8 @@
 package alexiil.mc.mod.load.baked.factory;
 
-import java.util.List;
-
 import alexiil.mc.mod.load.baked.BakedFactory;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
-import alexiil.mc.mod.load.json.subtypes.JsonFactoryVariableChange.KeptVariable;
+import alexiil.mc.mod.load.baked.BakedVariable;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 import buildcraft.lib.expression.InvalidExpressionException;
@@ -19,7 +17,7 @@ public class BakedFactoryVariableChange extends BakedFactory {
     private final INodeBoolean shouldDestroy;
     private final IExpressionNode node;
     private final IVariableNode checkNode;
-    private final List<KeptVariable> keptVariables;
+    private final BakedVariable[] variables, keptVariables;
     private final INodeBoolean hasChanged;
     private boolean hasAddedFirst;
 
@@ -27,13 +25,15 @@ public class BakedFactoryVariableChange extends BakedFactory {
         NodeVariableLong factoryIndex,
         NodeVariableLong factoryCount,
         BakedRenderingPart component,
-        List<KeptVariable> keptVariables,
+        BakedVariable[] variables,
+        BakedVariable[] keptVariables,
         INodeBoolean shouldDestroy,
         IExpressionNode node,
         boolean shouldSpawnFirst) throws InvalidExpressionException {
 
         super(factoryIndex, factoryCount, component);
         this.hasAddedFirst = !shouldSpawnFirst;
+        this.variables = variables;
         this.keptVariables = keptVariables;
         this.shouldDestroy = shouldDestroy;
         this.node = node;
@@ -52,21 +52,29 @@ public class BakedFactoryVariableChange extends BakedFactory {
     }
 
     public class ElementVarChange extends FactoryElement {
-        private final KeptVariable[] _keptVariables;
+        private final BakedVariable[] _keptVariables;
 
-        public ElementVarChange(List<KeptVariable> keptVariables) {
-            _keptVariables = new KeptVariable[keptVariables.size()];
-            for (int i = 0; i < keptVariables.size(); i++) {
-                KeptVariable v = keptVariables.get(i);
-                _keptVariables[i] = new KeptVariable(NodeType.createConstantNode(v.node), v.variable);
+        public ElementVarChange(BakedVariable[] keptVariables) {
+            _keptVariables = new BakedVariable[keptVariables.length];
+            for (int i = 0; i < keptVariables.length; i++) {
+                BakedVariable v = keptVariables[i];
+                _keptVariables[i] = v.copyAsConstant();
+            }
+        }
+        
+        @Override
+        protected void setVariables(MinecraftDisplayerRenderer renderer) {
+            super.setVariables(renderer);
+            for (BakedVariable v : _keptVariables) {
+                v.tick(renderer);
+            }
+            for (BakedVariable v : variables) {
+                v.tick(renderer);
             }
         }
 
         @Override
         public boolean tick(MinecraftDisplayerRenderer renderer) {
-            for (KeptVariable v : _keptVariables) {
-                v.variable.set(v.node);
-            }
             super.tick(renderer);
             return !shouldDestroy.evaluate();
         }

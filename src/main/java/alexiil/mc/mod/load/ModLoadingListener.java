@@ -169,10 +169,12 @@ public class ModLoadingListener {
             }
         }
         stage = ms.getNext();
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException t) {
-            t.printStackTrace();
+        if (CustomLoadingScreen.shouldWait) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ignored) {
+                // NO_OP
+            }
         }
     }
 }

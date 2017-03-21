@@ -35,9 +35,13 @@ public abstract class BakedFactory extends BakedTickable {
     public class FactoryElement {
         public final int elementIndex = createdCount++;
 
-        public boolean tick(MinecraftDisplayerRenderer renderer) {
+        protected void setVariables(MinecraftDisplayerRenderer renderer) {
             factoryIndex.value = elementIndex;
             factoryCount.value = createdCount;
+        }
+
+        public boolean tick(MinecraftDisplayerRenderer renderer) {
+            setVariables(renderer);
             component.tick(renderer);
             return true;
         }

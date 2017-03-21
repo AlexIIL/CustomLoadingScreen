@@ -8,13 +8,15 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.subtypes.JsonFactoryVariableChange;
 
-public enum FactoryDeserialiser implements JsonDeserializer<JsonFactory> {
+import buildcraft.lib.expression.InvalidExpressionException;
+
+public enum FactoryDeserialiser implements IThrowingDeserialiser<JsonFactory> {
     INSTANCE;
 
     private static final JsonPrimitive BUILTIN_CHANGE = new JsonPrimitive("builtin/change");
 
     @Override
-    public JsonFactory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public JsonFactory deserialize0(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws InvalidExpressionException {
         if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
             if (obj.has("parent")) {

@@ -1,9 +1,0 @@
-{
-	"parent": "builtin/change",
-	"toCreate": "sample/text_status_scrolling",
-	"change": "status + (is_reloading ? '' : sub_status)",
-	"shouldDestroy": "factory_index + ((screenheight - 40) / 2 / 16) < factory_count",
-	"variables": {
-		"factory_status": "status + (is_reloading ? '' : (' - ' + sub_status))"
-	}
-}

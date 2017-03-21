@@ -1,6 +1,7 @@
 {
-  "positionType": "CENTER",
-  "offsetPos": "CENTER",
+  "parent": "builtin/image",
+  "position_type": "CENTER",
+  "offset_pos": "CENTER",
   "texture": {
     "x": "0",
     "y": "0",

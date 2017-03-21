@@ -1,5 +1,9 @@
 package alexiil.mc.mod.load.json;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.collect.ObjectArrays;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -40,6 +44,10 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
         }
     }
 
+    public String getRawText() {
+        return this.rawText;
+    }
+
     /** Bakes this into something that can be ticked quickly. This is a potentially expensive function, so don't call
      * this more than you need to. (This does not cache, as this could potentially be called with a different map of
      * functions) */
@@ -61,6 +69,17 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
 
     // These are helper methods to make deserialisation one-liners
 
+    protected static <O> O deserialiseObject(JsonObject obj, String memeber, JsonDeserializationContext ctx, Class<O> clazz) {
+        if (obj.has(memeber)) {
+            return ctx.deserialize(obj.get(memeber), clazz);
+        }
+        return null;
+    }
+
+    protected static String consolidateFunction(JsonObject obj, String memeber, JsonDeserializationContext ctx, String parent, String defaultF) {
+        return consolidateFunction(deserialiseObject(obj, memeber, ctx, String.class), parent, defaultF);
+    }
+
     protected static String consolidateFunction(String in, String parent, String defaultF) {
         if (in == null) {
             if (parent == null) {
@@ -78,12 +97,34 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
     /** This will override the parents version of the object if in is not null. If in is null and the parent is null,
      * then the default is returned. */
     protected static <O> O overrideObject(JsonObject obj, String memeber, JsonDeserializationContext ctx, Class<O> clazz, O parent, O defaultO) {
-        if (obj.has(memeber)) {
-            O in = ctx.deserialize(obj.get(memeber), clazz);
-            if (in != null) return in;
-        }
+        O in = deserialiseObject(obj, memeber, ctx, clazz);
+        if (in != null) return in;
         if (parent != null) return parent;
         return defaultO;
+    }
+
+    protected static JsonVariable[] overrideVariables(JsonObject obj, String memeber, JsonDeserializationContext ctx, JsonVariable[] parent) {
+        JsonVariable[] in = deserialiseObject(obj, memeber, ctx, JsonVariable[].class);
+        if (in == null) {
+            return parent == null ? new JsonVariable[0] : parent;
+        } else if (parent == null) {
+            return in;
+        }
+        List<JsonVariable> vars = new ArrayList<>(in.length + parent.length);
+        Collections.addAll(vars, in);
+        for (JsonVariable vParent : parent) {
+            boolean found = false;
+            for (JsonVariable vChild : vars) {
+                if (vChild.name.equalsIgnoreCase(vParent.name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                vars.add(vParent);
+            }
+        }
+        return vars.toArray(new JsonVariable[vars.size()]);
     }
 
     /** This will effectively combine the two arrays together. Specifically, if both of the arrays are null, null is

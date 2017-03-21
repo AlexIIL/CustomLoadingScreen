@@ -1,6 +1,7 @@
 {
-  "positionType": "CENTER",
-  "offsetPos": "CENTER",
+  "parent": "builtin/image",
+  "position_type": "CENTER",
+  "offset_pos": "CENTER",
   "texture": {
     "x": "0",
     "y": "0",
@@ -8,7 +9,7 @@
     "height": "1"
   },
   "position": {
-    "x": "(percentage * 128) - 128",
+    "x": "percentage * 128 - 128",
     "y": "0",
     "width": "256 * percentage",
     "height": "64"

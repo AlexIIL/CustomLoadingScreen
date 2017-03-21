@@ -3,6 +3,9 @@ package alexiil.mc.mod.load.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.baked.BakedRender;
@@ -18,16 +21,30 @@ import buildcraft.lib.expression.node.value.NodeConstantBoolean;
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether
  * or not it should render at this time */
 public class JsonRenderingPart extends JsonConfigurable<JsonRenderingPart, BakedRenderingPart> {
-    public final JsonRenderingPart parent;
     public final JsonRender image;
     public final JsonInsn[] instructions;
     public final String shouldRender;
 
-    public JsonRenderingPart(JsonRenderingPart parent, JsonRender image, JsonInsn[] openGlInstructions, String shouldRender) {
-        this.parent = parent;
+    public JsonRenderingPart(JsonRender image, JsonInsn[] instructions, String shouldRender) {
         this.image = image;
-        this.instructions = openGlInstructions;
+        this.instructions = instructions;
         this.shouldRender = shouldRender;
+    }
+
+    public JsonRenderingPart(JsonRenderingPart parent, JsonObject json, JsonDeserializationContext context) {
+        if (json.has("image")) {
+            image = context.deserialize(json.get("image"), JsonRender.class);
+        } else {
+            image = parent == null ? null : parent.image;
+        }
+        JsonInsn[] insns;
+        if (json.has("instructions")) {
+            insns = context.deserialize(json.get("instructions"), JsonInsn[].class);
+        } else {
+            insns = new JsonInsn[0];
+        }
+        this.instructions = consolidateArray(parent == null ? null : parent.instructions, insns);
+        this.shouldRender = consolidateFunction(json, "should_render", context, parent == null ? null : parent.shouldRender, "true");
     }
 
     @Override

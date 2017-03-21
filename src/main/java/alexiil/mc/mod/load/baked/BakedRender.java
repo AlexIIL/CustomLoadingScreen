@@ -3,6 +3,8 @@ package alexiil.mc.mod.load.baked;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 public abstract class BakedRender extends BakedTickable {
+    public abstract void evaluateVariables(MinecraftDisplayerRenderer renderer);
+
     public abstract void render(MinecraftDisplayerRenderer renderer);
 
     @Override

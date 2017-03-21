@@ -1,0 +1,18 @@
+{
+	"parent": "sample/default",
+	"renders": [
+		"sample/text_generic_error"
+	],
+	"functions":[
+		
+	],
+	"factories":[
+		
+	],
+	"actions":[
+		
+	],
+	"variables":{
+		
+	}
+}

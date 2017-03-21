@@ -7,6 +7,7 @@ import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 
 public class BakedArea {
     public final INodeDouble x, y, width, height;
+    public double _x, _y, _w, _h;
 
     public BakedArea(String x, String y, String width, String height, FunctionContext context) throws InvalidExpressionException {
         this.x = GenericExpressionCompiler.compileExpressionDouble(x, context);
@@ -20,5 +21,12 @@ public class BakedArea {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public void evaluate() {
+        _x = x.evaluate();
+        _y = y.evaluate();
+        _w = width.evaluate();
+        _h = height.evaluate();
     }
 }

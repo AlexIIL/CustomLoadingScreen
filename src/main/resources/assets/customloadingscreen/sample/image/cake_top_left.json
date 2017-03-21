@@ -1,5 +1,5 @@
 {
   "parent":"sample/cake",
-  "positionType":"TOP_LEFT",
-  "offsetPos":"CENTER"
+  "position_type":"TOP_LEFT",
+  "offset_pos":"CENTER"
 }

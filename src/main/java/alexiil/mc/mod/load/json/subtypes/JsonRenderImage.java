@@ -14,6 +14,7 @@ import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.InvalidExpressionException;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.node.value.NodeVariableDouble;
 import buildcraft.lib.expression.node.value.NodeVariableLong;
 
 public class JsonRenderImage extends JsonRenderPositioned {
@@ -28,11 +29,10 @@ public class JsonRenderImage extends JsonRenderPositioned {
 
     @Override
     protected BakedRender actuallyBake(FunctionContext context) throws InvalidExpressionException {
-        NodeVariableLong varWidth = context.putVariableLong("elemWidth");
-        NodeVariableLong varHeight = context.putVariableLong("elemHeight");
+        NodeVariableDouble varWidth = context.putVariableDouble("elem_width");
+        NodeVariableDouble varHeight = context.putVariableDouble("elem_height");
         BakedArea pos = position.bake(context);
         BakedArea tex = texture.bake(context);
-
         if (TextureAnimator.isAnimated(resourceLocation.toString())) {
             INodeDouble _frame = GenericExpressionCompiler.compileExpressionDouble(frame, context);
             return new BakedAnimatedRender(varWidth, varHeight, image, pos, tex, _frame);
