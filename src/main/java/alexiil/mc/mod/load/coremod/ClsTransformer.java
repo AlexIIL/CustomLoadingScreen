@@ -167,6 +167,7 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
                 m.instructions.add(new MethodInsnNode(INVOKESTATIC, owner, name, desc, false));
 
                 m.instructions.add(new InsnNode(RETURN));
+                m.tryCatchBlocks.clear();
             }
         }
 
