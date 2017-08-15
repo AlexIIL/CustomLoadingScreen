@@ -15,7 +15,6 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
-import alexiil.mods.load.test.TestModExporter;
 
 import buildcraft.lib.expression.DefaultContexts;
 import buildcraft.lib.expression.FunctionContext;
