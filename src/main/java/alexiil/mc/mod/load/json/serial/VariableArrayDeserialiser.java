@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 
 import alexiil.mc.mod.load.json.JsonVariable;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum VariableArrayDeserialiser implements IThrowingDeserialiser<JsonVariable[]> {
     INSTANCE;

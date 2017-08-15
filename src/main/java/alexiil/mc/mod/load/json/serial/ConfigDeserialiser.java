@@ -8,7 +8,7 @@ import net.minecraft.util.JsonUtils;
 
 import alexiil.mc.mod.load.json.*;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum ConfigDeserialiser implements IThrowingDeserialiser<JsonConfig> {
     INSTANCE;

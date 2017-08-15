@@ -2,7 +2,7 @@ package alexiil.mc.mod.load.json;
 
 import net.minecraft.util.ResourceLocation;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class InvalidSourceException extends InvalidExpressionException {
     public InvalidSourceException(String message) {

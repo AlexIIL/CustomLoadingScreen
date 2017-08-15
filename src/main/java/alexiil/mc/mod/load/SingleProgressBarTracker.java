@@ -88,7 +88,7 @@ public class SingleProgressBarTracker {
             if (diff < 0) {
                 diff = 0;
             }
-            progress = from + subDiff * part + (subDiff * stage.getSubProgress()) / MAX_PROGRESS;
+            progress = from + subDiff * part + stage.getSubProgress(subDiff);
             hasFinishedModLoad = stage.getNext() == stage;
         }
 

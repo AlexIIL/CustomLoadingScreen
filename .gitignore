@@ -14,5 +14,6 @@ serverTest/
 out/
 build/
 VersionInfo/
+custom/
 
 *.launch

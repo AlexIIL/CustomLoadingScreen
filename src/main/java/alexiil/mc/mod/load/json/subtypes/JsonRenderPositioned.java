@@ -13,8 +13,8 @@ import alexiil.mc.mod.load.json.JsonRender;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
-import buildcraft.lib.expression.InvalidExpressionException;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeConstantDouble;
 
 public abstract class JsonRenderPositioned extends JsonRender {

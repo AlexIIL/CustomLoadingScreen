@@ -3,7 +3,7 @@ package alexiil.mc.mod.load.json;
 import alexiil.mc.mod.load.baked.render.BakedArea;
 
 import buildcraft.lib.expression.FunctionContext;
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class Area {
     public final String x, y, width, height;

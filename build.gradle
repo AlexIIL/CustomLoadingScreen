@@ -26,13 +26,21 @@ apply plugin: 'maven' // for uploading to a maven repo
 
 version = "1.4.0"
 // Feel free to rename this at some point
-group= "alexiil.mods.load"
-archivesBaseName = "BetterLoadingScreen"
+group= "alexiil.mc.mod.load"
+archivesBaseName = "CustomLoadingScreen"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+repositories {
+    maven {
+        name = "buildcraft"
+        url = "https://mod-buildcraft.com/maven"
+    }
+}
+
 dependencies {
+    deobfCompile "com.mod-buildcraft:buildcraft-lib:7.99.7"
     testCompile "junit:junit:4.12"
 }
 
@@ -93,6 +101,6 @@ jar
 	manifest
 	{
 		attributes 'FMLCorePluginContainsFMLMod': 'true'
-		attributes 'FMLCorePlugin': 'alexiil.mc.mod.load.coremod.LoadingScreenLoadPlugin'
+		attributes 'FMLCorePlugin': 'alexiil.mc.mod.load.coremod.ClsPlugin'
 	}
 }

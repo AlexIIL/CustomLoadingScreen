@@ -11,7 +11,7 @@ import alexiil.mc.mod.load.baked.insn.BakedInsn;
 import alexiil.mc.mod.load.json.JsonInsn.JsonInsnColourTogether;
 
 import buildcraft.lib.expression.FunctionContext;
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public abstract class JsonRender extends JsonConfigurable<JsonRender, BakedRender> {
     public final String image;

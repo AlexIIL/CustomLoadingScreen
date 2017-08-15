@@ -2,8 +2,8 @@ package alexiil.mc.mod.load.baked.render;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
-import buildcraft.lib.expression.InvalidExpressionException;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class BakedArea {
     public final INodeDouble x, y, width, height;

@@ -21,7 +21,7 @@ import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.json.serial.*;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class ConfigManager {
     public enum EType {

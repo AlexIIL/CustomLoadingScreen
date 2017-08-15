@@ -8,7 +8,7 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.subtypes.JsonFactoryVariableChange;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum FactoryDeserialiser implements IThrowingDeserialiser<JsonFactory> {
     INSTANCE;

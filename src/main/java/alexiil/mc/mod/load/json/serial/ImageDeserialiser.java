@@ -10,7 +10,7 @@ import alexiil.mc.mod.load.json.subtypes.JsonRenderImage;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderPanorama;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderText;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum ImageDeserialiser implements IThrowingDeserialiser<JsonRender> {
     INSTANCE;

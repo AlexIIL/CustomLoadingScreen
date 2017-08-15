@@ -1,12 +1,9 @@
 package alexiil.mc.mod.load.render;
 
-import java.awt.SplashScreen;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundEventAccessor;
@@ -16,15 +13,10 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.FMLFileResourcePack;
-import net.minecraftforge.fml.client.FMLFolderResourcePack;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import alexiil.mc.mod.load.CLSLog;
-import alexiil.mc.mod.load.ProgressDisplayer;
 import alexiil.mc.mod.load.ProgressDisplayer.IDisplayer;
-import alexiil.mc.mod.load.baked.BakedConfig;
-import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
 import alexiil.mc.mod.load.render.RenderingStatus.ProgressPair;
 

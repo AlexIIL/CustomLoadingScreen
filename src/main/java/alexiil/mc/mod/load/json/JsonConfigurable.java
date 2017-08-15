@@ -15,7 +15,7 @@ import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.baked.BakedConfigurable;
 
 import buildcraft.lib.expression.FunctionContext;
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 /** @param <C> The class that extends this. This is what it should consolidate down to.
  * @param <B> The class that this is baked to. */

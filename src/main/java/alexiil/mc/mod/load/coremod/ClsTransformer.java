@@ -29,11 +29,11 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
         if (name.equals("net.minecraftforge.fml.client.SplashProgress")) {
             return transformSplashProgress(basicClass);
         }
-        if (name.equals("net.minecraftforge.fml.client.SplashProgress$3")) {
-            return transformSplashProgress_3(basicClass);
-        }
         if (name.equals("net.minecraftforge.fml.client.SplashProgress$Texture")) {
             return transformSplashProgress_Texture(basicClass);
+        }
+        if (name.startsWith("net.minecraftforge.fml.client.SplashProgress$")) {
+            return transformSplashProgress_3(basicClass);
         }
         if (name.equals("alexiil.mc.mod.load.render.MainSplashRenderer")) {
             return transformMainSplashRenderer(basicClass);
@@ -151,7 +151,7 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
 
                 m.instructions.add(new VarInsnNode(ALOAD, 0));
 
-                owner = "net/minecraftforge/fml/client/SplashProgress$3";
+                owner = classNode.name;
                 name = "val$fontLoc";
                 desc = desc_resource_location;
                 m.instructions.add(new FieldInsnNode(GETFIELD, owner, name, desc));

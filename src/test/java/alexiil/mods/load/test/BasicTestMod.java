@@ -8,20 +8,18 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = "empty_test_mod_x")
 public class BasicTestMod {
 
-    public static final TestModVars variables = new TestModVars();
-
     @Mod.EventHandler
-    public static void onPreInit(FMLPreInitializationEvent event) {
-        TestModHelper.preInit(variables, event);
+    public void onPreInit(FMLPreInitializationEvent event) {
+        TestModHelper.preInit(this, event);
     }
 
     @Mod.EventHandler
-    public static void onInit(FMLInitializationEvent event) {
-        TestModHelper.init(variables, event);
+    public void onInit(FMLInitializationEvent event) {
+        TestModHelper.preInit(this, event);
     }
 
     @Mod.EventHandler
-    public static void onPostInit(FMLPostInitializationEvent event) {
-        TestModHelper.postInit(variables, event);
+    public void onPostInit(FMLPostInitializationEvent event) {
+        TestModHelper.postInit(this, event);
     }
 }

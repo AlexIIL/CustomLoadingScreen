@@ -7,7 +7,7 @@ import com.google.gson.*;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonRenderingPart;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum RenderingPartDeserialiser implements IThrowingDeserialiser<JsonRenderingPart> {
     INSTANCE;

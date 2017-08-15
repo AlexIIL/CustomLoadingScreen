@@ -5,12 +5,12 @@ import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedVariable;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
-import buildcraft.lib.expression.InvalidExpressionException;
 import buildcraft.lib.expression.api.IExpressionNode;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
+import buildcraft.lib.expression.api.IVariableNode;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.api.NodeType;
 import buildcraft.lib.expression.node.binary.BiNodeToBooleanType;
-import buildcraft.lib.expression.node.value.IVariableNode;
 import buildcraft.lib.expression.node.value.NodeVariableLong;
 
 public class BakedFactoryVariableChange extends BakedFactory {
@@ -37,7 +37,7 @@ public class BakedFactoryVariableChange extends BakedFactory {
         this.keptVariables = keptVariables;
         this.shouldDestroy = shouldDestroy;
         this.node = node;
-        this.checkNode = NodeType.getType(node).makeVariableNode();
+        this.checkNode = NodeType.getType(node).makeVariableNode("check");
         hasChanged = (INodeBoolean) BiNodeToBooleanType.NOT_EQUAL.createNode(node, checkNode);
     }
 

@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mc.mod.load.baked.*;
 
 import buildcraft.lib.expression.FunctionContext;
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final JsonRenderingPart[] renders;

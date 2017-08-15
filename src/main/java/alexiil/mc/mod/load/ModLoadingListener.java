@@ -89,18 +89,9 @@ public class ModLoadingListener {
             return listeners.get(index).mod.getName();
         }
 
-        /** @return A number between 0 and 1000 */
-        public int getSubProgress() {
-            return index * 1000 / listeners.size();
-        }
-
-        @Deprecated
-        public int getProgress() {
-            int values = 1000 / State.values().length;
-            int part = state.ordinal() * values;
-            int size = listeners.size();
-            int percent = values * index / size;
-            return part + percent;
+        /** @return A number between 0 and max */
+        public int getSubProgress(int max) {
+            return index * max / listeners.size();
         }
     }
 
@@ -125,7 +116,7 @@ public class ModLoadingListener {
     }
 
     public static volatile ModStage stage = null;
-    private static List<ModLoadingListener> listeners = new ArrayList<>();
+    private static final List<ModLoadingListener> listeners = new ArrayList<>();
 
     private final ModContainer mod;
 
@@ -169,7 +160,7 @@ public class ModLoadingListener {
             }
         }
         stage = ms.getNext();
-        if (CustomLoadingScreen.shouldWait) {
+        if (true) {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ignored) {

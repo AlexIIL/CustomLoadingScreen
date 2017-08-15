@@ -3,8 +3,8 @@ package alexiil.mc.mod.load.baked;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 import buildcraft.lib.expression.api.IExpressionNode;
+import buildcraft.lib.expression.api.IVariableNode;
 import buildcraft.lib.expression.api.NodeType;
-import buildcraft.lib.expression.node.value.IVariableNode;
 
 public class BakedVariable extends BakedTickable {
     private final IVariableNode varNode;

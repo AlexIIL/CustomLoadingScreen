@@ -14,8 +14,8 @@ import alexiil.mc.mod.load.baked.insn.BakedInsn;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
-import buildcraft.lib.expression.InvalidExpressionException;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeConstantBoolean;
 
 /** A rendering part is something that defines the meta about a particular ImageRender: so, OpenGL commands and whether

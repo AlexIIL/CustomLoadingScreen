@@ -23,8 +23,6 @@ import alexiil.mc.mod.load.CustomLoadingScreen;
 import alexiil.mc.mod.load.SingleProgressBarTracker;
 import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
 
-import buildcraft.lib.expression.InvalidExpressionException;
-
 public class MainSplashRenderer {
     private static volatile boolean enableCustom = false;
 
@@ -66,8 +64,8 @@ public class MainSplashRenderer {
         if (!reachedConstruct) {
             try {
                 enableCustom = ClsManager.load();
-            } catch (InvalidExpressionException iee) {
-                iee.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             reachedConstruct = true;
         }

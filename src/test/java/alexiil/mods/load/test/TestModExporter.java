@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -19,12 +20,13 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class TestModExporter implements Opcodes {
     public static void dumpMods() {
-        File folder = new File("./mods/test/");
+        File folder = new File("./mods/");
         folder.mkdirs();
         for (int i = 0; i < 0x500; i++) {
             String name = StringUtils.leftPad(Integer.toHexString(i), 3, "0");
@@ -45,7 +47,7 @@ public class TestModExporter implements Opcodes {
                 zos.finish();
 
                 // Random Texture
-                ze = new ZipEntry("assets/test/textures/blocks/Block_" + name + ".png");
+                ze = new ZipEntry("assets/test/textures/blocks/block_" + name + ".png");
                 zos.putNextEntry(ze);
                 zos.write(texture(name));
                 zos.closeEntry();
@@ -105,7 +107,7 @@ public class TestModExporter implements Opcodes {
 
         {
             av0 = cw.visitAnnotation("Lnet/minecraftforge/fml/common/Mod;", true);
-            av0.visit("modid", "empty_test_mod_" + num);
+            av0.visit("modid", "empty_test_mod_" + num.toLowerCase(Locale.ROOT));
             av0.visit("name", "Empty Test Mod " + num);
             av0.visit("version", "0.1");
             av0.visitEnd();
@@ -133,9 +135,24 @@ public class TestModExporter implements Opcodes {
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new InsnNode(DUP));
             list.add(new VarInsnNode(ALOAD, 1));
-            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "preInit", "(Ljava.lang.Object;" + preInit + ")V",
+            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "preInit", "(Ljava/lang/Object;" + preInit + ")V",
                     false));
-            // list.add(new MethodInsnNode(INVOKESTATIC));
+            list.add(new InsnNode(RETURN));
+            mn.accept(cw);
+        }
+        {
+            String init = Type.getDescriptor(FMLInitializationEvent.class);
+            mn = new MethodNode(ACC_PUBLIC, "init", "(" + init + ")V", null, null);
+
+            mn.visitAnnotation(Type.getDescriptor(EventHandler.class), true);
+
+            InsnList list = mn.instructions;
+            list.add(new VarInsnNode(ALOAD, 0));
+            list.add(new InsnNode(DUP));
+            list.add(new VarInsnNode(ALOAD, 1));
+            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "preInit", "(Ljava/lang/Object;" + init + ")V",
+                    false));
+            list.add(new InsnNode(RETURN));
             mn.accept(cw);
         }
         {
@@ -147,8 +164,9 @@ public class TestModExporter implements Opcodes {
             InsnList list = mn.instructions;
             list.add(new VarInsnNode(ALOAD, 0));
             list.add(new VarInsnNode(ALOAD, 1));
-            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "postInit", "(Ljava.lang.Object;" + postInit + ")V",
+            list.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(TestModHelper.class), "postInit", "(Ljava/lang/Object;" + postInit + ")V",
                     false));
+            list.add(new InsnNode(RETURN));
             mn.accept(cw);
         }
         cw.visitEnd();

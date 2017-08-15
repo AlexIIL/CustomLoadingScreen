@@ -13,7 +13,7 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonInsn;
 import alexiil.mc.mod.load.json.JsonInsn.*;
 
-import buildcraft.lib.expression.InvalidExpressionException;
+import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum InstructionDeserialiser implements IThrowingDeserialiser<JsonInsn> {
     INSTANCE;
