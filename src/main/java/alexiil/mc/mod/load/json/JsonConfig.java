@@ -2,7 +2,11 @@ package alexiil.mc.mod.load.json;
 
 import net.minecraft.util.ResourceLocation;
 
-import alexiil.mc.mod.load.baked.*;
+import alexiil.mc.mod.load.baked.BakedAction;
+import alexiil.mc.mod.load.baked.BakedConfig;
+import alexiil.mc.mod.load.baked.BakedFactory;
+import alexiil.mc.mod.load.baked.BakedRenderingPart;
+import alexiil.mc.mod.load.baked.BakedVariable;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.api.InvalidExpressionException;

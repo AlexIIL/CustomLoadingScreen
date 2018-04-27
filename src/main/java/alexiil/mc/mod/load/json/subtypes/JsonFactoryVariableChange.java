@@ -12,7 +12,6 @@ import alexiil.mc.mod.load.baked.factory.BakedFactoryVariableChange;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.JsonRenderingPart;
 import alexiil.mc.mod.load.json.JsonVariable;
-
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.InternalCompiler;
@@ -37,18 +36,20 @@ public class JsonFactoryVariableChange extends JsonFactory {
         super(parent, obj, context);
         this.changeExpression = overrideObject(obj, "change", context, String.class, parent == null ? null : parent.changeExpression, "false");
         this.shouldDestroy = overrideObject(obj, "should_destroy", context, String.class, parent == null ? null : parent.shouldDestroy, "false");
-        this.variables = overrideVariables(obj, "variables", context, parent == null ? null : parent.variables);
         this.keptVariables = overrideVariables(obj, "kept_variables", context, parent == null ? null : parent.keptVariables);
+        this.variables = overrideVariables(obj, "variables", context, parent == null ? null : parent.variables);
     }
 
     @Override
     public void setLocation(ResourceLocation location) {
         super.setLocation(location);
         location = this.resourceLocation;
-        for (JsonVariable v : variables)
+        for (JsonVariable v : keptVariables) {
             v.setLocation(location);
-        for (JsonVariable v : keptVariables)
+        }
+        for (JsonVariable v : variables) {
             v.setLocation(location);
+        }
     }
 
     @Override
@@ -56,8 +57,8 @@ public class JsonFactoryVariableChange extends JsonFactory {
         IExpressionNode exp = InternalCompiler.compileExpression(changeExpression, context);
         NodeVariableLong varFactoryIndex = context.putVariableLong("factory_index");
         NodeVariableLong varFactoryCount = context.putVariableLong("factory_count");
-        BakedVariable[] _variables = bakeVariables(variables, context);
         BakedVariable[] _keptVariables = bakeVariables(keptVariables, context);
+        BakedVariable[] _variables = bakeVariables(variables, context);
 
         INodeBoolean _shouldDestroy = GenericExpressionCompiler.compileExpressionBoolean(shouldDestroy, context);
         BakedRenderingPart baked = toCreate.bake(context);

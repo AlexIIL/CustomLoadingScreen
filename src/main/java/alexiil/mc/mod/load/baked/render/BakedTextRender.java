@@ -8,10 +8,10 @@ import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
-import buildcraft.lib.expression.node.value.NodeVariableString;
+import buildcraft.lib.expression.node.value.NodeVariableObject;
 
 public abstract class BakedTextRender extends BakedRenderPositioned {
-    protected final NodeVariableString varText;
+    protected final NodeVariableObject<String> varText;
     protected final INodeDouble x;
     protected final INodeDouble y;
     protected final INodeLong colour;
@@ -21,7 +21,7 @@ public abstract class BakedTextRender extends BakedRenderPositioned {
     private long _colour;
     private double _x, _y;
 
-    public BakedTextRender(NodeVariableString varText, NodeVariableDouble varWidth, NodeVariableDouble varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
+    public BakedTextRender(NodeVariableObject<String> varText, NodeVariableDouble varWidth, NodeVariableDouble varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
         super(varWidth, varHeight);
         this.varText = varText;
         this.x = x;

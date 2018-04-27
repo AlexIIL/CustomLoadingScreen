@@ -10,9 +10,10 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
-import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker.LockUnlocker;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
@@ -22,22 +23,22 @@ import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeVariableBoolean;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
 import buildcraft.lib.expression.node.value.NodeVariableLong;
-import buildcraft.lib.expression.node.value.NodeVariableString;
+import buildcraft.lib.expression.node.value.NodeVariableObject;
 
 public class ClsManager {
     public static final Resolution RESOLUTION = new Resolution();
 
     private static final FunctionContext FUNC_CTX = DefaultContexts.createWithAll();
 
-    private static final NodeVariableString NODE_STATUS = FUNC_CTX.putVariableString("status");
-    private static final NodeVariableString NODE_STATUS_SUB = FUNC_CTX.putVariableString("sub_status");
+    private static final NodeVariableObject<String> NODE_STATUS = FUNC_CTX.putVariableString("status");
+    private static final NodeVariableObject<String> NODE_STATUS_SUB = FUNC_CTX.putVariableString("sub_status");
     private static final NodeVariableDouble NODE_PERCENTAGE = FUNC_CTX.putVariableDouble("percentage");
     private static final NodeVariableLong NODE_SCREEN_WIDTH = FUNC_CTX.putVariableLong("screen_width");
     private static final NodeVariableLong NODE_SCREEN_HEIGHT = FUNC_CTX.putVariableLong("screen_height");
     private static final NodeVariableDouble NODE_TIME = FUNC_CTX.putVariableDouble("time");
     private static final NodeVariableBoolean NODE_IS_RELOADING = FUNC_CTX.putVariableBoolean("is_reloading");
 
-    private static final NodeVariableString NODE_ERROR_MESSAGE = FUNC_CTX.putVariableString("error_message");
+    private static final NodeVariableObject<String> NODE_ERROR_MESSAGE = FUNC_CTX.putVariableString("error_message");
 
     private static MinecraftDisplayerRenderer instance;
     private static IResourceManager resManager;

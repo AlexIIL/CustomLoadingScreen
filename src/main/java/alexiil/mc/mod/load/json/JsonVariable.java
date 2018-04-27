@@ -7,7 +7,7 @@ import buildcraft.lib.expression.InternalCompiler;
 import buildcraft.lib.expression.api.IExpressionNode;
 import buildcraft.lib.expression.api.IVariableNode;
 import buildcraft.lib.expression.api.InvalidExpressionException;
-import buildcraft.lib.expression.api.NodeType;
+import buildcraft.lib.expression.api.NodeTypes;
 
 public class JsonVariable extends JsonConfigurable<JsonVariable, BakedVariable> {
     public final String name, value;
@@ -20,7 +20,7 @@ public class JsonVariable extends JsonConfigurable<JsonVariable, BakedVariable> 
     @Override
     protected BakedVariable actuallyBake(FunctionContext context) throws InvalidExpressionException {
         IExpressionNode node = InternalCompiler.compileExpression(value, context);
-        IVariableNode variable = NodeType.getType(node).makeVariableNode(name);
+        IVariableNode variable = NodeTypes.makeVariableNode(NodeTypes.getType(node), name);
         context.putVariable(name, variable);
         return new BakedVariable(variable, node);
     }

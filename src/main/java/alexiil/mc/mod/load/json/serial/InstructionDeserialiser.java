@@ -5,13 +5,22 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.util.JsonUtils;
 
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonInsn;
-import alexiil.mc.mod.load.json.JsonInsn.*;
+import alexiil.mc.mod.load.json.JsonInsn.JsonInsnColourSplit;
+import alexiil.mc.mod.load.json.JsonInsn.JsonInsnColourTogether;
+import alexiil.mc.mod.load.json.JsonInsn.JsonInsnRotate;
+import alexiil.mc.mod.load.json.JsonInsn.JsonInsnScale;
+import alexiil.mc.mod.load.json.JsonInsn.JsonInsnTranslate;
 
 import buildcraft.lib.expression.api.InvalidExpressionException;
 

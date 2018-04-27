@@ -11,8 +11,8 @@ import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import alexiil.mc.mod.load.SingleProgressBarTracker;
-import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker.LockUnlocker;
 
 @SuppressWarnings("serial")
 public class LoadingFrame extends JFrame {

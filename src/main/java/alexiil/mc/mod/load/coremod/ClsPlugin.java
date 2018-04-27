@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import alexiil.mc.mod.load.Translation;
 
-@IFMLLoadingPlugin.MCVersion("1.11.2")
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.TransformerExclusions({ "alexiil.mc.mod.load.coremod" })
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE - 80)
 public class ClsPlugin implements IFMLLoadingPlugin {

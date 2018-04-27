@@ -17,11 +17,10 @@ import alexiil.mc.mod.load.frame.FrameDisplayer;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 
 @Mod(//
-    modid = Lib.Mod.ID,//
-    guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory",//
-    acceptableRemoteVersions = "*",//
-    clientSideOnly = true,//
-    dependencies = "required-after:buildcraftlib"//
+    modid = Lib.Mod.ID, //
+    guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory", //
+    acceptableRemoteVersions = "*", //
+    clientSideOnly = true//
 )
 public class CustomLoadingScreen {
     public static final Configuration CONFIG;
@@ -46,13 +45,15 @@ public class CustomLoadingScreen {
         PROP_USE_CUSTOM = CONFIG.get("general", "use_custom", true);
 
         PROP_CONFIG = CONFIG.get("general", "screen_config", "builtin/random");
-        PROP_CONFIG.setComment("Sets the config to use for the custom loading screen. Use 'builtin/random' for a random loading screen on each load");
+        PROP_CONFIG.setComment(
+            "Sets the config to use for the custom loading screen. Use 'builtin/random' for a random loading screen on each load");
 
         String[] defaultRandoms = { "sample/default", "sample/white", "sample/rotating_cakes", "sample/scrolling" };
         PROP_CONFIG_RANDOMS = CONFIG.get("general", "random_configs", defaultRandoms);
 
         PROP_WAIT = CONFIG.get("general", "smooth_init", true);
-        PROP_WAIT.setComment("Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better.");
+        PROP_WAIT.setComment(
+            "Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better.");
 
         useCustom = PROP_USE_CUSTOM.getBoolean();
 

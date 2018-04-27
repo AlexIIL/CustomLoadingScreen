@@ -4,7 +4,7 @@ import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
 import buildcraft.lib.expression.api.IExpressionNode;
 import buildcraft.lib.expression.api.IVariableNode;
-import buildcraft.lib.expression.api.NodeType;
+import buildcraft.lib.expression.api.NodeTypes;
 
 public class BakedVariable extends BakedTickable {
     private final IVariableNode varNode;
@@ -21,6 +21,6 @@ public class BakedVariable extends BakedTickable {
     }
 
     public BakedVariable copyAsConstant() {
-        return new BakedVariable(varNode, NodeType.createConstantNode(expNode));
+        return new BakedVariable(varNode, NodeTypes.createConstantNode(expNode));
     }
 }

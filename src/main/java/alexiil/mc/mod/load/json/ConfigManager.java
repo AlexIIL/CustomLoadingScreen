@@ -19,7 +19,12 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
-import alexiil.mc.mod.load.json.serial.*;
+import alexiil.mc.mod.load.json.serial.ConfigDeserialiser;
+import alexiil.mc.mod.load.json.serial.FactoryDeserialiser;
+import alexiil.mc.mod.load.json.serial.ImageDeserialiser;
+import alexiil.mc.mod.load.json.serial.InstructionDeserialiser;
+import alexiil.mc.mod.load.json.serial.RenderingPartDeserialiser;
+import alexiil.mc.mod.load.json.serial.VariableArrayDeserialiser;
 
 import buildcraft.lib.expression.api.InvalidExpressionException;
 

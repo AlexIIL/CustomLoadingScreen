@@ -10,10 +10,14 @@ import com.google.common.eventbus.Subscribe;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModLoadingListener {
-    public enum State {
+    public enum LoaderStage {
         CONSTRUCT("construction", 0),
         PRE_INIT("pre_initialization", 0),
         LITE_LOADER_INIT("lite", true, true, 0),
@@ -21,7 +25,7 @@ public class ModLoadingListener {
         POST_INIT("post_initialization", 1),
         LOAD_COMPLETE("completed", 1);
 
-        public final boolean isAfterReload1, isAfterReload2;
+        public final boolean isAfterReload1;
 
         private String translatedName = null;
         final String name;
@@ -31,15 +35,14 @@ public class ModLoadingListener {
          * calculation */
         final boolean shouldSkip;
 
-        State(String name, boolean loneState, boolean skip, int state) {
+        LoaderStage(String name, boolean loneState, boolean skip, int state) {
             isAfterReload1 = state > 0;
-            isAfterReload2 = state > 1;
             isLoneState = loneState;
             this.name = name;
             shouldSkip = skip;
         }
 
-        State(String name, int state) {
+        LoaderStage(String name, int state) {
             this(name, false, false, state);
         }
 
@@ -51,7 +54,7 @@ public class ModLoadingListener {
     }
 
     public static class ModStage {
-        public final State state;
+        public final LoaderStage state;
 
         @Override
         public String toString() {
@@ -60,19 +63,19 @@ public class ModLoadingListener {
 
         public final int index;
 
-        public ModStage(State state, int index) {
+        public ModStage(LoaderStage state, int index) {
             this.state = state;
             this.index = index;
         }
 
         public ModStage getNext() {
             int ind = index + 1;
-            State s = state;
+            LoaderStage s = state;
             if (ind == listeners.size() || s.isLoneState) {
                 ind = 0;
                 int ord = s.ordinal() + 1;
-                if (ord == State.values().length) return this;
-                s = State.values()[ord];
+                if (ord == LoaderStage.values().length) return this;
+                s = LoaderStage.values()[ord];
                 if (s.shouldSkip) {
                     return new ModStage(s, ind).getNext();
                 }
@@ -116,41 +119,43 @@ public class ModLoadingListener {
     }
 
     public static volatile ModStage stage = null;
+    public static final List<String> modIds = new ArrayList<>();
     private static final List<ModLoadingListener> listeners = new ArrayList<>();
 
     private final ModContainer mod;
 
     public ModLoadingListener(ModContainer mod) {
         this.mod = mod;
+        modIds.add(mod.getModId());
         listeners.add(this);
     }
 
     @Subscribe
     public void construct(FMLConstructionEvent event) {
-        doProgress(State.CONSTRUCT, this);
+        doProgress(LoaderStage.CONSTRUCT, this);
     }
 
     @Subscribe
     public void preinit(FMLPreInitializationEvent event) {
-        doProgress(State.PRE_INIT, this);
+        doProgress(LoaderStage.PRE_INIT, this);
     }
 
     @Subscribe
     public void init(FMLInitializationEvent event) {
-        doProgress(State.INIT, this);
+        doProgress(LoaderStage.INIT, this);
     }
 
     @Subscribe
     public void postinit(FMLPostInitializationEvent event) {
-        doProgress(State.POST_INIT, this);
+        doProgress(LoaderStage.POST_INIT, this);
     }
 
     @Subscribe
     public void loadComplete(FMLLoadCompleteEvent event) {
-        doProgress(State.LOAD_COMPLETE, this);
+        doProgress(LoaderStage.LOAD_COMPLETE, this);
     }
 
-    private static void doProgress(State state, ModLoadingListener mod) {
+    private static void doProgress(LoaderStage state, ModLoadingListener mod) {
         ModStage ms = stage;
         if (ms == null) {
             if (mod == null) {

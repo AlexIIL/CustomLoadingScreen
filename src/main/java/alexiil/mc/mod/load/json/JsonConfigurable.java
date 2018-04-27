@@ -11,7 +11,6 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.util.ResourceLocation;
 
-import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.baked.BakedConfigurable;
 
 import buildcraft.lib.expression.FunctionContext;
@@ -33,14 +32,12 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
     public final void setSource(String src) {
         if (rawText == null) {
             rawText = src;
-            CLSLog.info("setSource in " + resourceLocation + " to " + rawText.replace('\n', ' '));
         }
     }
 
     public final void setSource(JsonElement json) {
         if (rawText == null) {
             rawText = ConfigManager.GSON_DEFAULT.toJson(json);
-            CLSLog.info("setSource in " + resourceLocation + " to " + rawText.replace('\n', ' '));
         }
     }
 
@@ -69,14 +66,16 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
 
     // These are helper methods to make deserialisation one-liners
 
-    protected static <O> O deserialiseObject(JsonObject obj, String memeber, JsonDeserializationContext ctx, Class<O> clazz) {
+    protected static <O> O deserialiseObject(JsonObject obj, String memeber, JsonDeserializationContext ctx,
+        Class<O> clazz) {
         if (obj.has(memeber)) {
             return ctx.deserialize(obj.get(memeber), clazz);
         }
         return null;
     }
 
-    protected static String consolidateFunction(JsonObject obj, String memeber, JsonDeserializationContext ctx, String parent, String defaultF) {
+    protected static String consolidateFunction(JsonObject obj, String memeber, JsonDeserializationContext ctx,
+        String parent, String defaultF) {
         return consolidateFunction(deserialiseObject(obj, memeber, ctx, String.class), parent, defaultF);
     }
 
@@ -96,14 +95,16 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
 
     /** This will override the parents version of the object if in is not null. If in is null and the parent is null,
      * then the default is returned. */
-    protected static <O> O overrideObject(JsonObject obj, String memeber, JsonDeserializationContext ctx, Class<O> clazz, O parent, O defaultO) {
+    protected static <O> O overrideObject(JsonObject obj, String memeber, JsonDeserializationContext ctx,
+        Class<O> clazz, O parent, O defaultO) {
         O in = deserialiseObject(obj, memeber, ctx, clazz);
         if (in != null) return in;
         if (parent != null) return parent;
         return defaultO;
     }
 
-    protected static JsonVariable[] overrideVariables(JsonObject obj, String memeber, JsonDeserializationContext ctx, JsonVariable[] parent) {
+    protected static JsonVariable[] overrideVariables(JsonObject obj, String memeber, JsonDeserializationContext ctx,
+        JsonVariable[] parent) {
         JsonVariable[] in = deserialiseObject(obj, memeber, ctx, JsonVariable[].class);
         if (in == null) {
             return parent == null ? new JsonVariable[0] : parent;

@@ -9,10 +9,10 @@ import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 import buildcraft.lib.expression.api.IExpressionNode.INodeLong;
-import buildcraft.lib.expression.api.IExpressionNode.INodeString;
+import buildcraft.lib.expression.api.IExpressionNode.INodeObject;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
-import buildcraft.lib.expression.node.value.NodeVariableString;
+import buildcraft.lib.expression.node.value.NodeVariableObject;
 
 public class JsonRenderText extends JsonRenderPositioned {
     public final String text;
@@ -24,11 +24,11 @@ public class JsonRenderText extends JsonRenderPositioned {
 
     @Override
     protected BakedTextRenderStatic actuallyBake(FunctionContext context) throws InvalidExpressionException {
-        NodeVariableString varText = context.putVariableString("text");
+        NodeVariableObject<String> varText = context.putVariableString("text");
         NodeVariableDouble varWidth = context.putVariableDouble("elem_width");
         NodeVariableDouble varHeight = context.putVariableDouble("elem_height");
 
-        INodeString textFunc = GenericExpressionCompiler.compileExpressionString(text, context);
+        INodeObject<String> textFunc = GenericExpressionCompiler.compileExpressionObject(String.class, text, context);
         INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, context);
         INodeDouble yFunc = GenericExpressionCompiler.compileExpressionDouble(position.y, context);
         INodeLong colourFunc = GenericExpressionCompiler.compileExpressionLong(colour, context);

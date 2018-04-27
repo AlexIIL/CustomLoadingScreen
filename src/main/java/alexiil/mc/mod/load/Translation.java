@@ -1,7 +1,15 @@
 package alexiil.mc.mod.load;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -53,7 +61,7 @@ public class Translation {
 
         // Lastly, set the current locale
         File options = new File("./options.txt");
-        String language = "en_US";
+        String language = "en_us";
         try (BufferedReader reader = new BufferedReader(new FileReader(options))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -67,11 +75,11 @@ public class Translation {
         }
         if (translators.containsKey(language)) currentTranslation = translators.get(language);
         else if (translators.containsKey("en_US")) {
-            System.out.println("Failed to load " + language + ", loading en_US insted");
-            currentTranslation = translators.get("en_US");
+            System.out.println("Failed to load " + language + ", loading en_us insted");
+            currentTranslation = translators.get("en_us");
         } else if (!translators.isEmpty()) {
             String name = translators.keySet().iterator().next();
-            System.out.println("Failed to load " + language + ", AND FAILED TO LOAD en_US! One available however is " + name + ", using that and keeping quiet...");
+            System.out.println("Failed to load " + language + ", AND FAILED TO LOAD en_us! One available however is " + name + ", using that and keeping quiet...");
             currentTranslation = translators.values().iterator().next();
         } else {
             System.out.println("Failed to load ANY languages! all strings fail now!");

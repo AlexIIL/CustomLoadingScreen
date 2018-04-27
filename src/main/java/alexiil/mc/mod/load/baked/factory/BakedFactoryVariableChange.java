@@ -5,12 +5,13 @@ import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedVariable;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
+import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.api.IExpressionNode;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 import buildcraft.lib.expression.api.IVariableNode;
 import buildcraft.lib.expression.api.InvalidExpressionException;
-import buildcraft.lib.expression.api.NodeType;
-import buildcraft.lib.expression.node.binary.BiNodeToBooleanType;
+import buildcraft.lib.expression.api.NodeTypes;
 import buildcraft.lib.expression.node.value.NodeVariableLong;
 
 public class BakedFactoryVariableChange extends BakedFactory {
@@ -21,15 +22,9 @@ public class BakedFactoryVariableChange extends BakedFactory {
     private final INodeBoolean hasChanged;
     private boolean hasAddedFirst;
 
-    public BakedFactoryVariableChange(
-        NodeVariableLong factoryIndex,
-        NodeVariableLong factoryCount,
-        BakedRenderingPart component,
-        BakedVariable[] variables,
-        BakedVariable[] keptVariables,
-        INodeBoolean shouldDestroy,
-        IExpressionNode node,
-        boolean shouldSpawnFirst) throws InvalidExpressionException {
+    public BakedFactoryVariableChange(NodeVariableLong factoryIndex, NodeVariableLong factoryCount,
+        BakedRenderingPart component, BakedVariable[] variables, BakedVariable[] keptVariables,
+        INodeBoolean shouldDestroy, IExpressionNode node, boolean shouldSpawnFirst) throws InvalidExpressionException {
 
         super(factoryIndex, factoryCount, component);
         this.hasAddedFirst = !shouldSpawnFirst;
@@ -37,8 +32,11 @@ public class BakedFactoryVariableChange extends BakedFactory {
         this.keptVariables = keptVariables;
         this.shouldDestroy = shouldDestroy;
         this.node = node;
-        this.checkNode = NodeType.getType(node).makeVariableNode("check");
-        hasChanged = (INodeBoolean) BiNodeToBooleanType.NOT_EQUAL.createNode(node, checkNode);
+        this.checkNode = NodeTypes.makeVariableNode(NodeTypes.getType(node), "check");
+        FunctionContext ctx = new FunctionContext("not_equal");
+        ctx.putVariable("a", node);
+        ctx.putVariable("b", checkNode);
+        hasChanged = GenericExpressionCompiler.compileExpressionBoolean("a != b", ctx);
     }
 
     @Override
@@ -61,7 +59,7 @@ public class BakedFactoryVariableChange extends BakedFactory {
                 _keptVariables[i] = v.copyAsConstant();
             }
         }
-        
+
         @Override
         protected void setVariables(MinecraftDisplayerRenderer renderer) {
             super.setVariables(renderer);

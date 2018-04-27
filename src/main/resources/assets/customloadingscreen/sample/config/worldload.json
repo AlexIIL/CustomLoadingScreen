@@ -1,0 +1,58 @@
+{
+    "renders": [
+        "sample/panorama",
+        {
+            "image": {
+                "parent": "sample/dirt_background",
+                "position_type": "BOTTOM_CENTER",
+                "offset_pos": "BOTTOM_CENTER",
+                "position": {
+                    "height": "4 * 16"
+                },
+                "texture": {
+                    "height": "4"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "sample/bottom_bar",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "colour": "0xFF_00_00_00",
+                "position": {
+                    "width": "screen_width",
+                    "y": "-64"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "sample/bottom_bar",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "colour": "0xFF_33_55_FF",
+                "position": {
+                    "y": "-64"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text"
+            }
+        }
+    ],
+    "functions": [
+
+    ],
+    "variables": {
+
+    },
+    "factories": [
+
+    ],
+    "actions": [
+
+    ]
+}

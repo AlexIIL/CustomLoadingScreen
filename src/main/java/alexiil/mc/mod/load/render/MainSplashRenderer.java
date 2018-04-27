@@ -1,6 +1,37 @@
 package alexiil.mc.mod.load.render;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_GREATER;
+import static org.lwjgl.opengl.GL11.GL_LEQUAL;
+import static org.lwjgl.opengl.GL11.GL_LIGHTING;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glAlphaFunc;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor3d;
+import static org.lwjgl.opengl.GL11.glColor4f;
+import static org.lwjgl.opengl.GL11.glDepthFunc;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glScalef;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL11.glViewport;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -20,8 +51,9 @@ import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
-import alexiil.mc.mod.load.SingleProgressBarTracker;
-import alexiil.mc.mod.load.SingleProgressBarTracker.LockUnlocker;
+import alexiil.mc.mod.load.progress.LongTermProgressTracker;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker;
+import alexiil.mc.mod.load.progress.SingleProgressBarTracker.LockUnlocker;
 
 public class MainSplashRenderer {
     private static volatile boolean enableCustom = false;
@@ -126,6 +158,7 @@ public class MainSplashRenderer {
                 setGL();
             }
         }
+        LongTermProgressTracker.save(SingleProgressBarTracker.getProgressSections());
         clearGL();
     }
 
@@ -194,7 +227,7 @@ public class MainSplashRenderer {
             long used = total - free;
 
             String[] list = { //
-                String.format("Mem: % 2d%% %03d/%03dMB", used * 100L / max, bytesToMb(used), bytesToMb(max)),//
+                String.format("Mem: % 2d%% %03d/%03dMB", used * 100L / max, bytesToMb(used), bytesToMb(max)), //
                 String.format("Allocated: % 2d%% %03dMB", total * 100L / max, bytesToMb(total)) //
             };
 

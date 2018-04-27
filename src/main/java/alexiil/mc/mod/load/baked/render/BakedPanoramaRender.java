@@ -3,9 +3,9 @@ package alexiil.mc.mod.load.baked.render;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -44,7 +44,7 @@ public class BakedPanoramaRender extends BakedRender {
 
     private void drawPanorama(MinecraftDisplayerRenderer renderer) {
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vb = tessellator.getBuffer();
+        BufferBuilder vb = tessellator.getBuffer();
 
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();

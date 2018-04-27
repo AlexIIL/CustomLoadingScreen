@@ -17,7 +17,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
     }
 }
 
@@ -34,14 +34,23 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     maven {
-        name = "buildcraft"
+        name = "BuildCraft"
         url = "https://mod-buildcraft.com/maven"
     }
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
-    deobfCompile "com.mod-buildcraft:buildcraft-lib:7.99.7"
     testCompile "junit:junit:4.12"
+    shade "com.mod-buildcraft:buildcraft-libexpression:0.9.1"
+}
+
+reobfJar {
+    addExtraSrgLine("PK: buildcraft/lib/expression alexiil/mc/mod/load/repackage/buildcraft/lib/expression")
 }
 
 ext.configFile = file "build.properties"
@@ -59,7 +68,7 @@ version = "${project.config.mc_version}-${project.config.mod_version}." + buildN
 minecraft {
     version = config.mc_version + "-" + config.forge_version
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -70,10 +79,6 @@ minecraft {
     replaceIn "alexiil/mods/load/Lib.java"
     replace "@VERSION@", "${project.config.mod_version}." + buildNumber
     replace "@COMMIT_HASH@", System.getenv("DRONE_COMMIT")?: "manual build" 
-}
-
-dependencies {
-    testCompile "junit:junit:4.12"
 }
 
 processResources
@@ -96,10 +101,29 @@ processResources
     }
 }
 
-jar
-{
-	manifest
-	{
+sourceSets {
+    main {
+        java {
+            srcDir "src/main/java"
+        }
+        resources {
+            srcDir "src/main/resources"
+        }
+    }
+    test {
+        java {
+            srcDir "src/test/java"
+        }
+    }
+}
+
+jar {
+    configurations.shade.forEach { dep ->
+        from(project.zipTree(dep)) {
+            exclude "META-INF", "META-INF/**"
+        }
+    }
+	manifest {
 		attributes 'FMLCorePluginContainsFMLMod': 'true'
 		attributes 'FMLCorePlugin': 'alexiil.mc.mod.load.coremod.ClsPlugin'
 	}

@@ -2,11 +2,20 @@ package alexiil.mc.mod.load.json.serial;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.util.JsonUtils;
 
-import alexiil.mc.mod.load.json.*;
+import alexiil.mc.mod.load.json.ConfigManager;
+import alexiil.mc.mod.load.json.JsonAction;
+import alexiil.mc.mod.load.json.JsonConfig;
+import alexiil.mc.mod.load.json.JsonFactory;
+import alexiil.mc.mod.load.json.JsonRenderingPart;
+import alexiil.mc.mod.load.json.JsonVariable;
 
 import buildcraft.lib.expression.api.InvalidExpressionException;
 

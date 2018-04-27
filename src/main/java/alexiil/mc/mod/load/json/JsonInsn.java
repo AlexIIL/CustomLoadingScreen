@@ -1,6 +1,15 @@
 package alexiil.mc.mod.load.json;
 
-import alexiil.mc.mod.load.baked.insn.*;
+import alexiil.mc.mod.load.baked.insn.BakedColourFunctional;
+import alexiil.mc.mod.load.baked.insn.BakedColourFunctionalTogether;
+import alexiil.mc.mod.load.baked.insn.BakedColourSimple;
+import alexiil.mc.mod.load.baked.insn.BakedInsn;
+import alexiil.mc.mod.load.baked.insn.BakedRotationFunctional;
+import alexiil.mc.mod.load.baked.insn.BakedRotationSimple;
+import alexiil.mc.mod.load.baked.insn.BakedScaleFunctional;
+import alexiil.mc.mod.load.baked.insn.BakedScaleSimple;
+import alexiil.mc.mod.load.baked.insn.BakedTranslateFunctional;
+import alexiil.mc.mod.load.baked.insn.BakedTranslateSimple;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;

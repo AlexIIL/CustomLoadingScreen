@@ -2,7 +2,11 @@ package alexiil.mc.mod.load.json.serial;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 import buildcraft.lib.expression.api.InvalidExpressionException;
 

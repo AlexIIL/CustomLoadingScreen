@@ -8,15 +8,15 @@ import net.minecraft.util.ResourceLocation;
 import alexiil.mc.mod.load.baked.BakedAction;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
-import buildcraft.lib.expression.api.IExpressionNode.INodeString;
+import buildcraft.lib.expression.api.IExpressionNode.INodeObject;
 
 public class ActionSound extends BakedAction {
     public static final SoundHandler sndHandler = Minecraft.getMinecraft().getSoundHandler();
-    public final INodeString sound;
+    public final INodeObject<String> sound;
     public final INodeBoolean repeat;
     private ISound currentSound = null;
 
-    public ActionSound(INodeBoolean conditionStart, INodeBoolean conditionEnd, INodeString sound, INodeBoolean repeat) {
+    public ActionSound(INodeBoolean conditionStart, INodeBoolean conditionEnd, INodeObject<String> sound, INodeBoolean repeat) {
         super(conditionStart, conditionEnd);
         this.sound = sound;
         this.repeat = repeat;

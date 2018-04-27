@@ -9,11 +9,11 @@ import alexiil.mc.mod.load.baked.render.BakedArea;
 import alexiil.mc.mod.load.baked.render.BakedImageRender;
 import alexiil.mc.mod.load.json.Area;
 import alexiil.mc.mod.load.render.TextureAnimator;
-
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.api.IExpressionNode.INodeDouble;
 import buildcraft.lib.expression.api.InvalidExpressionException;
+import buildcraft.lib.expression.node.value.NodeConstantDouble;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
 
 public class JsonRenderImage extends JsonRenderPositioned {
@@ -31,7 +31,14 @@ public class JsonRenderImage extends JsonRenderPositioned {
         NodeVariableDouble varWidth = context.putVariableDouble("elem_width");
         NodeVariableDouble varHeight = context.putVariableDouble("elem_height");
         BakedArea pos = position.bake(context);
-        BakedArea tex = texture.bake(context);
+        BakedArea tex;
+        if (texture == null) {
+            NodeConstantDouble zero = NodeConstantDouble.ZERO;
+            NodeConstantDouble one = NodeConstantDouble.ONE;
+            tex = new BakedArea(zero, zero, one, one);
+        } else {
+            tex = texture.bake(context);
+        }
         if (TextureAnimator.isAnimated(resourceLocation.toString())) {
             INodeDouble _frame = GenericExpressionCompiler.compileExpressionDouble(frame, context);
             return new BakedAnimatedRender(varWidth, varHeight, image, pos, tex, _frame);

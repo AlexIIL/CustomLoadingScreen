@@ -15,7 +15,11 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.ClsManager.Resolution;
-import alexiil.mc.mod.load.baked.*;
+import alexiil.mc.mod.load.baked.BakedAction;
+import alexiil.mc.mod.load.baked.BakedConfig;
+import alexiil.mc.mod.load.baked.BakedFactory;
+import alexiil.mc.mod.load.baked.BakedRenderingPart;
+import alexiil.mc.mod.load.baked.BakedVariable;
 
 public class MinecraftDisplayerRenderer {
     public final TextureAnimator animator;

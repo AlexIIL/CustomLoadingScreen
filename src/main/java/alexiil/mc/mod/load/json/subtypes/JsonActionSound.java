@@ -7,7 +7,7 @@ import alexiil.mc.mod.load.json.JsonAction;
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
-import buildcraft.lib.expression.api.IExpressionNode.INodeString;
+import buildcraft.lib.expression.api.IExpressionNode.INodeObject;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class JsonActionSound extends JsonAction {
@@ -24,7 +24,7 @@ public class JsonActionSound extends JsonAction {
     protected BakedAction actuallyBake(FunctionContext functions) throws InvalidExpressionException {
         INodeBoolean start = GenericExpressionCompiler.compileExpressionBoolean(conditionStart, functions);
         INodeBoolean end = GenericExpressionCompiler.compileExpressionBoolean(conditionStart, functions);
-        INodeString _sound = GenericExpressionCompiler.compileExpressionString(sound, functions);
+        INodeObject<String> _sound = GenericExpressionCompiler.compileExpressionString(sound, functions);
         INodeBoolean _repeat = GenericExpressionCompiler.compileExpressionBoolean(repeat, functions);
         return new ActionSound(start, end, _sound, _repeat);
     }
