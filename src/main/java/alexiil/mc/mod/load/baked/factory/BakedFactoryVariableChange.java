@@ -23,7 +23,7 @@ public class BakedFactoryVariableChange extends BakedFactory {
     private boolean hasAddedFirst;
 
     public BakedFactoryVariableChange(NodeVariableLong factoryIndex, NodeVariableLong factoryCount,
-        BakedRenderingPart component, BakedVariable[] variables, BakedVariable[] keptVariables,
+        BakedRenderingPart[] component, BakedVariable[] variables, BakedVariable[] keptVariables,
         INodeBoolean shouldDestroy, IExpressionNode node, boolean shouldSpawnFirst) throws InvalidExpressionException {
 
         super(factoryIndex, factoryCount, component);

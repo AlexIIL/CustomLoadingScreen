@@ -1,6 +1,9 @@
 package alexiil.mc.mod.load;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.lwjgl.opengl.Display;
 
@@ -9,6 +12,9 @@ import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
 import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonConfig;
@@ -40,8 +46,34 @@ public class ClsManager {
 
     private static final NodeVariableObject<String> NODE_ERROR_MESSAGE = FUNC_CTX.putVariableString("error_message");
 
+    private static final List<String> forgeProgressBarTitles = new ArrayList<>();
+    private static final List<String> forgeProgressBarMessages = new ArrayList<>();
+    private static final List<Double> forgeProgressBarPercents = new ArrayList<>();
+
     private static MinecraftDisplayerRenderer instance;
     private static IResourceManager resManager;
+
+    static {
+        FUNC_CTX.put_l("forge_progress_bar_count", forgeProgressBarTitles::size);
+        FUNC_CTX.put_l_o("forge_progress_bar_title", String.class, (index) -> {
+            if (index < 0 || index >= forgeProgressBarTitles.size()) {
+                return "Invalid Index";
+            }
+            return forgeProgressBarTitles.get((int) index);
+        }).setNeverInline();
+        FUNC_CTX.put_l_o("forge_progress_bar_message", String.class, (index) -> {
+            if (index < 0 || index >= forgeProgressBarMessages.size()) {
+                return "Invalid Index";
+            }
+            return forgeProgressBarMessages.get((int) index);
+        }).setNeverInline();
+        FUNC_CTX.put_l_d("forge_progress_bar_percent", (index) -> {
+            if (index < 0 || index >= forgeProgressBarPercents.size()) {
+                return 0;
+            }
+            return forgeProgressBarPercents.get((int) index);
+        }).setNeverInline();
+    }
 
     public static boolean load() throws InvalidExpressionException {
         resManager = Minecraft.getMinecraft().getResourceManager();
@@ -54,11 +86,13 @@ public class ClsManager {
             NODE_ERROR_MESSAGE.value = "Error: couldn't find the config file '" + used + "'";
             cfg = ConfigManager.getAsConfig("sample/generic_error");
             if (cfg == null) {
-                CLSLog.info("Error: couldn't find the generic error file! '" + used + "', defaulting to sample/generic_error");
+                CLSLog.info(
+                    "Error: couldn't find the generic error file! '" + used + "', defaulting to sample/generic_error");
                 return false;
             }
         } else {
-            NODE_ERROR_MESSAGE.value = "Unknown error! Check your logs + config file (this should never be shown normally)";
+            NODE_ERROR_MESSAGE.value =
+                "Unknown error! Check your logs + config file (this should never be shown normally)";
         }
 
         try {
@@ -77,6 +111,22 @@ public class ClsManager {
             NODE_STATUS.value = SingleProgressBarTracker.getStatusText();
             NODE_STATUS_SUB.value = SingleProgressBarTracker.getSubStatus();
             NODE_PERCENTAGE.value = SingleProgressBarTracker.getProgress() / SingleProgressBarTracker.MAX_PROGRESS_D;
+
+            Iterator<ProgressBar> i = ProgressManager.barIterator();
+            forgeProgressBarTitles.clear();
+            forgeProgressBarMessages.clear();
+            forgeProgressBarPercents.clear();
+            while (i.hasNext()) {
+                ProgressBar b = i.next();
+                forgeProgressBarTitles.add(b.getTitle());
+                forgeProgressBarMessages.add(b.getMessage());
+                double div = b.getSteps();
+                if (div <= 0) {
+                    forgeProgressBarPercents.add(0.0);
+                } else {
+                    forgeProgressBarPercents.add((b.getStep()) / div);
+                }
+            }
         }
         RESOLUTION.update();
         NODE_TIME.value = MainSplashRenderer.getTotalTime() / 1000.0;
@@ -96,7 +146,7 @@ public class ClsManager {
             this.width = Display.getWidth();
             this.height = Display.getHeight();
             int scaleFactor = 1;
-            boolean unicode = false;;
+            boolean unicode = false;
             int guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
 
             if (guiScale == 0) {

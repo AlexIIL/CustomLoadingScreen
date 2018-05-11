@@ -12,6 +12,7 @@ import alexiil.mc.mod.load.baked.factory.BakedFactoryVariableChange;
 import alexiil.mc.mod.load.json.JsonFactory;
 import alexiil.mc.mod.load.json.JsonRenderingPart;
 import alexiil.mc.mod.load.json.JsonVariable;
+
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
 import buildcraft.lib.expression.InternalCompiler;
@@ -24,7 +25,7 @@ public class JsonFactoryVariableChange extends JsonFactory {
     public final String changeExpression, shouldDestroy;
     public final JsonVariable[] variables, keptVariables;
 
-    public JsonFactoryVariableChange(JsonRenderingPart toCreate, String changeExpression, String shouldDestroy, JsonVariable[] variables, JsonVariable[] keptVariables) {
+    public JsonFactoryVariableChange(JsonRenderingPart[] toCreate, String changeExpression, String shouldDestroy, JsonVariable[] variables, JsonVariable[] keptVariables) {
         super(toCreate);
         this.changeExpression = changeExpression;
         this.shouldDestroy = shouldDestroy;
@@ -54,14 +55,17 @@ public class JsonFactoryVariableChange extends JsonFactory {
 
     @Override
     protected BakedFactory actuallyBake(FunctionContext context) throws InvalidExpressionException {
+        NodeVariableLong varFactoryCount = context.putVariableLong("factory_count");
         IExpressionNode exp = InternalCompiler.compileExpression(changeExpression, context);
         NodeVariableLong varFactoryIndex = context.putVariableLong("factory_index");
-        NodeVariableLong varFactoryCount = context.putVariableLong("factory_count");
         BakedVariable[] _keptVariables = bakeVariables(keptVariables, context);
         BakedVariable[] _variables = bakeVariables(variables, context);
 
         INodeBoolean _shouldDestroy = GenericExpressionCompiler.compileExpressionBoolean(shouldDestroy, context);
-        BakedRenderingPart baked = toCreate.bake(context);
+        BakedRenderingPart[] baked = new BakedRenderingPart[toCreate.length];
+        for (int i = 0; i < baked.length; i++) {
+            baked[i] = toCreate[i].bake(context);
+        }
         return new BakedFactoryVariableChange(varFactoryIndex, varFactoryCount, baked, _variables, _keptVariables, _shouldDestroy, exp, true);
     }
 

@@ -10,12 +10,12 @@ import buildcraft.lib.expression.node.value.NodeVariableLong;
 
 public abstract class BakedFactory extends BakedTickable {
     public final NodeVariableLong factoryIndex, factoryCount;
-    public final BakedRenderingPart component;
+    public final BakedRenderingPart[] component;
 
     public final List<FactoryElement> elements = new LinkedList<>();
     protected int createdCount = 0;
 
-    public BakedFactory(NodeVariableLong factoryIndex, NodeVariableLong factoryCount, BakedRenderingPart component) {
+    public BakedFactory(NodeVariableLong factoryIndex, NodeVariableLong factoryCount, BakedRenderingPart[] component) {
         this.factoryIndex = factoryIndex;
         this.factoryCount = factoryCount;
         this.component = component;
@@ -42,7 +42,9 @@ public abstract class BakedFactory extends BakedTickable {
 
         public boolean tick(MinecraftDisplayerRenderer renderer) {
             setVariables(renderer);
-            component.tick(renderer);
+            for (BakedRenderingPart part : component) {
+                part.tick(renderer);
+            }
             return true;
         }
     }

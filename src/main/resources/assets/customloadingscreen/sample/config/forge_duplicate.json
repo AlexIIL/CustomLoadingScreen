@@ -1,0 +1,37 @@
+{
+    "renders": [
+        "sample/mojang_splash"
+    ],
+    "functions": [
+        
+    ],
+    "variables": {
+        "bar_count": "forge_progress_bar_count"
+    },
+    "factories": [
+        {
+            "parent": "builtin/change",
+            "change": "factory_count < bar_count",
+            "to_create": [
+                {   
+                    "should_render": "factory_index < bar_count",
+                    "image": {
+                        "parent": "builtin/text",
+                        "image": "textures/font/ascii.png",
+                        "position_type": "BOTTOM_LEFT",
+                        "offset_pos": "BOTTOM_LEFT",
+                        "text": "forge_progress_bar_title(factory_index) + ': ' + forge_progress_bar_message(factory_index)",
+                        "position": {
+                            "x": "30",
+                            "y": "(factory_index - bar_count) * 16 - 4"
+                        },
+                        "colour": "0xFF_00_00_00"
+                    }
+                }
+            ]
+        }
+    ],
+    "actions":[
+        
+    ]
+}
