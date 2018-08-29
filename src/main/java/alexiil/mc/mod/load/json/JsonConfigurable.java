@@ -1,10 +1,10 @@
 package alexiil.mc.mod.load.json;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.ObjectArrays;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -128,19 +128,26 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
         return vars.toArray(new JsonVariable[vars.size()]);
     }
 
+    protected static void ensureExists(Object obj, String name) throws InvalidExpressionException {
+        if (obj == null) {
+            throw new InvalidExpressionException("Missing element '" + name + "'");
+        }
+    }
+
     /** This will effectively combine the two arrays together. Specifically, if both of the arrays are null, null is
      * returned. If both of them are either null or empty (but one is not null) then the non-null one is returned. If
      * both of them are not empty, then a new array is returned with the first array occupying the first positions, and
      * and the second array occupying the last positions. */
-    @SuppressWarnings("unchecked")
     protected static <O> O[] consolidateArray(O[] first, O[] last) {
         if (first == null || first.length == 0) {
-            if (last == null) return null;
-            else if (first != null) return first;
-            else return last;
+            return last != null ? last : first;
         }
-        if (last == null || last.length == 0) return first;
-        return ObjectArrays.concat(first, last, (Class<O>) first.getClass().getComponentType());
+        if (last == null || last.length == 0) {
+            return first;
+        }
+        O[] array = Arrays.copyOf(first, first.length + last.length);
+        System.arraycopy(last, 0, array, first.length, last.length);
+        return array;
     }
 
     protected static Area consolidateArea(JsonObject obj, String memeber, JsonDeserializationContext ctx, Area parent) {

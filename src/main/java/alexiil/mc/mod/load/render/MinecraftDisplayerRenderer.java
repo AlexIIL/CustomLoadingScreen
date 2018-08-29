@@ -103,7 +103,6 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.color(1, 1, 1, 1);
         mc.updateDisplay();
-
     }
 
     public FontRenderer fontRenderer(String fontTexture) {

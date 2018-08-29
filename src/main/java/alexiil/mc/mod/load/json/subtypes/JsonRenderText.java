@@ -19,7 +19,7 @@ public class JsonRenderText extends JsonRenderPositioned {
 
     public JsonRenderText(JsonRenderText parent, JsonObject json, JsonDeserializationContext context) {
         super(parent, json, context);
-        text = overrideObject(json, "text", context, String.class, parent == null ? null : parent.text, "_missing_text_");
+        text = overrideObject(json, "text", context, String.class, parent == null ? null : parent.text, null);
     }
 
     @Override
@@ -27,6 +27,12 @@ public class JsonRenderText extends JsonRenderPositioned {
         NodeVariableObject<String> varText = context.putVariableString("text");
         NodeVariableDouble varWidth = context.putVariableDouble("elem_width");
         NodeVariableDouble varHeight = context.putVariableDouble("elem_height");
+
+        ensureExists(text, "text");
+        ensureExists(position, "position");
+        ensureExists(position.x, "position.x");
+        ensureExists(position.y, "position.y");
+        ensureExists(colour, "colour");
 
         INodeObject<String> textFunc = GenericExpressionCompiler.compileExpressionObject(String.class, text, context);
         INodeDouble xFunc = GenericExpressionCompiler.compileExpressionDouble(position.x, context);

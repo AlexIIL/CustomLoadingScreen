@@ -122,7 +122,7 @@ public class ConfigManager {
     /** This makes the assumption that the type.clazz is the same as T or a subclass of T. Because this is a
      * package-protected function this is known and so it will NEVER throw a class cast exception. */
     /* For some reason, using <T extends JsonConfigurable<T, ?>> didn't compile. (But it did in eclipse? What?) */
-    static <T extends JsonConfigurable> T getAsT(EType type, String location) throws InvalidExpressionException {
+    static <T extends JsonConfigurable<T, ?>> T getAsT(EType type, String location) throws InvalidExpressionException {
         if (StringUtils.isEmpty(location)) {
             CLSLog.warn("Location was given as null!", new Throwable());
             return null;

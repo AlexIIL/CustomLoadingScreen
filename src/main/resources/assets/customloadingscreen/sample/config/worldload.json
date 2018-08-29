@@ -39,7 +39,9 @@
         },
         {
             "image": {
-                "parent": "builtin/text"
+                "parent": "builtin/text",
+                "text": "'hello'",
+                "position": { "x": 0, "y": 0 }
             }
         }
     ],
