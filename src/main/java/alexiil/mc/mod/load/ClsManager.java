@@ -73,6 +73,10 @@ public class ClsManager {
             }
             return forgeProgressBarPercents.get((int) index);
         }).setNeverInline();
+
+        FUNC_CTX.put_s("tip", Tips::getFirstTip);
+        FUNC_CTX.put_l("tip_count", Tips::getTipCount);
+        FUNC_CTX.put_l_o("tip", String.class, Tips::getTip);
     }
 
     public static boolean load() throws InvalidExpressionException {
