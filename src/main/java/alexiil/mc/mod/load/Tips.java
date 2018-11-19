@@ -1,13 +1,18 @@
 package alexiil.mc.mod.load;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Basic tips manager. Provides access to a single list of */
+import javax.annotation.Nullable;
+
+/** Basic tips manager. Provides access to a single list of tips. */
 public class Tips {
 
     private static final List<String> tips = new ArrayList<>();
+    private static boolean anyTips = false;
 
     static {
         // Just ensure that nothing can crash by having an empty list
@@ -23,15 +28,50 @@ public class Tips {
         Collections.shuffle(tips);
         if (tips.isEmpty()) {
             tips.add("Tips file was empty!");
+            anyTips = false;
+        } else {
+            anyTips = true;
         }
+    }
+
+    public static void parseTips(BufferedReader from, List<String> to) throws IOException {
+        String line;
+        while ((line = from.readLine()) != null) {
+            if (line.isEmpty() || line.startsWith("#")) {
+                // Comment
+            } else {
+                to.add(line);
+            }
+        }
+    }
+
+    public static List<String> parseTips(BufferedReader from) throws IOException {
+        List<String> list = new ArrayList<>();
+        parseTips(from, list);
+        return list;
     }
 
     public static String getFirstTip() {
         return tips.get(0);
     }
 
+    /** Checks to see if any valid tips have been loaded ({@link #getFirstTip()} will return the default tip if this
+     * returns false). */
+    public static boolean hasAnyTips() {
+        return anyTips;
+    }
+
     public static int getTipCount() {
         return tips.size();
+    }
+
+    /** @return The tip at the given index, or null if the index is out of bounds. */
+    @Nullable
+    public static String getTipAt(int index) {
+        if (index < 0 || index >= tips.size()) {
+            return null;
+        }
+        return tips.get(index);
     }
 
     /** @return The tip at the given index. Wraps around if the index was outside of bounds */
@@ -49,5 +89,9 @@ public class Tips {
 
     public static String getTip(long index) {
         return getTip((int) index);
+    }
+
+    public static class TipsInstance {
+
     }
 }

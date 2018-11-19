@@ -1,5 +1,8 @@
 package alexiil.mc.mod.load.render;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glEnable;
+
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -22,6 +25,8 @@ import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedVariable;
 
 public class MinecraftDisplayerRenderer {
+    private static final ResourceLocation FONT_LOCATION = new ResourceLocation("textures/font/ascii.png");
+
     public final TextureAnimator animator;
     private final BakedVariable[] variables;
     private final BakedRenderingPart[] renderingParts;
@@ -30,7 +35,7 @@ public class MinecraftDisplayerRenderer {
     private long lastTime;
     private Minecraft mc;
     private final Map<String, FontRenderer> fontRenderers = Maps.newHashMap();
-    private final FontRenderer _font_render_instance;
+    private final FontRendererSeparate _font_render_instance;
     public TextureManager textureManager;
     private boolean first = true;
     private SharedDrawable drawable;
@@ -40,7 +45,7 @@ public class MinecraftDisplayerRenderer {
         mc = Minecraft.getMinecraft();
 
         textureManager = new TextureManager(mc.getResourceManager());
-        _font_render_instance = new FontRenderer(mc.gameSettings, new ResourceLocation("textures/font/ascii.png"), textureManager, false);
+        _font_render_instance = new FontRendererSeparate(mc.gameSettings, FONT_LOCATION, textureManager, false);
         mc.refreshResources();
         textureManager.onResourceManagerReload(mc.getResourceManager());
         _font_render_instance.onResourceManagerReload(mc.getResourceManager());
@@ -65,6 +70,7 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         GlStateManager.disableDepth();
+        glEnable(GL_TEXTURE_2D);
         GlStateManager.enableTexture2D();
 
         GlStateManager.clearColor(1, 1, 1, 1);
@@ -102,7 +108,6 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.color(1, 1, 1, 1);
-        mc.updateDisplay();
     }
 
     public FontRenderer fontRenderer(String fontTexture) {
@@ -116,7 +121,6 @@ public class MinecraftDisplayerRenderer {
         // font.onResourceManagerReload(mc.getResourceManager());
         // fontRenderers.put(fontTexture, font);
         // return font;
-
         return _font_render_instance;
     }
 
@@ -127,6 +131,7 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
         GlStateManager.clearColor(1, 1, 1, 0);
         GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT);
+        _font_render_instance.destroy();
         drawable.destroy();
     }
 }

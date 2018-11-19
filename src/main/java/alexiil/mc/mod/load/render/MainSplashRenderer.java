@@ -40,6 +40,7 @@ import java.util.concurrent.locks.Lock;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -143,17 +144,18 @@ public class MainSplashRenderer {
             mutex.acquireUninterruptibly();
             Display.update();
             mutex.release();
+            GL11.glFlush();
 
             if (finishedLoading && !reachedConstruct) {
                 // We crashed
                 break;
             }
 
+            Display.sync(100);
             boolean grabUngrab = pause;// & !finishedLoading;
             if (grabUngrab) {
                 clearGL();
             }
-            Display.sync(100);
             if (grabUngrab) {
                 setGL();
             }
