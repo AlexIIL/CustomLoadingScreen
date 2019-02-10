@@ -77,6 +77,20 @@ public class ClsManager {
         FUNC_CTX.put_s("tip", Tips::getFirstTip);
         FUNC_CTX.put_l("tip_count", Tips::getTipCount);
         FUNC_CTX.put_l_o("tip", String.class, Tips::getTip);
+
+        FUNC_CTX.put_l("memory_bytes_total", Runtime.getRuntime()::totalMemory);
+        FUNC_CTX.put_l("memory_bytes_max", Runtime.getRuntime()::maxMemory);
+        FUNC_CTX.put_l("memory_bytes_free", Runtime.getRuntime()::freeMemory);
+        FUNC_CTX.put_l("memory_bytes_used", () -> {
+            return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        });
+
+        FUNC_CTX.put_l("memory_total", () -> Runtime.getRuntime().totalMemory() / 1024 / 1024);
+        FUNC_CTX.put_l("memory_max", () -> Runtime.getRuntime().maxMemory() / 1024 / 1024);
+        FUNC_CTX.put_l("memory_free", () -> Runtime.getRuntime().freeMemory() / 1024 / 1024);
+        FUNC_CTX.put_l("memory_used", () -> {
+            return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+        });
     }
 
     public static boolean load() throws InvalidExpressionException {

@@ -26,6 +26,7 @@ public class FontRendererSeparate extends FontRenderer {
         super(settings, location, textureManagerIn, unicode);
 
         loadTex(location);
+        // TODO: Load unicode pages?
         // for (int i = 0; i < 256; i++) {
 
         // }

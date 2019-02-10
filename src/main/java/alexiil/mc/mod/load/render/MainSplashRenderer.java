@@ -74,20 +74,19 @@ public class MainSplashRenderer {
     private static volatile boolean finishedLoading = false;
 
     static {
-        lock = get(SplashProgress.class, "lock");
-        mutex = get(SplashProgress.class, "mutex");
+        lock = get(SplashProgress.class, "lock", Lock.class);
+        mutex = get(SplashProgress.class, "mutex", Semaphore.class);
     }
 
     public static long getTotalTime() {
         return diff;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T get(Class<?> cls, String name) {
+    private static <T> T get(Class<?> cls, String name, Class<T> type) {
         try {
             Field fld = cls.getDeclaredField(name);
             fld.setAccessible(true);
-            return (T) fld.get(null);
+            return type.cast(fld.get(null));
         } catch (Throwable t) {
             throw new Error(t);
         }
@@ -113,7 +112,7 @@ public class MainSplashRenderer {
 
     // This is called instead of SplashProgress$3.run
     public static void run() {
-        fontRenderer = get(SplashProgress.class, "fontRenderer");
+        fontRenderer = get(SplashProgress.class, "fontRenderer", FontRenderer.class);
 
         boolean transitionOutDone = false;
         start = System.currentTimeMillis();
@@ -133,7 +132,7 @@ public class MainSplashRenderer {
             glLoadIdentity();
 
             diff = System.currentTimeMillis() - start;
-            if (diff < 3000 || !reachedConstruct) {
+            if (diff < 2500 || !reachedConstruct) {
                 renderMojangFrame();
             } else if (!finishedLoading) {
                 renderFrame();
