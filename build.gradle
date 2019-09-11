@@ -75,7 +75,7 @@ minecraft {
     mappings = config.mcp_mappings
 
     replaceIn "alexiil/mods/load/Lib.java"
-    replace "@VERSION@", "${project.config.mod_version}." + buildNumber
+    replace "@VERSION@", "${project.config.mod_version}"
     replace "@COMMIT_HASH@", System.getenv("DRONE_COMMIT")?: "manual build" 
 }
 
