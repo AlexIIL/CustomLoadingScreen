@@ -61,9 +61,7 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-def buildNumber = System.getenv("DRONE_BUILD_NUMBER") ?: config.fallback_build_number
-
-version = "${project.config.mc_version}-${project.config.mod_version}." + buildNumber
+version = "${project.config.mc_version}-${project.config.mod_version}"
 
 minecraft {
     version = config.mc_version + "-" + config.forge_version

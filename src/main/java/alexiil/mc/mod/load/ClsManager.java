@@ -105,12 +105,13 @@ public class ClsManager {
             cfg = ConfigManager.getAsConfig("sample/generic_error");
             if (cfg == null) {
                 CLSLog.info(
-                    "Error: couldn't find the generic error file! '" + used + "', defaulting to sample/generic_error");
+                    "Error: couldn't find the generic error file! '" + used + "', defaulting to sample/generic_error"
+                );
                 return false;
             }
         } else {
-            NODE_ERROR_MESSAGE.value =
-                "Unknown error! Check your logs + config file (this should never be shown normally)";
+            NODE_ERROR_MESSAGE.value
+                = "Unknown error! Check your logs + config file (this should never be shown normally)";
         }
 
         try {

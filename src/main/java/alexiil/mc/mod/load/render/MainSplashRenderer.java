@@ -34,6 +34,8 @@ import static org.lwjgl.opengl.GL11.glVertex2f;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
@@ -50,6 +52,7 @@ import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
 import alexiil.mc.mod.load.CustomLoadingScreen;
 import alexiil.mc.mod.load.progress.LongTermProgressTracker;
@@ -73,9 +76,44 @@ public class MainSplashRenderer {
     private static volatile boolean reachedConstruct = false;
     private static volatile boolean finishedLoading = false;
 
+    private static final String SPLASH_ANIMATION_CLASS_NAME = "pl.asie.splashanimation.SplashAnimationRenderer";
+
+    private static final boolean enableSplashAnimationCompat;
+    private static final Field __SPLASH_ANIMATION_COMPAT__STAGE;
+    private static final Method __SPLASH_ANIMATION_COMPAT__RUN;
+    private static final Method __SPLASH_ANIMATION_COMPAT__FINISH;
+
     static {
         lock = get(SplashProgress.class, "lock", Lock.class);
         mutex = get(SplashProgress.class, "mutex", Semaphore.class);
+
+        Field stage = null;
+        Method run = null;
+        Method finish = null;
+        try {
+            Class<?> clazz = Class.forName(SPLASH_ANIMATION_CLASS_NAME);
+
+            stage = clazz.getDeclaredField("stage");
+            stage.setAccessible(true);
+
+            run = clazz.getDeclaredMethod("run");
+            run.setAccessible(true);
+
+            finish = clazz.getDeclaredMethod("finish");
+            finish.setAccessible(true);
+
+        } catch (ClassNotFoundException cnfe) {
+            CLSLog.info(
+                "Not loading compat for SplashAnimation, as we didn't find '" + SPLASH_ANIMATION_CLASS_NAME + "'"
+            );
+        } catch (ReflectiveOperationException roe) {
+            CLSLog.warn("Not loading compat for SplashAnimation, as some other error prevented us from using it:", roe);
+        }
+
+        __SPLASH_ANIMATION_COMPAT__STAGE = stage;
+        __SPLASH_ANIMATION_COMPAT__RUN = run;
+        __SPLASH_ANIMATION_COMPAT__FINISH = finish;
+        enableSplashAnimationCompat = stage != null && run != null && finish != null;
     }
 
     public static long getTotalTime() {
@@ -89,6 +127,40 @@ public class MainSplashRenderer {
             return type.cast(fld.get(null));
         } catch (Throwable t) {
             throw new Error(t);
+        }
+    }
+
+    /** @return The stage that SplashAnimation is at. the value 3 (or greater) indicate that it's finished rendering. */
+    private static int getSplashAnimationStage() {
+        if (!enableSplashAnimationCompat) {
+            return 3;
+        }
+        try {
+            return __SPLASH_ANIMATION_COMPAT__STAGE.getInt(null);
+        } catch (IllegalArgumentException e) {
+            return 3;
+        } catch (IllegalAccessException e) {
+            return 3;
+        }
+    }
+
+    private static void invokeSplashAnimationRun() {
+        if (enableSplashAnimationCompat) {
+            try {
+                __SPLASH_ANIMATION_COMPAT__RUN.invoke(null);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                return;
+            }
+        }
+    }
+
+    private static void invokeSplashAnimationFinish() {
+        if (enableSplashAnimationCompat) {
+            try {
+                __SPLASH_ANIMATION_COMPAT__FINISH.invoke(null);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                return;
+            }
         }
     }
 
@@ -135,7 +207,12 @@ public class MainSplashRenderer {
             if (diff < 2500 || !reachedConstruct) {
                 renderMojangFrame();
             } else if (!finishedLoading) {
-                renderFrame();
+                int splashAnimationStage = getSplashAnimationStage();
+                if (splashAnimationStage >= 3) {
+                    renderFrame();
+                } else {
+                    invokeSplashAnimationRun();
+                }
             } else {
                 transitionOutDone = renderTransitionFrame();
             }
@@ -150,17 +227,18 @@ public class MainSplashRenderer {
                 break;
             }
 
-            Display.sync(100);
             boolean grabUngrab = pause;// & !finishedLoading;
             if (grabUngrab) {
                 clearGL();
             }
+            Display.sync(100);
             if (grabUngrab) {
                 setGL();
             }
         }
         LongTermProgressTracker.save(SingleProgressBarTracker.getProgressSections());
         clearGL();
+        invokeSplashAnimationFinish();
     }
 
     private static void renderMojangFrame() {

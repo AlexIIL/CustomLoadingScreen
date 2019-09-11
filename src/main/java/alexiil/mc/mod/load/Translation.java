@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -48,7 +49,11 @@ public class Translation {
                     String name = je.getName();
                     if (name.startsWith(lookingFor) && !name.equals(lookingFor)) {
                         try {
-                            addTranslation(name.replace(lookingFor, "").replace(".lang", ""), new BufferedReader(new InputStreamReader(modJar.getInputStream(je), "UTF-8")));
+                            addTranslation(
+                                name.replace(lookingFor, "").replace(".lang", ""), new BufferedReader(
+                                    new InputStreamReader(modJar.getInputStream(je), "UTF-8")
+                                )
+                            );
                         } catch (IOException e) {
                             System.out.println("Had trouble opening " + name);
                         }
@@ -67,22 +72,27 @@ public class Translation {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals("lang")) {
-                    language = parts[1];
+                    language = parts[1].toLowerCase(Locale.ROOT);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (translators.containsKey(language)) currentTranslation = translators.get(language);
-        else if (translators.containsKey("en_US")) {
+
+        if (translators.containsKey(language)) {
+            currentTranslation = translators.get(language);
+        } else if (translators.containsKey("en_us")) {
             System.out.println("Failed to load " + language + ", loading en_us insted");
             currentTranslation = translators.get("en_us");
         } else if (!translators.isEmpty()) {
             String name = translators.keySet().iterator().next();
-            System.out.println("Failed to load " + language + ", AND FAILED TO LOAD en_us! One available however is " + name + ", using that and keeping quiet...");
+            System.out.println(
+                "Failed to load " + language + ", AND FAILED TO LOAD en_us! One available however is " + name
+                    + ", using that and keeping quiet..."
+            );
             currentTranslation = translators.values().iterator().next();
         } else {
-            System.out.println("Failed to load ANY languages! all strings fail now!");
+            System.out.println("Failed to load ANY languages! All strings fail now!");
         }
     }
 
@@ -90,7 +100,7 @@ public class Translation {
         try {
             translators.put(locale, new Translation(from));
         } catch (IOException e) {
-            System.out.println("Failed to add" + locale);
+            System.out.println("Failed to add" + locale + " because " + e.getMessage());
         }
         return true;
     }
@@ -107,7 +117,9 @@ public class Translation {
                 }
             }
         } finally {
-            if (loadFrom != null) loadFrom.close();
+            if (loadFrom != null) {
+                loadFrom.close();
+            }
         }
     }
 
