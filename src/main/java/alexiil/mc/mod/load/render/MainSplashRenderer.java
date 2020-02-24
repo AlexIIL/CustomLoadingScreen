@@ -83,6 +83,16 @@ public class MainSplashRenderer {
     private static final Method __SPLASH_ANIMATION_COMPAT__RUN;
     private static final Method __SPLASH_ANIMATION_COMPAT__FINISH;
 
+    // Monitoring
+    private static Thread mainThread = null;
+    private static Thread monitorThread = null;
+
+    /** A hint of how much time the main thread spends in the "blocked" state. Used to lower the time we spend in
+     * Display.update() to ensure that the main thread isn't waiting for us for too long. */
+    // *just* volatile is enough, as only 1 thread writes to this.
+    private static volatile int blockedState = 0;
+    private static volatile boolean inDisplayUpdate = false;
+
     static {
         lock = get(SplashProgress.class, "lock", Lock.class);
         mutex = get(SplashProgress.class, "mutex", Semaphore.class);
@@ -166,6 +176,27 @@ public class MainSplashRenderer {
 
     public static void onReachConstruct() {
         if (!reachedConstruct) {
+            mainThread = Thread.currentThread();
+            monitorThread = new Thread("CLS Monitor") {
+                @Override
+                public void run() {
+                    Thread t;
+                    while ((t = mainThread) != null) {
+                        Thread.State state = t.getState();
+                        if (state == State.BLOCKED && inDisplayUpdate) {
+                            blockedState = (blockedState * 7000 + 3000 * 10_000) / 10_000;
+                        } else {
+                            blockedState = blockedState * 9900 / 10_000;
+                        }
+
+                        try {
+                            Thread.sleep(5);
+                        } catch (InterruptedException ignored) {}
+                    }
+                }
+            };
+            monitorThread.setDaemon(true);
+            monitorThread.start();
             try {
                 enableCustom = ClsManager.load();
             } catch (Exception e) {
@@ -180,6 +211,8 @@ public class MainSplashRenderer {
         CustomLoadingScreen.finish();
         finishedLoading = true;
         lock.lock();
+        mainThread = null;
+        monitorThread = null;
     }
 
     // This is called instead of SplashProgress$3.run
@@ -217,10 +250,36 @@ public class MainSplashRenderer {
                 transitionOutDone = renderTransitionFrame();
             }
 
+            // glPushMatrix();
+            // glScalef(4, 4, 1);
+            // glColor4f(1, 0, 1, 1);
+            // glEnable(GL_TEXTURE_2D);
+
+            // For the debug build always try for 100 fps
+            int fpsLimit = CustomLoadingScreen.fpsLimit;
+            // Reduce the fps to help prevent us from blocking the main thread.
+            if (blockedState > 8_000) {
+                fpsLimit = 6;
+            } else if (blockedState > 4_000) {
+                fpsLimit = 12;
+            } else if (blockedState > 1_000) {
+                fpsLimit = 24;
+            }
+
+            // String text = "" + blockedState / 1000 + " - max " + fpsLimit + "fps";
+            // while (text.length() < 5) {
+            // text = "0" + text;
+            // }
+            // fontRenderer.drawString(text, 0, 30, 0xFF_FF_FF_00);
+            // glDisable(GL_TEXTURE_2D);
+            // glPopMatrix();
+
             mutex.acquireUninterruptibly();
+            inDisplayUpdate = true;
             Display.update();
             mutex.release();
             GL11.glFlush();
+            inDisplayUpdate = false;
 
             if (finishedLoading && !reachedConstruct) {
                 // We crashed
@@ -231,7 +290,7 @@ public class MainSplashRenderer {
             if (grabUngrab) {
                 clearGL();
             }
-            Display.sync(100);
+            Display.sync(fpsLimit);
             if (grabUngrab) {
                 setGL();
             }

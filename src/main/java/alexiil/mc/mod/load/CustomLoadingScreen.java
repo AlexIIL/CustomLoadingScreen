@@ -30,11 +30,13 @@ public class CustomLoadingScreen {
     private static final Property PROP_CONFIG;
     private static final Property PROP_CONFIG_RANDOMS;
     private static final Property PROP_WAIT;
+    private static final Property PROP_FPS_LIMIT;
 
     public static final boolean shouldWait;
     public static final boolean useFrame;
     public static final boolean useCustom;
     public static final String customConfigPath;
+    public static final int fpsLimit;
 
     private static FrameDisplayer displayer;
 
@@ -55,9 +57,16 @@ public class CustomLoadingScreen {
         PROP_WAIT.setComment(
             "Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better.");
 
+        PROP_FPS_LIMIT = CONFIG.get("general", "fps_limit", 75);
+        PROP_FPS_LIMIT.setComment("The maximum fps to target for the loading screen. The default is 75. Values between 2 and 300 are allowed.");
+        PROP_FPS_LIMIT.setMinValue(2);
+        PROP_FPS_LIMIT.setMaxValue(300);
+        fpsLimit = Math.max(2, Math.min(300, PROP_FPS_LIMIT.getInt()));
+
         useCustom = PROP_USE_CUSTOM.getBoolean();
 
-        String customName = PROP_CONFIG.getString();
+        // TEMP FOR TEST BUILD
+        String customName = "sample/scrolling_detailed";// PROP_CONFIG.getString();
         if ("builtin/random".equals(customName)) {
             String[] possible = PROP_CONFIG_RANDOMS.getStringList();
             if (possible.length == 0) {
