@@ -19,15 +19,27 @@ public enum EPosition {
         this.y = y;
     }
 
-    public String getFunctionX(String width, String argument) {
+    public String getPositionFunctionX(String width, String argument) {
         if (x == -1) return argument;
-        else if (x == 0) return "(" + width + ") / 2 - (" + argument + ")";
-        else return "(" + width + ") - (" + argument + ")";
+        else if (x == 0) return "(" + width + ") / 2 + (" + argument + ")";
+        else return "(" + width + ") + (" + argument + ")";
     }
 
-    public String getFunctionY(String height, String argument) {
+    public String getPositionFunctionY(String height, String argument) {
         if (y == -1) return argument;
-        else if (y == 0) return "(" + height + ") / 2 - (" + argument + ")";
-        else return "(" + height + ") - (" + argument + ")";
+        else if (y == 0) return "(" + height + ") / 2 + (" + argument + ")";
+        else return "(" + height + ") + (" + argument + ")";
+    }
+
+    public String getOffsetFunctionX(String width) {
+        if (x == -1) return "0";
+        if (x == 0) return "-(" + width + ")/2";
+        return "-(" + width + ")";
+    }
+
+    public String getOffsetFunctionY(String height) {
+        if (y == -1) return "0";
+        if (y == 0) return "-(" + height + ")/2";
+        return "-(" + height + ")";
     }
 }
