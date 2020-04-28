@@ -1,6 +1,6 @@
 {
 	"parent":"builtin/rotate",
-	"angle": "item_rotation",
+	"angle": "item_rotation / 10",
 	"x": "0",
 	"y": "0",
 	"z": "-1"

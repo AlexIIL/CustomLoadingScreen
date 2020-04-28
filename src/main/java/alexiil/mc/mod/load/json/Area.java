@@ -1,6 +1,7 @@
 package alexiil.mc.mod.load.json;
 
 import alexiil.mc.mod.load.baked.render.BakedArea;
+
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 
@@ -27,6 +28,6 @@ public class Area {
     }
 
     public BakedArea bake(FunctionContext context) throws InvalidExpressionException {
-        return new BakedArea(x, y, width, height, context);
+        return new BakedArea(x == null ? "0" : x, y == null ? "0" : y, width, height, context);
     }
 }

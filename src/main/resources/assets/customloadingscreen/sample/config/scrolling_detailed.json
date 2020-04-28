@@ -5,14 +5,14 @@
         {
             "image": {
                 "parent": "sample/bottom_bar",
-                "colour": "0xFF_00_00_00",
+                "colour": "0xFF_54_23_70",
                 "position": { "width": "screen_width" }
             }
         },
         {
             "image": {
                 "parent": "sample/bottom_bar",
-                "colour": "0xFF_11_44_CC"
+                "colour": "0xFF_83_37_B1"
             }
         },
         {
@@ -21,7 +21,7 @@
                 "image": "textures/font/ascii.png",
                 "position_type": "TOP_LEFT",
                 "offset_pos": "TOP_LEFT",
-                "text": "memory_used() + ' MiB / ' + memory_total() + ' MiB'",
+                "text": "'Memory Alotted     :'", 
                 "position": {
                     "x": 10, "y": 10
                 }
@@ -32,10 +32,94 @@
                 "parent": "builtin/text",
                 "image": "textures/font/ascii.png",
                 "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_RIGHT",
+                "text": "memory_total() + ' MiB'", 
+                "position": {
+                    "x": 180, "y": 10
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
                 "offset_pos": "TOP_LEFT",
-                "text": "floor(time * 10) / 10.0 + 's'",
+                "text": "'Memory Utilized     :   -'",
                 "position": {
                     "x": 10, "y": 24
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_RIGHT",
+                "text": "memory_used() + ' MiB'",
+                "position": {
+                    "x": 180, "y": 24
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_LEFT",
+                "text": "'________'", 
+                "position": {
+                    "x": 132, "y": 27
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_LEFT",
+                "text": "'Memory Unutilized  :'", 
+                "position": {
+                    "x": 10, "y": 38
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_RIGHT",
+                "text": "memory_free() + ' MiB'", 
+                "position": {
+                    "x": 180, "y": 38
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_LEFT",
+                "text": "'[ ' + memory_max() + ' MiB Maximum ]'",
+                "position": {
+                    "x": 10, "y": 54
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "image": "textures/font/ascii.png",
+                "position_type": "TOP_LEFT",
+                "offset_pos": "TOP_LEFT",
+                "text": "'[ ' + floor(time * 10) / 10.0 + ' Seconds Elapsed ]'",
+                "position": {
+                    "x": 10, "y": 66
                 }
             }
         }
@@ -44,7 +128,7 @@
         
     ],
     "variables": {
-        "max_scroll_count": "screen_height / (2 * 16)",
+        "max_scroll_count": "screen_height / (5 * 8)",
         "scroll_text": "status + (is_reloading ? '' : (' - ' + sub_status))"
     },
     "factories": [
@@ -69,7 +153,7 @@
                         "x": "30",
                         "y": "(factory_index - factory_count) * 16 - 4"
                       },
-                      "colour": "0xFF_00_00_00 | (0x01_01_01 * (0xFF - 0xFF * factory_age / max_scroll_count).max(0x20))"
+                      "colour": "0xFF_00_00_00 | (0x01_00_01 * (0xFF - 0xFF * factory_age / max_scroll_count).max(0x20))"
                 }
             }
         }

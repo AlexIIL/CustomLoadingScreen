@@ -65,8 +65,7 @@ public class CustomLoadingScreen {
 
         useCustom = PROP_USE_CUSTOM.getBoolean();
 
-        // TEMP FOR TEST BUILD
-        String customName = "sample/scrolling_detailed";// PROP_CONFIG.getString();
+        String customName = PROP_CONFIG.getString();
         if ("builtin/random".equals(customName)) {
             String[] possible = PROP_CONFIG_RANDOMS.getStringList();
             if (possible.length == 0) {
