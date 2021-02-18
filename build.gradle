@@ -24,7 +24,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge" // adds the forge dependency
 apply plugin: 'maven' // for uploading to a maven repo
 
-version = "1.4.0"
+version = "1.5.0"
 // Feel free to rename this at some point
 group= "alexiil.mc.mod.load"
 archivesBaseName = "CustomLoadingScreen"
