@@ -1,10 +1,14 @@
 {
+    "variables": {
+        "image_interval": "3.0",
+        "transition_duration": "0.5"
+    },
     "renders": [
         {
             "image": {
                 "parent": "builtin/slideshow",
                 "image": "config:slideshow_#.png",
-                "frame": "(time - 0.5) / 3",
+                "frame": "(time - transition_duration) / image_interval",
                 "position_type": "CENTER",
                 "offset_pos": "CENTER",
                 "colour": "0xFF_FF_FF_FF",
@@ -26,10 +30,10 @@
             "image": {
                 "parent": "builtin/slideshow",
                 "image": "config:slideshow_#.png",
-                "frame": "time / 3",
+                "frame": "time / image_interval",
                 "position_type": "CENTER",
                 "offset_pos": "CENTER",
-                "colour": "0xFF_FF_FF | (0xFF_00_00_00 & (0x01_00_00_00 * floor(0xFF * min(1, (time / 0.5)%3  ))))",
+                "colour": "0xFF_FF_FF | (0xFF_00_00_00 & (0x01_00_00_00 * floor(0xFF * min(1, ((transition_duration <= 0.01) ? (0) : (time/transition_duration)) % image_interval  ))))",
                 "position": {
                     "x": "0",
                     "y": "0",
@@ -121,9 +125,6 @@
     "functions": [
 
     ],
-    "variables": {
-
-    },
     "factories": [
 
     ],
