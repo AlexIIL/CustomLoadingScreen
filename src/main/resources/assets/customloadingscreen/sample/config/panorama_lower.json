@@ -1,0 +1,90 @@
+{
+    "renders": [
+        "sample/panorama",
+        {
+            "image": {
+                "parent": "sample/dirt_background",
+                "position_type": "BOTTOM_CENTER",
+                "offset_pos": "BOTTOM_CENTER",
+                "position": {
+                    "height": "2 * 16"
+                },
+                "texture": {
+                    "height": "4"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "sample/bottom_bar",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "colour": "0xFF_00_00_00",
+                "position": {
+                    "width": "screen_width",
+                    "y": "-32"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "sample/bottom_bar",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "colour": "0xFF_33_55_FF",
+                "position": {
+                    "y": "-32"
+                }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "text": "status",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "position": { "x": 10, "y": -16 }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "text": "sub_status",
+                "position_type": "BOTTOM_LEFT",
+                "offset_pos": "BOTTOM_LEFT",
+                "position": { "x": 10, "y": -4 }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "text": "(floor(percentage * 100)) + '%'",
+                "scale": 2,
+                "position_type": "BOTTOM_RIGHT",
+                "offset_pos": "BOTTOM_RIGHT",
+                "position": { "x": -10, "y": -5 }
+            }
+        },
+        {
+            "image": {
+                "parent": "builtin/text",
+                "text": "has_tips() ? tip(floor(time / 8)) : ''",
+                "position_type": "BOTTOM_CENTER",
+                "offset_pos": "BOTTOM_CENTER",
+                "position": { "x": 0, "y": -10 }
+            }
+        }
+    ],
+    "functions": [
+
+    ],
+    "variables": {
+
+    },
+    "factories": [
+
+    ],
+    "actions": [
+
+    ]
+}

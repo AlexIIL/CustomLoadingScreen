@@ -12,18 +12,24 @@ import buildcraft.lib.expression.node.value.NodeVariableObject;
 
 public abstract class BakedTextRender extends BakedRenderPositioned {
     protected final NodeVariableObject<String> varText;
+    protected final INodeDouble scale;
     protected final INodeDouble x;
     protected final INodeDouble y;
     protected final INodeLong colour;
     protected final String fontTexture;
     private String _text;
-    private int _width;
+    private double _scale;
+    private double _width;
     private long _colour;
     private double _x, _y;
 
-    public BakedTextRender(NodeVariableObject<String> varText, NodeVariableDouble varWidth, NodeVariableDouble varHeight, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture) {
+    public BakedTextRender(
+        NodeVariableObject<String> varText, NodeVariableDouble varWidth, NodeVariableDouble varHeight,
+        INodeDouble scale, INodeDouble x, INodeDouble y, INodeLong colour, String fontTexture
+    ) {
         super(varWidth, varHeight);
         this.varText = varText;
+        this.scale = scale;
         this.x = x;
         this.y = y;
         this.colour = colour;
@@ -33,19 +39,29 @@ public abstract class BakedTextRender extends BakedRenderPositioned {
     @Override
     public void evaluateVariables(MinecraftDisplayerRenderer renderer) {
         _text = getText();
+        _scale = scale.evaluate();
         FontRenderer font = renderer.fontRenderer(fontTexture);
-        _width = font.getStringWidth(_text);
+        _width = (int) (font.getStringWidth(_text) * _scale);
         varWidth.value = _width;
-        varHeight.value = font.FONT_HEIGHT;
+        varHeight.value = font.FONT_HEIGHT * _scale;
         _x = x.evaluate();
         _y = y.evaluate();
-        _colour = 0xFF_00_00_00 | colour.evaluate();
+        _colour = colour.evaluate();
+        if ((_colour & 0xFF_00_00_00) == 0) {
+            _colour |= 0xFF_00_00_00;
+        } else if ((_colour & 0xFF_00_00_00) == 0x01_00_00_00) {
+            _colour &= 0xFF_FF_FF;
+        }
     }
 
     @Override
     public void render(MinecraftDisplayerRenderer renderer) {
         FontRenderer font = renderer.fontRenderer(fontTexture);
-        font.drawString(_text, (float) _x, (float) _y, (int) _colour, false);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(_x, _y, 0);
+        GlStateManager.scale(_scale, _scale, _scale);
+        font.drawString(_text, 0, 0, (int) _colour, false);
+        GlStateManager.popMatrix();
         GlStateManager.color(1, 1, 1, 1);
     }
 

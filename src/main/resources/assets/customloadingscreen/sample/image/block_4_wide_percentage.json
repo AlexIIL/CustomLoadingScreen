@@ -5,6 +5,6 @@
   },
   "position": {
     "x": "percentage * 128 - 128",
-    "width": "256 * percentage"
+    "width": "128*2 * percentage"
   }
 }

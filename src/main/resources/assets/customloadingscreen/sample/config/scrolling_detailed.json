@@ -5,14 +5,14 @@
         {
             "image": {
                 "parent": "sample/bottom_bar",
-                "colour": "0xFF_54_23_70",
+                "colour": "0xFF_00_00_00",
                 "position": { "width": "screen_width" }
             }
         },
         {
             "image": {
                 "parent": "sample/bottom_bar",
-                "colour": "0xFF_83_37_B1"
+                "colour": "0xFF_11_44_CC"
             }
         },
         {
@@ -150,10 +150,10 @@
                     "offset_pos": "BOTTOM_LEFT",
                     "text": "factory_status + (factory_age == 1 ? ( is_reloading ? ' - ' + sub_status : '') : '')",
                     "position": {
-                        "x": "30",
+                        "x": "35",
                         "y": "(factory_index - factory_count) * 16 - 4"
                       },
-                      "colour": "0xFF_00_00_00 | (0x01_00_01 * (0xFF - 0xFF * factory_age / max_scroll_count).max(0x20))"
+                      "colour": "0xFF_00_00_00 | (0x01_01_01 * (0xFF - 0xFF * factory_age / max_scroll_count).max(0x20))"
                 }
             }
         }

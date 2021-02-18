@@ -74,8 +74,11 @@ public class ClsManager {
             return forgeProgressBarPercents.get((int) index);
         }).setNeverInline();
 
+        Tips.load();
+
         FUNC_CTX.put_s("tip", Tips::getFirstTip);
         FUNC_CTX.put_l("tip_count", Tips::getTipCount);
+        FUNC_CTX.put_b("has_tips", Tips::hasAnyTips);
         FUNC_CTX.put_l_o("tip", String.class, Tips::getTip);
 
         FUNC_CTX.put_l("memory_bytes_total", Runtime.getRuntime()::totalMemory);
@@ -115,7 +118,7 @@ public class ClsManager {
         }
 
         try {
-            instance = new MinecraftDisplayerRenderer(cfg.bake(FUNC_CTX), null);
+            instance = new MinecraftDisplayerRenderer(cfg.bake(FUNC_CTX));
         } catch (InvalidExpressionException e) {
             CLSLog.warn("Failed to bake " + used, e);
             return false;

@@ -1,7 +1,10 @@
 package alexiil.mc.mod.load.json;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -55,7 +58,9 @@ public class ConfigManager {
                 JsonRender ji = getAsImage(location);
                 if (ji != null) {
                     JsonRenderingPart jrp = new JsonRenderingPart(ji, new JsonInsn[0], "true");
-                    jrp.setSource(("{#-'image':'" + location + "'#}").replace('\'', '"').replace('#', '\n').replace('-', '\t'));
+                    jrp.setSource(
+                        ("{#-'image':'" + location + "'#}").replace('\'', '"').replace('#', '\n').replace('-', '\t')
+                    );
                     return jrp;
                 }
             }
@@ -84,10 +89,30 @@ public class ConfigManager {
     }
 
     private static String getFirst(ResourceLocation identifier, boolean firstAttempt) {
-        if (identifier == null) throw new NullPointerException("Identifier provided shouldn't have been null!");
+        if (identifier == null) {
+            throw new NullPointerException("Identifier provided shouldn't have been null!");
+        }
+        if ("config".equals(identifier.getResourceDomain())) {
+            File file = new File("config/customloadingscreen", identifier.getResourcePath());
+            try (FileInputStream fis = new FileInputStream(file)) {
+                return IOUtils.toString(fis, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                if (firstAttempt) {
+                    
+                    String real = file.toString();
+                    try {
+                        real = file.getCanonicalPath();
+                    } catch (IOException io) {
+                        // Ignore
+                    }
+                    CLSLog.warn("Tried to get the resource but failed! (" + real + ") because " + e.getClass());
+                }
+                return null;
+            }
+        }
         try (IResource res = ClsManager.getResource(identifier)) {
             try (InputStream stream = res.getInputStream()) {
-                return IOUtils.toString(stream);
+                return IOUtils.toString(stream, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 CLSLog.warn("Tried to access \"" + identifier + "\", but an IO exception occoured!", e);
                 return null;
@@ -187,6 +212,13 @@ public class ConfigManager {
             path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
         } else if (base.startsWith("sample/")) {
             path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
+        } else if (base.startsWith("config/")) {
+            if (type == EType.CONFIG) {
+                path = base.substring("config/".length()) + ".json";
+            } else {
+                path = type.resourceBase + "/" + base.substring("config/".length()) + ".json";
+            }
+            return new ResourceLocation("config", path);
         } else {
             path = type.resourceBase + "/" + base + ".json";
         }

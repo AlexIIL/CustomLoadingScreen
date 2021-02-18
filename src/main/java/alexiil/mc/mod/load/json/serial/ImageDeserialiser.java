@@ -12,6 +12,7 @@ import alexiil.mc.mod.load.json.ConfigManager;
 import alexiil.mc.mod.load.json.JsonRender;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderImage;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderPanorama;
+import alexiil.mc.mod.load.json.subtypes.JsonRenderSlideshow;
 import alexiil.mc.mod.load.json.subtypes.JsonRenderText;
 
 import buildcraft.lib.expression.api.InvalidExpressionException;
@@ -21,6 +22,7 @@ public enum ImageDeserialiser implements IThrowingDeserialiser<JsonRender> {
 
     private static final JsonPrimitive BUILTIN_TEXT = new JsonPrimitive("builtin/text");
     private static final JsonPrimitive BUILTIN_IMAGE = new JsonPrimitive("builtin/image");
+    private static final JsonPrimitive BUILTIN_SLIDESHOW = new JsonPrimitive("builtin/slideshow");
     private static final JsonPrimitive BUILTIN_PANORAMA = new JsonPrimitive("builtin/panorama");
 
     @Override
@@ -52,12 +54,16 @@ public enum ImageDeserialiser implements IThrowingDeserialiser<JsonRender> {
             return new JsonRenderText(null, obj, context);
         } else if (BUILTIN_IMAGE.equals(pe)) {
             return new JsonRenderImage(null, obj, context);
+        } else if (BUILTIN_SLIDESHOW.equals(pe)) {
+            return new JsonRenderSlideshow(null, obj, context);
         } else if (BUILTIN_PANORAMA.equals(pe)) {
             return new JsonRenderPanorama(null, obj, context);
         } else {
             JsonRender parent = context.deserialize(pe, JsonRender.class);
             if (parent instanceof JsonRenderText) {
                 return new JsonRenderText((JsonRenderText) parent, obj, context);
+            } else if (parent instanceof JsonRenderSlideshow) {
+                return new JsonRenderSlideshow((JsonRenderSlideshow) parent, obj, context);
             } else if (parent instanceof JsonRenderImage) {
                 return new JsonRenderImage((JsonRenderImage) parent, obj, context);
             } else if (parent instanceof JsonRenderPanorama) {

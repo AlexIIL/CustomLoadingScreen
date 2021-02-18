@@ -16,7 +16,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import alexiil.mc.mod.load.frame.FrameDisplayer;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 
-@Mod(//
+@Mod(
+    //
     modid = Lib.Mod.ID, //
     guiFactory = "alexiil.mc.mod.load.ConfigGuiFactory", //
     acceptableRemoteVersions = "*", //
@@ -48,17 +49,23 @@ public class CustomLoadingScreen {
 
         PROP_CONFIG = CONFIG.get("general", "screen_config", "builtin/random");
         PROP_CONFIG.setComment(
-            "Sets the config to use for the custom loading screen. Use 'builtin/random' for a random loading screen on each load");
+            "Sets the config to use for the custom loading screen. Use 'builtin/random' for a random loading screen on each load."
+                + "\nAlternatively you can prefix this with 'config/' to load from the 'config/customloadingscreen/' directory."
+                + "\nOr you can use 'sample/slideshow' to display images from config/customloadingscreen/slideshow_#.png."
+        );
 
-        String[] defaultRandoms = { "sample/default", "sample/white", "sample/rotating_cakes", "sample/scrolling" };
+        String[] defaultRandoms = { "sample/default", "sample/white", "sample/scrolling", "sample_panorama_lower" };
         PROP_CONFIG_RANDOMS = CONFIG.get("general", "random_configs", defaultRandoms);
 
         PROP_WAIT = CONFIG.get("general", "smooth_init", true);
         PROP_WAIT.setComment(
-            "Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better.");
+            "Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better."
+        );
 
         PROP_FPS_LIMIT = CONFIG.get("general", "fps_limit", 75);
-        PROP_FPS_LIMIT.setComment("The maximum fps to target for the loading screen. The default is 75. Values between 2 and 300 are allowed.");
+        PROP_FPS_LIMIT.setComment(
+            "The maximum fps to target for the loading screen. The default is 75. Values between 2 and 300 are allowed."
+        );
         PROP_FPS_LIMIT.setMinValue(2);
         PROP_FPS_LIMIT.setMaxValue(300);
         fpsLimit = Math.max(2, Math.min(300, PROP_FPS_LIMIT.getInt()));

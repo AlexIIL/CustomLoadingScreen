@@ -1,6 +1,9 @@
 package alexiil.mc.mod.load;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +20,17 @@ public class Tips {
     static {
         // Just ensure that nothing can crash by having an empty list
         tips.add("Tips haven't been loaded yet!");
+    }
+
+    public static void load() {
+        File f = new File("config/customloadingscreen_tips.txt");
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            load(parseTips(br));
+        } catch (FileNotFoundException e) {
+            CLSLog.info("No tip file found at " + f);
+        } catch (IOException e) {
+            CLSLog.warn("Failed to load the tips file: " + f, e);
+        }
     }
 
     /** Clears out the current list of tips and sets it to the given {@link List}.
@@ -89,9 +103,5 @@ public class Tips {
 
     public static String getTip(long index) {
         return getTip((int) index);
-    }
-
-    public static class TipsInstance {
-
     }
 }

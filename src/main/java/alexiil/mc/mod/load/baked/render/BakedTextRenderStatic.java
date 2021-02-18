@@ -13,12 +13,13 @@ public class BakedTextRenderStatic extends BakedTextRender {
         NodeVariableObject<String> varText,
         NodeVariableDouble varWidth,
         NodeVariableDouble varHeight,
+        INodeDouble scale,
         INodeDouble x,
         INodeDouble y,
         INodeLong colour,
         String fontTexture,
         INodeObject<String> text) {
-        super(varText, varWidth, varHeight, x, y, colour, fontTexture);
+        super(varText, varWidth, varHeight, scale, x, y, colour, fontTexture);
         this.text = text;
     }
 

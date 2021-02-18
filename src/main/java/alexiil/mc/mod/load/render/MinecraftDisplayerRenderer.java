@@ -40,8 +40,8 @@ public class MinecraftDisplayerRenderer {
     private boolean first = true;
     private SharedDrawable drawable;
 
-    public MinecraftDisplayerRenderer(BakedConfig config, TextureAnimator animator) {
-        this.animator = animator;
+    public MinecraftDisplayerRenderer(BakedConfig config) {
+        this.animator = new TextureAnimator(config);
         mc = Minecraft.getMinecraft();
 
         textureManager = new TextureManager(mc.getResourceManager());
@@ -83,6 +83,8 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
         GlStateManager.color(1, 1, 1, 1);
+
+        animator.tick();
 
         for (BakedVariable variable : variables) {
             variable.tick(this);
@@ -133,5 +135,6 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT);
         _font_render_instance.destroy();
         drawable.destroy();
+        animator.close();
     }
 }

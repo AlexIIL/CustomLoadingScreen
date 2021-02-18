@@ -3,26 +3,32 @@ package alexiil.mc.mod.load.render;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import com.google.common.collect.ImmutableList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
+import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.baked.BakedConfig;
 import alexiil.mc.mod.load.baked.BakedRenderingPart;
 
 public class TextureAnimator {
+
     public class AnimatedTexture {
         private final int[] ids;
         private final long[] lastUsed;
@@ -37,8 +43,9 @@ public class TextureAnimator {
             if (totalPixels <= TEXTURE_PIXEL_MIN) {
                 // If its a small animation, just upload all of them
                 textureMilliSeconds = Integer.MAX_VALUE;
-                for (int i = 0; i < images.length; i++)
-                    bindFrame(i);
+                for (int i = 0; i < images.length; i++) {
+                    bindFrame(i, false);
+                }
             } else if (totalPixels <= TEXTURE_PIXEL_CAP) textureMilliSeconds = TEXTURE_MILLI_SECONDS;
             else {
                 // If this image is that big, expire frames quicker, relative to how big it actually is
@@ -53,17 +60,26 @@ public class TextureAnimator {
                 if (wf >= images.length) break;// We have wrapped back around, twice (woops!)
                 if (ids[wf] == -1) {
                     ids[wf] = TextureUtil.glGenTextures();
-                    TextureUtil.uploadTextureImage(ids[wf], images[wf]);
+                    uploadTextureImage(ids[wf], images[wf]);
                 }
             }
         }
 
-        public void bindFrame(int frame) {
+        public void bindFrame(int frame, boolean loop) {
+            if (loop) {
+                frame %= ids.length;
+            } else {
+                if (frame < 0) {
+                    frame = 0;
+                } else if (frame >= ids.length) {
+                    frame = ids.length - 1;
+                }
+            }
             if (ids[frame] != -1) {
                 GlStateManager.bindTexture(ids[frame]);
             } else {
                 ids[frame] = TextureUtil.glGenTextures();
-                TextureUtil.uploadTextureImage(ids[frame], images[frame]);
+                uploadTextureImage(ids[frame], images[frame]);
                 GlStateManager.bindTexture(ids[frame]);
             }
             lastUsed[frame] = now;
@@ -105,22 +121,26 @@ public class TextureAnimator {
     /** The number of frames to upload ahead of time */
     private static final int TEXTURE_UPLOAD_AHEAD = 10;
 
+    private static final int BUFFER_SIZE = 4 * 1024 * 1024;
+    private static final IntBuffer DATA_BUFFER = GLAllocation.createDirectIntBuffer(BUFFER_SIZE);
+
     private Map<String, AnimatedTexture> animatedTextures = new HashMap<String, AnimatedTexture>();
     private long now = System.currentTimeMillis();
 
     public static boolean isAnimated(String resourceLocation) {
         ResourceLocation location = new ResourceLocation(resourceLocation);
         try {
-            IResource res = Minecraft.getMinecraft().getResourceManager().getResource(location);
-            final InputStream stream = res.getInputStream();
-            for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(stream))) {
-                try {
-                    reader.setInput(stream);
-                    boolean animated = reader.getNumImages(true) > 1;
-                    reader.dispose();
-                    return animated;
-                } catch (IOException ignored) {} finally {
-                    reader.dispose();
+            final InputStream stream = TextureLoader.loadTexture(location);
+            try (MemoryCacheImageInputStream imageStream = new MemoryCacheImageInputStream(stream)) {
+                for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(imageStream))) {
+                    try {
+                        reader.setInput(imageStream);
+                        boolean animated = reader.getNumImages(true) > 1;
+                        reader.dispose();
+                        return animated;
+                    } catch (IOException ignored) {} finally {
+                        reader.dispose();
+                    }
                 }
             }
         } catch (IOException ignored) {}
@@ -131,27 +151,44 @@ public class TextureAnimator {
         Minecraft mc = Minecraft.getMinecraft();
         for (BakedRenderingPart render : images.renderingParts) {
             String resource = render.render.getLocation();
-            if (resource != null && isAnimated(resource)) {
+            if (resource != null) {
                 try {
-                    IResource res = mc.getResourceManager().getResource(new ResourceLocation(resource));
-                    final InputStream stream = res.getInputStream();
+                    final InputStream stream = TextureLoader.loadTexture(new ResourceLocation(resource));
                     BufferedImage[] frames = null;
-                    for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(stream))) {
-                        try {
-                            reader.setInput(stream);
-                            int size = 0;
-                            frames = new BufferedImage[reader.getNumImages(true)];
-                            for (int i = 0; i < frames.length; i++) {
-                                frames[i] = reader.read(i);
-                                size += frames[i].getHeight() * frames[i].getWidth();
+                    try (MemoryCacheImageInputStream imageStream = new MemoryCacheImageInputStream(stream)) {
+                        for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(imageStream))) {
+                            try {
+                                reader.setInput(imageStream);
+                                int size = 0;
+                                frames = new BufferedImage[reader.getNumImages(true)];
+                                if (frames.length < 2) {
+                                    continue;
+                                }
+                                int read = 0;
+                                for (int i = 0; i < frames.length; i++) {
+                                    try {
+                                        frames[read] = reader.read(i);
+                                    } catch (IndexOutOfBoundsException e) {
+                                        continue;
+                                    }
+                                    size += frames[read].getHeight() * frames[read].getWidth();
+                                    read++;
+                                }
+                                if (read < frames.length) {
+                                    frames = Arrays.copyOf(frames, read);
+                                }
+                                if (frames.length < 2) {
+                                    continue;
+                                }
+                                CLSLog.info("Number of Frames = " + read);
+                                animatedTextures.put(resource, new AnimatedTexture(frames, size));
+                                reader.dispose();
+                                break;
+                            } catch (IOException e) {
+                                // TODO: do something about this!
+                            } finally {
+                                reader.dispose();
                             }
-                            animatedTextures.put(resource, new AnimatedTexture(frames, size));
-                            reader.dispose();
-                            break;
-                        } catch (IOException e) {
-                            // TODO: do something about this!
-                        } finally {
-                            reader.dispose();
                         }
                     }
                 } catch (IOException e) {
@@ -174,9 +211,36 @@ public class TextureAnimator {
         }
     }
 
-    public void bindTexture(String resource, int frame) {
+    public void bindTexture(String resource, int frame, boolean loop) {
         if (animatedTextures.containsKey(resource)) {
-            animatedTextures.get(resource).bindFrame(frame);
+            animatedTextures.get(resource).bindFrame(frame, loop);
         }
     }
+
+    public static void uploadTextureImage(int textureId, BufferedImage texture) {
+        TextureUtil.allocateTexture(textureId, texture.getWidth(), texture.getHeight());
+        int width = texture.getWidth();
+        int height = texture.getHeight();
+        int count = BUFFER_SIZE / width;
+        int[] data = new int[count * width];
+
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10240, 9728);
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10241, 9728);
+
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10242, 10497);
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10243, 10497);
+
+        for (int i = 0; i < width * height; i += width * count) {
+            int iteration = i / width;
+            int thisHeight = Math.min(count, height - iteration);
+            int size = width * thisHeight;
+            texture.getRGB(0, iteration, width, thisHeight, data, 0, width);
+            DATA_BUFFER.clear();
+            DATA_BUFFER.put(data, 0, size);
+            DATA_BUFFER.position(0).limit(size);
+            GlStateManager.glTexSubImage2D(3553, 0, 0, iteration, width, thisHeight, 32993, 33639, DATA_BUFFER);
+        }
+        return;
+    }
+
 }
