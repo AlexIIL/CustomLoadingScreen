@@ -24,7 +24,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge" // adds the forge dependency
 apply plugin: 'maven' // for uploading to a maven repo
 
-version = "1.5.0"
+version = "1.5.0-pre.2"
 // Feel free to rename this at some point
 group= "alexiil.mc.mod.load"
 archivesBaseName = "CustomLoadingScreen"
@@ -33,6 +33,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
+    mavenLocal()
     maven {
         name = "BuildCraft"
         url = "https://mod-buildcraft.com/maven"
@@ -46,7 +47,7 @@ configurations {
 
 dependencies {
     testCompile "junit:junit:4.12"
-    shade "com.mod-buildcraft:buildcraft-libexpression:0.9.1"
+    shade "com.mod-buildcraft:buildcraft-libexpression:0.9.3-pre.4"
 }
 
 reobfJar {

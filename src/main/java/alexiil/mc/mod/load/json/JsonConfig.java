@@ -9,28 +9,39 @@ import alexiil.mc.mod.load.baked.BakedRenderingPart;
 import alexiil.mc.mod.load.baked.BakedVariable;
 
 import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.FunctionSignature;
+import buildcraft.lib.expression.InternalCompiler;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public final JsonRenderingPart[] renders;
-    public final String[] functions;
+    public final String[][] functions;
     public final JsonFactory[] factories;
     public final JsonAction[] actions;
+    public final JsonVariable[] constants;
     public final JsonVariable[] variables;
 
-    public JsonConfig(JsonRenderingPart[] renders, String[] functions, JsonFactory[] factories, JsonAction[] actions, JsonVariable[] variables) {
+    public JsonConfig(
+        JsonRenderingPart[] renders, String[][] functions, JsonFactory[] factories, JsonAction[] actions,
+        JsonVariable[] constants, JsonVariable[] variables
+    ) {
         this.renders = renders;
         this.functions = functions;
         this.factories = factories;
         this.actions = actions;
+        this.constants = constants;
         this.variables = variables;
     }
 
-    public JsonConfig(JsonConfig parent, JsonRenderingPart[] renders, String[] functions, JsonFactory[] factories, JsonAction[] actions, JsonVariable[] variables) {
+    public JsonConfig(
+        JsonConfig parent, JsonRenderingPart[] renders, String[][] functions, JsonFactory[] factories,
+        JsonAction[] actions, JsonVariable[] constants, JsonVariable[] variables
+    ) {
         this.renders = consolidateArray(parent == null ? null : parent.renders, renders);
         this.functions = consolidateArray(parent == null ? null : parent.functions, functions);
         this.factories = consolidateArray(parent == null ? null : parent.factories, factories);
         this.actions = consolidateArray(parent == null ? null : parent.actions, actions);
+        this.constants = consolidateArray(parent == null ? null : parent.constants, constants);
         this.variables = consolidateArray(parent == null ? null : parent.variables, variables);
     }
 
@@ -38,6 +49,8 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
     public void setLocation(ResourceLocation location) {
         super.setLocation(location);
         location = this.resourceLocation;
+        for (JsonVariable c : constants)
+            c.setLocation(location);
         for (JsonVariable v : variables)
             v.setLocation(location);
         for (JsonRenderingPart p : renders)
@@ -50,6 +63,31 @@ public class JsonConfig extends JsonConfigurable<JsonConfig, BakedConfig> {
 
     @Override
     protected BakedConfig actuallyBake(FunctionContext context) throws InvalidExpressionException {
+        for (JsonVariable c : constants) {
+            c.bake(context);
+        }
+
+        context = new FunctionContext("User Functions", context);
+
+        for (String[] fn : this.functions) {
+
+            FunctionSignature signature = FunctionSignature.parse(fn[0]);
+
+            String function = null;
+
+            if (signature.func != null) {
+                if (fn.length == 2) {
+                    throw new InvalidExpressionException("Cannot provide two function implementations!");
+                }
+                function = signature.func;
+            } else {
+                function = fn[1];
+            }
+
+            String name = signature.name;
+            context.putFunction(name, InternalCompiler.compileFunction(function, context, signature.args));
+        }
+
         BakedVariable[] vars = new BakedVariable[variables.length];
         for (int i = 0; i < variables.length; i++) {
             vars[i] = variables[i].bake(context);

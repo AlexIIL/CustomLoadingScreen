@@ -22,6 +22,7 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.CLSLog;
 import alexiil.mc.mod.load.ClsManager;
+import alexiil.mc.mod.load.json.JsonVariable.JsonConstant;
 import alexiil.mc.mod.load.json.serial.ConfigDeserialiser;
 import alexiil.mc.mod.load.json.serial.FactoryDeserialiser;
 import alexiil.mc.mod.load.json.serial.ImageDeserialiser;
@@ -81,7 +82,8 @@ public class ConfigManager {
             .registerTypeAdapter(JsonRenderingPart.class, RenderingPartDeserialiser.INSTANCE)//
             .registerTypeAdapter(JsonRender.class, ImageDeserialiser.INSTANCE)//
             .registerTypeAdapter(JsonInsn.class, InstructionDeserialiser.INSTANCE)//
-            .registerTypeAdapter(JsonVariable[].class, VariableArrayDeserialiser.INSTANCE)//
+            .registerTypeAdapter(JsonVariable[].class, VariableArrayDeserialiser.VARIABLES)//
+            .registerTypeAdapter(JsonConstant[].class, VariableArrayDeserialiser.CONSTANTS)//
             .registerTypeAdapter(JsonFactory.class, FactoryDeserialiser.INSTANCE)//
             // .registerTypeAdapter(JsonAction.class, ActionDeserialiser.INSTANCE)//
             .create();

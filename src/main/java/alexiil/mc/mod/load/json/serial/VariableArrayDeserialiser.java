@@ -13,7 +13,14 @@ import alexiil.mc.mod.load.json.JsonVariable;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 
 public enum VariableArrayDeserialiser implements IThrowingDeserialiser<JsonVariable[]> {
-    INSTANCE;
+    CONSTANTS(true),
+    VARIABLES(false);
+
+    final boolean constant;
+
+    VariableArrayDeserialiser(boolean constant) {
+        this.constant = constant;
+    }
 
     @Override
     public JsonVariable[] deserialize0(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws InvalidExpressionException {
@@ -25,7 +32,7 @@ public enum VariableArrayDeserialiser implements IThrowingDeserialiser<JsonVaria
             String name = entry.getKey();
             JsonElement jvalue = entry.getValue();
             String value = jvalue.getAsString();
-            JsonVariable var = new JsonVariable(name, value);
+            JsonVariable var = new JsonVariable(constant, name, value);
             var.setSource(jvalue);
             vars[i++] = var;
         }

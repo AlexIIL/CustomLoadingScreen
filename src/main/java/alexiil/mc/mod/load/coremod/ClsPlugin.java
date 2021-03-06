@@ -28,13 +28,17 @@ public class ClsPlugin implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        File coremodLocation = (File) data.get("coremodLocation");
-        if (coremodLocation == null) {
-            coremodLocation = new File("./../bin/");
+        if (!Translation.scanUrlsForTranslations()) {
+            File coremodLocation = (File) data.get("coremodLocation");
+            if (coremodLocation == null) {
+                coremodLocation = new File("./../bin/");
+            }
+            // Assume this is a dev environment, and that the build dir is in bin, and the test dir has the same parent
+            // as
+            // the bin dir...
+            Translation.scanFileForTranslations(coremodLocation);
         }
-        // Assume this is a dev environment, and that the build dir is in bin, and the test dir has the same parent as
-        // the bin dir...
-        Translation.addTranslations(coremodLocation);
+        Translation.setTranslator();
     }
 
     @Override

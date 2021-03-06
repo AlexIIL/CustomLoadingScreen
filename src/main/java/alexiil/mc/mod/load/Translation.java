@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class Translation {
     private static Map<String, Translation> translators = new HashMap<>();
@@ -21,12 +27,56 @@ public class Translation {
     private Set<String> failedTranslations = new HashSet<>();
 
     public static String translate(String toTranslate) {
-        if (currentTranslation != null) return currentTranslation.translateInternal(toTranslate);
+        if (currentTranslation != null) {
+            return currentTranslation.translateInternal(toTranslate);
+        }
         CLSLog.log().warn("We don't have a translator!");
         return toTranslate;
     }
 
-    public static void addTranslations(File modLocation) {
+    public static boolean scanUrlsForTranslations() {
+        URL url = Translation.class.getResource("/assets/customloadingscreen/lang/en_us.lang");
+        if (url == null) {
+            return false;
+        }
+
+        final Path langRoot;
+
+        try {
+            langRoot = Paths.get(url.toURI()).getParent();
+        } catch (URISyntaxException e) {
+            System.out.println(e);
+            return false;
+        }
+
+        return scanLangRoot(langRoot);
+    }
+
+    static boolean scanLangRoot(final Path langRoot) {
+        try {
+            for (Path child : Files.list(langRoot).collect(Collectors.toList())) {
+                String fn = child.getFileName().toString();
+                if (!fn.endsWith(".lang") || !Files.isRegularFile(child)) {
+                    continue;
+                }
+                String locale = fn.substring(0, fn.lastIndexOf('.'));
+
+                try (BufferedReader br = Files.newBufferedReader(child)) {
+                    addTranslation(locale, br);
+                } catch (IOException io) {
+                    System.out.println(io);
+                    continue;
+                }
+            }
+        } catch (IOException io) {
+            System.out.println(io);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void scanFileForTranslations(File modLocation) {
         String lookingFor = "assets/customloadingscreen/lang/";
         if (modLocation == null) return;
         if (modLocation.isDirectory()) {
@@ -50,9 +100,8 @@ public class Translation {
                     if (name.startsWith(lookingFor) && !name.equals(lookingFor)) {
                         try {
                             addTranslation(
-                                name.replace(lookingFor, "").replace(".lang", ""), new BufferedReader(
-                                    new InputStreamReader(modJar.getInputStream(je), "UTF-8")
-                                )
+                                name.replace(lookingFor, "").replace(".lang", ""),
+                                new BufferedReader(new InputStreamReader(modJar.getInputStream(je), "UTF-8"))
                             );
                         } catch (IOException e) {
                             System.out.println("Had trouble opening " + name);
@@ -63,6 +112,12 @@ public class Translation {
                 System.out.println("Could not open file " + e.getMessage());
             }
         }
+
+    }
+
+    public static void setTranslator() {
+        // Scan config dir for langs
+        scanLangRoot(Paths.get("config", "customloadingscreen", "lang"));
 
         // Lastly, set the current locale
         File options = new File("./options.txt");
@@ -98,7 +153,14 @@ public class Translation {
 
     public static boolean addTranslation(String locale, BufferedReader from) {
         try {
-            translators.put(locale, new Translation(from));
+            Translation added = new Translation(from);
+            Translation current = translators.get(locale);
+
+            if (current == null) {
+                translators.put(locale, added);
+            } else {
+                current.translations.putAll(added.translations);
+            }
         } catch (IOException e) {
             System.out.println("Failed to add" + locale + " because " + e.getMessage());
         }
@@ -124,7 +186,10 @@ public class Translation {
     }
 
     private String translateInternal(String toTranslate) {
-        if (translations.containsKey(toTranslate)) return translations.get(toTranslate);
+        if (translations.containsKey(toTranslate)) {
+            return translations.get(toTranslate);
+        }
+
         if (failedTranslations.add(toTranslate)) {
             CLSLog.log().warn("Failed to translate " + toTranslate);
         }

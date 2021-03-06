@@ -23,8 +23,12 @@ import alexiil.mc.mod.load.progress.SingleProgressBarTracker.LockUnlocker;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
+import buildcraft.lib.expression.Argument;
 import buildcraft.lib.expression.DefaultContexts;
 import buildcraft.lib.expression.FunctionContext;
+import buildcraft.lib.expression.GenericExpressionCompiler;
+import buildcraft.lib.expression.InternalCompiler;
+import buildcraft.lib.expression.api.INodeFunc;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeVariableBoolean;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
@@ -34,7 +38,8 @@ import buildcraft.lib.expression.node.value.NodeVariableObject;
 public class ClsManager {
     public static final Resolution RESOLUTION = new Resolution();
 
-    private static final FunctionContext FUNC_CTX = DefaultContexts.createWithAll();
+    private static final FunctionContext FUNC_CTX
+        = new FunctionContext("CLS", DefaultContexts.createWithAll(), ClsRandom.CTX_RANDOM);
 
     private static final NodeVariableObject<String> NODE_STATUS = FUNC_CTX.putVariableString("status");
     private static final NodeVariableObject<String> NODE_STATUS_SUB = FUNC_CTX.putVariableString("sub_status");
@@ -102,13 +107,14 @@ public class ClsManager {
 
         String used = CustomLoadingScreen.customConfigPath;
         JsonConfig cfg = ConfigManager.getAsConfig(used);
+        JsonConfig error = ConfigManager.getAsConfig("sample/generic_error");
         if (cfg == null) {
             CLSLog.info("Error: couldn't find the config file '" + used + "', defaulting to sample/generic_error");
             NODE_ERROR_MESSAGE.value = "Error: couldn't find the config file '" + used + "'";
-            cfg = ConfigManager.getAsConfig("sample/generic_error");
+            cfg = error;
             if (cfg == null) {
                 CLSLog.info(
-                    "Error: couldn't find the generic error file! '" + used + "', defaulting to sample/generic_error"
+                    "Error: couldn't find the generic error file! 'sample/generic_error', not displaying anything custom!"
                 );
                 return false;
             }
@@ -119,12 +125,12 @@ public class ClsManager {
 
         try {
             instance = new MinecraftDisplayerRenderer(cfg.bake(FUNC_CTX));
+            return true;
         } catch (InvalidExpressionException e) {
+            NODE_ERROR_MESSAGE.value = "Error: Failed to bake '" + used + "', check your logs for details!";
             CLSLog.warn("Failed to bake " + used, e);
             return false;
         }
-
-        return true;
     }
 
     public static void renderFrame() {
