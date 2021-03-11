@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +45,7 @@ public class Translation {
 
         try {
             langRoot = Paths.get(url.toURI()).getParent();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | FileSystemNotFoundException e) {
             System.out.println(e);
             return false;
         }
