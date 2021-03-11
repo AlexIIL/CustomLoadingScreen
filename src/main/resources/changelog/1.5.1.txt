@@ -1,4 +1,18 @@
 Changes:
 
-* 
-
+* Added various random number functions:
+    * generate_seed(): Generates a new (48 bit integer) seed for use in other functions. (This should be saved in constants).
+    * random(seed): calls random_seeded(seed, 0)
+    * random(seed, index): returns a random number (between 0 and 1) based on both the seed and index - the idea being that you'd keep the seed the same, and pass an ever-increasing index to grab the next value for that seed.
+    * random_int(seed, max): calls random_int(seed, 0, max)
+    * random_int(seed, index, max): returns a random integer between 0 and max-1. Internally this is just min(max - 1, random(seed, index) * max), but it's a lot easier to type this way.
+* Added "constants" as a root object to config.json
+    * Unlike "variables" these are evaluated once only rather than once per frame.
+    * These are ideal for storing random number seeds
+* Added "functions":
+    * These are in the form "name(ArgType1 arg1, ArgType2 arg2)": "arg1 + arg2".
+* Updated "sample/slideshow" to use all 3 of the above features. In particular a few variables have been extracted out to the top of the file:
+    * "image_interval", the number of seconds to display each slide for
+    * "transition_duration", the number of seconds to transition from one slide to another.
+    * "tip_interval", the number of seconds to wait between changing what tip is displayed.
+    * "random_slide_order", This should be "true" to use a random slide each time rather than going sequentially.
