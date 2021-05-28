@@ -14,10 +14,10 @@ public class BakedColourFunctionalTogether extends BakedInsn {
     @Override
     public void render() {
         long value = argb.evaluate();
-        int a = (int) ((value >> 24) & 0xFF);
-        int r = (int) ((value >> 16) & 0xFF);
-        int g = (int) ((value >> 8) & 0xFF);
-        int b = (int) (value & 0xFF);
-        GL11.glColor4d(r, g, b, a);
+        float a = ((value >> 24) & 0xFF) / 255f;
+        float r = ((value >> 16) & 0xFF) / 255f;
+        float g = ((value >>  8) & 0xFF) / 255f;
+        float b = (value & 0xFF) / 255f;
+        GL11.glColor4f(r, g, b, a);
     }
 }
