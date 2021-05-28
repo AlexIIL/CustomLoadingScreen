@@ -1,0 +1,3 @@
+Bug Fixes:
+
+* Fix colour handling for non-constant colours.
