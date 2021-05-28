@@ -2,8 +2,10 @@ package alexiil.mc.mod.load;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 
@@ -23,12 +25,8 @@ import alexiil.mc.mod.load.progress.SingleProgressBarTracker.LockUnlocker;
 import alexiil.mc.mod.load.render.MainSplashRenderer;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
-import buildcraft.lib.expression.Argument;
 import buildcraft.lib.expression.DefaultContexts;
 import buildcraft.lib.expression.FunctionContext;
-import buildcraft.lib.expression.GenericExpressionCompiler;
-import buildcraft.lib.expression.InternalCompiler;
-import buildcraft.lib.expression.api.INodeFunc;
 import buildcraft.lib.expression.api.InvalidExpressionException;
 import buildcraft.lib.expression.node.value.NodeVariableBoolean;
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
@@ -128,8 +126,31 @@ public class ClsManager {
             return true;
         } catch (InvalidExpressionException e) {
             NODE_ERROR_MESSAGE.value = "Error: Failed to bake '" + used + "', check your logs for details!";
-            CLSLog.warn("Failed to bake " + used, e);
+            CLSLog.warn("Failed to bake " + used);
+            Map<Throwable, Integer> seen = new HashMap<>();
+            warn("", "", seen, e);
             return false;
+        }
+    }
+
+    private static void warn(String indent, String prefix, Map<Throwable, Integer> seen, Throwable e) {
+        if (e == null) {
+            return;
+        }
+        Integer id = seen.get(e);
+        boolean seenBefore = true;
+        if (id == null) {
+            seen.put(e, id = seen.size() + 1);
+            seenBefore = false;
+        }
+        if (seenBefore) {
+            CLSLog.warn(indent + prefix + " #" + id);
+            return;
+        }
+        CLSLog.warn(indent + prefix + " #" + id + ": " + e.getClass().getSimpleName() + " " + e.getMessage());
+        warn(indent + "  ", "Caused by", seen, e.getCause());
+        for (Throwable t : e.getSuppressed()) {
+            warn(indent + "  ", "Suppressed", seen, t);
         }
     }
 

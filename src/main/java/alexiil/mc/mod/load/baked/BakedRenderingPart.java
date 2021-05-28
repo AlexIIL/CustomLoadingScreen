@@ -43,4 +43,15 @@ public class BakedRenderingPart extends BakedTickable {
             render(renderer);
         }
     }
+
+    @Override
+    public void preLoad(MinecraftDisplayerRenderer renderer) {
+        super.preLoad(renderer);
+
+        for (BakedInsn insn : instructions) {
+            insn.preLoad(renderer);
+        }
+
+        render.preLoad(renderer);
+    }
 }

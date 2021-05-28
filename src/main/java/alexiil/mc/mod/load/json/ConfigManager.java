@@ -2,6 +2,7 @@ package alexiil.mc.mod.load.json;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -100,7 +101,7 @@ public class ConfigManager {
                 return IOUtils.toString(fis, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 if (firstAttempt) {
-                    
+
                     String real = file.toString();
                     try {
                         real = file.getCanonicalPath();
@@ -124,6 +125,37 @@ public class ConfigManager {
                 CLSLog.warn("Tried to get the resource but failed! (" + identifier + ") because " + e.getClass());
             }
             return null;
+        }
+    }
+
+    public static InputStream getInputStream(ResourceLocation identifier) throws FileNotFoundException {
+        if (identifier == null) {
+            throw new NullPointerException("Identifier provided shouldn't have been null!");
+        }
+        if ("config".equals(identifier.getResourceDomain())) {
+            File file = new File("config/customloadingscreen", identifier.getResourcePath());
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException fnfe) {
+                throw fnfe;
+            } catch (IOException io) {
+                FileNotFoundException fnfe = new FileNotFoundException();
+                fnfe.initCause(io);
+                throw fnfe;
+            }
+        }
+
+        try {
+            IResource res = ClsManager.getResource(identifier);
+
+            // Wrap the resource
+            return new ResourceWrappingInputStream(res);
+        } catch (FileNotFoundException fnfe) {
+            throw fnfe;
+        } catch (IOException io) {
+            FileNotFoundException fnfe = new FileNotFoundException();
+            fnfe.initCause(io);
+            throw fnfe;
         }
     }
 

@@ -17,7 +17,7 @@ public class BakedImageRender extends BakedRenderPositioned {
     /** We only ever render 4 x (3 pos, 2 uv) ints each time then reset for the next face.
      * <p>
      * So this 64 is overkill. */
-    private static final int TESS_INT_COUNT = 0x40;
+    private static final int TESS_INT_COUNT = 64;
 
     private final Tessellator tess = new Tessellator(TESS_INT_COUNT);
 
@@ -31,6 +31,14 @@ public class BakedImageRender extends BakedRenderPositioned {
         this.res = new ResourceLocation(res);
         this.pos = pos;
         this.tex = tex;
+    }
+
+    @Override
+    public void preLoad(MinecraftDisplayerRenderer renderer) {
+        super.preLoad(renderer);
+
+        // TODO: Replace this with loading the texture data to bind on the correct thread.
+        // bindTexture(renderer);
     }
 
     @Override

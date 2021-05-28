@@ -25,6 +25,11 @@ public class BakedVariable extends BakedTickable {
     }
 
     public BakedVariable copyAsConstant() {
-        return new BakedVariable(true, varNode, NodeTypes.createConstantNode(expNode));
+        return new BakedVariable(false, varNode, NodeTypes.createConstantNode(expNode));
+    }
+
+    @Override
+    public String toString() {
+        return "" + expNode;
     }
 }

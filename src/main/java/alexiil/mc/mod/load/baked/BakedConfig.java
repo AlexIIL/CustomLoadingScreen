@@ -20,4 +20,17 @@ public class BakedConfig extends BakedTickable {
         // NO-OP
         // This is handled specially by MinecraftDisplayerRenderer
     }
+
+    @Override
+    public void preLoad(MinecraftDisplayerRenderer renderer) {
+        super.preLoad(renderer);
+
+        for (BakedRenderingPart part : renderingParts) {
+            part.preLoad(renderer);
+        }
+
+        for (BakedFactory factory : factories) {
+            factory.preLoad(renderer);
+        }
+    }
 }

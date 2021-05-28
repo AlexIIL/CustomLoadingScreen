@@ -47,7 +47,7 @@ public class JsonRenderSlideshow extends JsonRenderImage {
         // Find available textures
         List<ResourceLocation> images = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             String l = image.replace("#", Integer.toString(i));
 
             ResourceLocation r = new ResourceLocation(l);

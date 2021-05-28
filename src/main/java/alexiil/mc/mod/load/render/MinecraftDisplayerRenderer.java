@@ -1,13 +1,13 @@
 package alexiil.mc.mod.load.render;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
-
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.opengl.SharedDrawable;
 
 import net.minecraft.client.Minecraft;
@@ -56,9 +56,15 @@ public class MinecraftDisplayerRenderer {
         factories = config.factories;
 
         lastTime = System.currentTimeMillis();
+
+        config.preLoad(this);
     }
 
     public void render() {
+        if (GLContext.getCapabilities().GL_KHR_debug) {
+            KHRDebug.glPushDebugGroup(KHRDebug.GL_DEBUG_SOURCE_APPLICATION, 10, "CLS_Render");
+        }
+
         Resolution resolution = ClsManager.RESOLUTION;
 
         // Pre render stuffs
@@ -67,22 +73,21 @@ public class MinecraftDisplayerRenderer {
         GlStateManager.ortho(0.0D, resolution.getWidth(), resolution.getHeight(), 0.0D, -1, 1);
         GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         GlStateManager.loadIdentity();
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        GlStateManager.disableDepth();
-        glEnable(GL_TEXTURE_2D);
-        GlStateManager.enableTexture2D();
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_FOG);
+        GL11.glDisable(GL11.GL_DEPTH);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        GlStateManager.clearColor(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glClearColor(1, 1, 1, 1);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+        GL11.glEnable(GL11.GL_ALPHA);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
-        GlStateManager.color(1, 1, 1, 1);
+        GL11.glColor4f(1, 1, 1, 1);
 
         animator.tick();
 
@@ -92,7 +97,16 @@ public class MinecraftDisplayerRenderer {
 
         for (BakedRenderingPart brp : renderingParts) {
             if (brp != null) {
+
+                if (GLContext.getCapabilities().GL_KHR_debug) {
+                    KHRDebug.glPushDebugGroup(KHRDebug.GL_DEBUG_SOURCE_APPLICATION, 10, "" + brp.getOrigin());
+                }
+
                 brp.tick(this);
+
+                if (GLContext.getCapabilities().GL_KHR_debug) {
+                    KHRDebug.glPopDebugGroup();
+                }
             }
         }
 
@@ -105,34 +119,41 @@ public class MinecraftDisplayerRenderer {
         }
 
         // Post render stuffs
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 0);
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-        GlStateManager.color(1, 1, 1, 1);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 0);
+
+        GL11.glEnable(GL11.GL_ALPHA);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+        GL11.glColor4f(1, 1, 1, 1);
+
+        if (GLContext.getCapabilities().GL_KHR_debug) {
+            KHRDebug.glPopDebugGroup();
+        }
     }
 
     public FontRenderer fontRenderer(String fontTexture) {
-        // if (fontRenderers.containsKey(fontTexture)) {
-        // return fontRenderers.get(fontTexture);
-        // }
-        // FontRenderer font = new FontRenderer(mc.gameSettings, new ResourceLocation(fontTexture), textureManager,
-        // false);
-        // // font.onResourceManagerReload(mc.getResourceManager());
-        // // mc.refreshResources();
+        if ("missingno".equals(fontTexture)) {
+            return _font_render_instance;
+        }
+        if (fontRenderers.containsKey(fontTexture)) {
+            return fontRenderers.get(fontTexture);
+        }
+        FontRenderer font
+            = new FontRendererSeparate(mc.gameSettings, new ResourceLocation(fontTexture), textureManager, false);
         // font.onResourceManagerReload(mc.getResourceManager());
-        // fontRenderers.put(fontTexture, font);
-        // return font;
-        return _font_render_instance;
+        // mc.refreshResources();
+        font.onResourceManagerReload(mc.getResourceManager());
+        fontRenderers.put(fontTexture, font);
+        return font;
     }
 
     public void close() {
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-        GlStateManager.clearColor(1, 1, 1, 0);
-        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
+        GL11.glEnable(GL11.GL_ALPHA);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+        GL11.glClearColor(1, 1, 1, 1);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         _font_render_instance.destroy();
         drawable.destroy();
         animator.close();

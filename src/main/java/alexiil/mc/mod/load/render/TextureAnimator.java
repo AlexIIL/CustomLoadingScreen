@@ -131,6 +131,9 @@ public class TextureAnimator {
         ResourceLocation location = new ResourceLocation(resourceLocation);
         try {
             final InputStream stream = TextureLoader.loadTexture(location);
+            if (stream == null) {
+                return false;
+            }
             try (MemoryCacheImageInputStream imageStream = new MemoryCacheImageInputStream(stream)) {
                 for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(imageStream))) {
                     try {
@@ -154,6 +157,9 @@ public class TextureAnimator {
             if (resource != null) {
                 try {
                     final InputStream stream = TextureLoader.loadTexture(new ResourceLocation(resource));
+                    if (stream == null) {
+                        continue;
+                    }
                     BufferedImage[] frames = null;
                     try (MemoryCacheImageInputStream imageStream = new MemoryCacheImageInputStream(stream)) {
                         for (ImageReader reader : ImmutableList.copyOf(ImageIO.getImageReaders(imageStream))) {

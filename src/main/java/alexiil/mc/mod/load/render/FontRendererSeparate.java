@@ -3,6 +3,7 @@ package alexiil.mc.mod.load.render;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +14,17 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.SimpleResource;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.CLSLog;
+import alexiil.mc.mod.load.json.ConfigManager;
 
 public class FontRendererSeparate extends FontRenderer {
+
+    private static final BufferedImage EMPTY_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
+
     private final Map<ResourceLocation, BufferedImage> textureData = new HashMap<>();
     private final Map<ResourceLocation, Integer> textureLocations = new HashMap<>();
 
@@ -35,13 +41,21 @@ public class FontRendererSeparate extends FontRenderer {
         }
     }
 
-    private void loadTex(ResourceLocation location) {
-        try (IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(location)) {
-            textureData.put(location, TextureUtil.readBufferedImage(resource.getInputStream()));
+    private BufferedImage loadTex(ResourceLocation location) {
+        try (InputStream stream = ConfigManager.getInputStream(location)) {
+            BufferedImage img = TextureUtil.readBufferedImage(stream);
+            if (img == null) {
+                CLSLog.warn("Failed to read a texture from " + location + " - " + stream);
+                return EMPTY_IMAGE;
+            }
+            textureData.put(location, img);
+            return img;
         } catch (FileNotFoundException e) {
-            throw new Error(e);
+            CLSLog.warn("loadTex(" + location + ") : " + e);
+            return EMPTY_IMAGE;
         } catch (IOException e) {
-            throw new Error(e);
+            CLSLog.warn("loadTex(" + location + ") : " + e);
+            return EMPTY_IMAGE;
         }
     }
 
@@ -53,8 +67,8 @@ public class FontRendererSeparate extends FontRenderer {
         }
         Integer value = textureLocations.get(location);
         if (value == null) {
-            BufferedImage img = textureData.get(location);
-            if (img == null) {
+            BufferedImage img = textureData.computeIfAbsent(location, this::loadTex);
+            if (img == null || img == EMPTY_IMAGE) {
                 CLSLog.warn("Non-cached texture: '" + location + "'");
                 return;
             }
@@ -64,6 +78,26 @@ public class FontRendererSeparate extends FontRenderer {
             value = next;
         }
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, value.intValue());
+    }
+
+    @Override
+    protected IResource getResource(ResourceLocation location) throws IOException {
+        if ("config".equals(location.getResourceDomain())) {
+            InputStream stream = ConfigManager.getInputStream(location);
+            InputStream metaStream = null;
+            try {
+                metaStream = ConfigManager.getInputStream(
+                    new ResourceLocation(location.getResourceDomain(), location.getResourcePath() + ".mcmeta")
+                );
+            } catch (IOException e) {
+                // Ignored
+            }
+            return new SimpleResource(
+                "cls config", location, stream, metaStream,
+                Minecraft.getMinecraft().getResourcePackRepository().rprMetadataSerializer
+            );
+        }
+        return super.getResource(location);
     }
 
     public void destroy() {

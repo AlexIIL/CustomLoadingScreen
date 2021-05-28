@@ -42,6 +42,16 @@ public class BakedPanoramaRender extends BakedRender {
     }
 
     @Override
+    public void preLoad(MinecraftDisplayerRenderer renderer) {
+        super.preLoad(renderer);
+
+        for (ResourceLocation loc : cubeSides) {
+            // TODO: Replace this with loading the texture data to bind on the correct thread.
+            // TextureLoader.bindTexture(renderer.textureManager, loc);
+        }
+    }
+
+    @Override
     public void evaluateVariables(MinecraftDisplayerRenderer renderer) {}
 
     /* This is mostly the same as GuiMainMenu.renderSkyBox() method, with a few things removed, and a bit of
@@ -73,8 +83,8 @@ public class BakedPanoramaRender extends BakedRender {
             float f2 = ((float) (k / b0) / (float) b0 - 0.5F) / 64.0F;
             float f3 = 0.0F;
             GlStateManager.translate(f1, f2, f3);
-            GlStateManager.rotate(MathHelper.sin(((float) this.actualAngle) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F,
-                0.0F);
+            GlStateManager
+                .rotate(MathHelper.sin(((float) this.actualAngle) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(-((float) this.actualAngle) * 0.1F, 0.0F, 1.0F, 0.0F);
 
             for (int l = 0; l < 6; ++l) {
