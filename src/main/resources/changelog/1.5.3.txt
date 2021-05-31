@@ -1,3 +1,3 @@
 Bug Fixes:
 
-* Fix colour handling for non-constant colours.
+* Fix non-constant colour handling treating components as either fully bright or off, rather than values ranging from 255 (100% brightness) to 0 (dark).

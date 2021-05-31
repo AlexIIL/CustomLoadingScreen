@@ -1,6 +1,6 @@
 package alexiil.mc.mod.load.baked.insn;
 
-import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 
 public class BakedColourSimple extends BakedInsn {
     private final float a, r, g, b;
@@ -14,6 +14,6 @@ public class BakedColourSimple extends BakedInsn {
 
     @Override
     public void render() {
-        GlStateManager.color(r, g, b, a);
+        GL11.glColor4f(r, g, b, a);
     }
 }

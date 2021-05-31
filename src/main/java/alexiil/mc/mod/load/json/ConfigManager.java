@@ -184,7 +184,7 @@ public class ConfigManager {
     static <T extends JsonConfigurable<T, ?>> T getAsT(EType type, String location) throws InvalidExpressionException {
         if (StringUtils.isEmpty(location)) {
             CLSLog.warn("Location was given as null!", new Throwable());
-            return null;
+            throw new JsonSyntaxException("Invalid location '" + location + "'");
         }
         CLSLog.info("Getting " + location + " as " + type);
         ResourceLocation loc = getLocation(type, location);
@@ -196,7 +196,7 @@ public class ConfigManager {
                 return (T) failed;
             }
             CLSLog.warn("The text inside of \"" + loc + "\" was null!");
-            return null;
+            throw new JsonSyntaxException("Invalid location '" + location + "': the text inside it was null!");
         }
         try {
             T t = (T) GSON_ADAPTORS.fromJson(text, type.clazz);
@@ -241,22 +241,55 @@ public class ConfigManager {
     }
 
     public static ResourceLocation getLocation(EType type, String base) {
+
+        /* Namespace rules: */
+
+        // If the location starts contains a colon before a slash then it's a namespace,
+        // and we don't do anything special other that use it instead of the default.
+
+        // If the location starts with "config/" then we use "config" as the namespace
+        // and we *don't* add the type prefix if the type is EType.CONFIG.
+
+        /* Path rules: */
+
+        // We always append ".json" to the path, no exceptions
+        // The other rules are a bit more complicated:
+
+        // If it starts with "builtin/" or "sample/" then we bring that to the front.
+
+        // Then we add "type"
+
+        String namespace = "customloadingscreen";
         String path;
-        if (base.startsWith("builtin/")) {
-            path = "builtin/" + type.resourceBase + "/" + base.substring("builtin/".length()) + ".json";
-        } else if (base.startsWith("sample/")) {
-            path = "sample/" + type.resourceBase + "/" + base.substring("sample/".length()) + ".json";
-        } else if (base.startsWith("config/")) {
-            if (type == EType.CONFIG) {
-                path = base.substring("config/".length()) + ".json";
+        int colon = base.indexOf(':');
+        int slash = base.indexOf('/');
+
+        if (colon > 0 && (colon < slash || slash < 0)) {
+            namespace = base.substring(0, colon);
+            base = base.substring(colon + 1);
+
+            if ("config".equals(namespace) && type == EType.CONFIG) {
+                path = base;
             } else {
-                path = type.resourceBase + "/" + base.substring("config/".length()) + ".json";
+                path = type.resourceBase + "/" + base;
             }
-            return new ResourceLocation("config", path);
         } else {
-            path = type.resourceBase + "/" + base + ".json";
+            if (base.startsWith("builtin/")) {
+                path = "builtin/" + type.resourceBase + base.substring(slash);
+            } else if (base.startsWith("sample/")) {
+                path = "sample/" + type.resourceBase + base.substring(slash);
+            } else if (base.startsWith("config/")) {
+                if (type == EType.CONFIG) {
+                    path = base.substring(slash + 1);
+                } else {
+                    path = type.resourceBase + base.substring(slash);
+                }
+                namespace = "config";
+            } else {
+                path = type.resourceBase + "/" + base;
+            }
         }
 
-        return new ResourceLocation("customloadingscreen", path);
+        return new ResourceLocation(namespace, path + ".json");
     }
 }

@@ -57,7 +57,12 @@ public class Translation {
         try {
             for (Path child : Files.list(langRoot).collect(Collectors.toList())) {
                 String fn = child.getFileName().toString();
+                if (fn.endsWith(".lang.txt")) {
+                    fn = fn.substring(0, fn.length() - 4);
+                    CLSLog.warn("Found .lang.txt file in lang root, treating as .lang: " + child);
+                }
                 if (!fn.endsWith(".lang") || !Files.isRegularFile(child)) {
+                    CLSLog.warn("Encountered unknown file in lang root " + child);
                     continue;
                 }
                 String locale = fn.substring(0, fn.lastIndexOf('.'));
@@ -118,7 +123,16 @@ public class Translation {
 
     public static void setTranslator() {
         // Scan config dir for langs
-        scanLangRoot(Paths.get("config", "customloadingscreen", "lang"));
+        Path cfgLangFolder = Paths.get("config", "customloadingscreen", "lang");
+        if (Files.exists(cfgLangFolder)) {
+            scanLangRoot(cfgLangFolder);
+        } else {
+            try {
+                Files.createDirectories(cfgLangFolder);
+            } catch (IOException ignored) {
+                // Ignore
+            }
+        }
 
         // Lastly, set the current locale
         File options = new File("./options.txt");

@@ -97,6 +97,8 @@ public class ClsManager {
         FUNC_CTX.put_l("memory_used", () -> {
             return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
         });
+
+        FUNC_CTX.put_s_s("translate", Translation::translate);
     }
 
     public static boolean load() throws InvalidExpressionException {
