@@ -1,7 +1,7 @@
 Bug Fixes:
 
 * Fix constant colours sometimes not applying properly.
-* Add a new function: "translate". This takes 1 string argument, and can be used to localize custom language strings (in addition to tghe built-in ones).
+* Add a new function: "translate". This takes 1 string argument, and can be used to localize custom language strings (in addition to the built-in ones).
 * Print debug information about language paths when loading them.
 * Fix a NullPointerException being thrown when json resources aren't found.
 * Improve namespace handling for json resources. 
