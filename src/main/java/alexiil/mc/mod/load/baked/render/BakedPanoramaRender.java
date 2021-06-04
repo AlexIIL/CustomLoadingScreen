@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -65,49 +64,48 @@ public class BakedPanoramaRender extends BakedRender {
     private void drawPanorama(MinecraftDisplayerRenderer renderer) {
         BufferBuilder vb = tess.getBuffer();
 
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.pushMatrix();
-        GlStateManager.loadIdentity();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
         Project.gluPerspective(120.0F, 1.0F, 0.05F, 10.0F);
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-        GlStateManager.pushMatrix();
-        GlStateManager.loadIdentity();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.disableAlpha();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+        GL11.glDisable(GL11.GL_ALPHA);
         byte b0 = 8;
 
         for (int k = 0; k < b0 * b0; ++k) {
-            GlStateManager.pushMatrix();
+            GL11.glPushMatrix();
             float f1 = ((float) (k % b0) / (float) b0 - 0.5F) / 64.0F;
             float f2 = ((float) (k / b0) / (float) b0 - 0.5F) / 64.0F;
             float f3 = 0.0F;
-            GlStateManager.translate(f1, f2, f3);
-            GlStateManager
-                .rotate(MathHelper.sin(((float) this.actualAngle) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(-((float) this.actualAngle) * 0.1F, 0.0F, 1.0F, 0.0F);
+            GL11.glTranslatef(f1, f2, f3);
+            GL11.glRotatef(MathHelper.sin(((float) this.actualAngle) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(-((float) this.actualAngle) * 0.1F, 0.0F, 1.0F, 0.0F);
 
             for (int l = 0; l < 6; ++l) {
-                GlStateManager.pushMatrix();
+                GL11.glPushMatrix();
 
                 if (l == 1) {
-                    GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+                    GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
                 }
 
                 if (l == 2) {
-                    GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                    GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
                 }
 
                 if (l == 3) {
-                    GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+                    GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
                 }
 
                 if (l == 4) {
-                    GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                    GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
                 if (l == 5) {
-                    GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+                    GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
                 renderer.textureManager.bindTexture(cubeSides[l]);
@@ -120,21 +118,21 @@ public class BakedPanoramaRender extends BakedRender {
                 vb.pos(1.0D, 1.0D, 1.0D).tex(1.0F - f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
                 vb.pos(-1.0D, 1.0D, 1.0D).tex(0.0F + f4, 1.0F - f4).color(rgb, rgb, rgb, alpha).endVertex();
                 tess.draw();
-                GlStateManager.popMatrix();
+                GL11.glPopMatrix();
             }
 
-            GlStateManager.popMatrix();
-            GlStateManager.colorMask(true, true, true, false);
+            GL11.glPopMatrix();
+            GL11.glColorMask(true, true, true, false);
         }
 
         vb.setTranslation(0.0D, 0.0D, 0.0D);
-        GlStateManager.colorMask(true, true, true, true);
-        GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.popMatrix();
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-        GlStateManager.popMatrix();
-        GlStateManager.enableAlpha();
+        GL11.glColorMask(true, true, true, true);
+        GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_ALPHA);
     }
 
     @Override

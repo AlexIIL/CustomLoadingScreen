@@ -1,38 +1,5 @@
 package alexiil.mc.mod.load.render;
 
-import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_GREATER;
-import static org.lwjgl.opengl.GL11.GL_LEQUAL;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glAlphaFunc;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor3d;
-import static org.lwjgl.opengl.GL11.glColor4f;
-import static org.lwjgl.opengl.GL11.glDepthFunc;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glVertex2f;
-import static org.lwjgl.opengl.GL11.glViewport;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -223,18 +190,18 @@ public class MainSplashRenderer {
         start = System.currentTimeMillis();
 
         while (!transitionOutDone) {
-            glClearColor(1, 1, 1, 1);
-            glClear(GL_COLOR_BUFFER_BIT);
+            GL11.glClearColor(1, 1, 1, 1);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             // matrix setup -- similar as SplashProgress
             int w = Display.getWidth();
             int h = Display.getHeight();
-            glViewport(0, 0, w, h);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(-w / 2, w / 2, h / 2, -h / 2, -1, 1);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
+            GL11.glViewport(0, 0, w, h);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(-w / 2, w / 2, h / 2, -h / 2, -1, 1);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
 
             diff = System.currentTimeMillis() - start;
             if (diff < 2500 || !reachedConstruct) {
@@ -250,10 +217,10 @@ public class MainSplashRenderer {
                 transitionOutDone = renderTransitionFrame();
             }
 
-            // glPushMatrix();
-            // glScalef(4, 4, 1);
-            // glColor4f(1, 0, 1, 1);
-            // glEnable(GL_TEXTURE_2D);
+            // GL11.glPushMatrix();
+            // GL11.glScalef(4, 4, 1);
+            // GL11.glColor4f(1, 0, 1, 1);
+            // GL11.glEnable(GL11.GL_TEXTURE_2D);
 
             // For the debug build always try for 100 fps
             int fpsLimit = CustomLoadingScreen.fpsLimit;
@@ -301,20 +268,20 @@ public class MainSplashRenderer {
     }
 
     private static void renderMojangFrame() {
-        glColor4f(1, 1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         mojangLogoTex.bind();
-        glBegin(GL_QUADS);
+        GL11.glBegin(GL11.GL_QUADS);
         mojangLogoTex.texCoord(0, 0, 0);
-        glVertex2f(-256, -256);
+        GL11.glVertex2f(-256, -256);
         mojangLogoTex.texCoord(0, 0, 1);
-        glVertex2f(-256, 256);
+        GL11.glVertex2f(-256, 256);
         mojangLogoTex.texCoord(0, 1, 1);
-        glVertex2f(256, 256);
+        GL11.glVertex2f(256, 256);
         mojangLogoTex.texCoord(0, 1, 0);
-        glVertex2f(256, -256);
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
+        GL11.glVertex2f(256, -256);
+        GL11.glEnd();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
     private static void renderFrame() {
@@ -332,10 +299,10 @@ public class MainSplashRenderer {
 
             // Actual drawing
             int y = 0;
-            glColor3d(0, 0, 0);
-            glPushMatrix();
-            glScalef(2, 2, 1);
-            glEnable(GL_TEXTURE_2D);
+            GL11.glColor3d(0, 0, 0);
+            GL11.glPushMatrix();
+            GL11.glScalef(2, 2, 1);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
 
             String s = ((diff / 100L) / 10.0) + "s";
             fontRenderer.drawString(s, 0, -10, 0);
@@ -379,8 +346,8 @@ public class MainSplashRenderer {
                 y += 20;
             }
 
-            glDisable(GL_TEXTURE_2D);
-            glPopMatrix();
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glPopMatrix();
         }
     }
 
@@ -428,11 +395,11 @@ public class MainSplashRenderer {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        glClearColor(1, 1, 1, 1);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glClearColor(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private static void clearGL() {
@@ -440,11 +407,11 @@ public class MainSplashRenderer {
         mc.displayWidth = Display.getWidth();
         mc.displayHeight = Display.getHeight();
         mc.resize(mc.displayWidth, mc.displayHeight);
-        glClearColor(1, 1, 1, 1);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER, .1f);
+        GL11.glClearColor(1, 1, 1, 1);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glAlphaFunc(GL11.GL_GREATER, .1f);
         try {
             Display.getDrawable().releaseContext();
         } catch (LWJGLException e) {

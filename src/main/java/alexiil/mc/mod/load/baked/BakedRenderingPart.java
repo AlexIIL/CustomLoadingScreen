@@ -2,8 +2,6 @@ package alexiil.mc.mod.load.baked;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.renderer.GlStateManager;
-
 import alexiil.mc.mod.load.baked.insn.BakedInsn;
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
@@ -22,19 +20,19 @@ public class BakedRenderingPart extends BakedTickable {
     }
 
     public void render(MinecraftDisplayerRenderer renderer) {
-        GlStateManager.pushMatrix();
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.pushMatrix();
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
         render.evaluateVariables(renderer);
         for (BakedInsn insn : instructions) {
             insn.render();
         }
         render.render(renderer);
-        GlStateManager.popMatrix();
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.popMatrix();
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
     }
 
     @Override

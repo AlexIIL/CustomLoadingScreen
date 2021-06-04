@@ -3,7 +3,6 @@ package alexiil.mc.mod.load.baked.render;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -61,7 +60,7 @@ public class BakedSlideshowRender extends BakedRenderPositioned {
         }
 
         if (c != -1) {
-            GlStateManager.color(
+            GL11.glColor4f(
                 ((c >>> 16) & 0xFF) / 255f,
                 ((c >>>  8) & 0xFF) / 255f,
                 ((c >>>  0) & 0xFF) / 255f,
@@ -78,7 +77,7 @@ public class BakedSlideshowRender extends BakedRenderPositioned {
         tess.draw();
 
         if (c != -1) {
-            GlStateManager.color(1, 1, 1, 1);
+            GL11.glColor4f(1, 1, 1, 1);
         }
     }
 

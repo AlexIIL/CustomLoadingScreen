@@ -18,7 +18,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -59,7 +58,7 @@ public class TextureAnimator {
                 int wf = f >= images.length ? f - images.length : f;
                 if (wf >= images.length) break;// We have wrapped back around, twice (woops!)
                 if (ids[wf] == -1) {
-                    ids[wf] = TextureUtil.glGenTextures();
+                    ids[wf] = GL11.glGenTextures();
                     uploadTextureImage(ids[wf], images[wf]);
                 }
             }
@@ -76,11 +75,11 @@ public class TextureAnimator {
                 }
             }
             if (ids[frame] != -1) {
-                GlStateManager.bindTexture(ids[frame]);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[frame]);
             } else {
-                ids[frame] = TextureUtil.glGenTextures();
+                ids[frame] = GL11.glGenTextures();
                 uploadTextureImage(ids[frame], images[frame]);
-                GlStateManager.bindTexture(ids[frame]);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D,ids[frame]);
             }
             lastUsed[frame] = now;
             uploadFramesAhead(frame, TEXTURE_UPLOAD_AHEAD);
@@ -230,11 +229,11 @@ public class TextureAnimator {
         int count = BUFFER_SIZE / width;
         int[] data = new int[count * width];
 
-        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10240, 9728);
-        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10241, 9728);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, 10240, 9728);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, 10241, 9728);
 
-        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10242, 10497);
-        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, 10243, 10497);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, 10242, 10497);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, 10243, 10497);
 
         for (int i = 0; i < width * height; i += width * count) {
             int iteration = i / width;
@@ -244,7 +243,7 @@ public class TextureAnimator {
             DATA_BUFFER.clear();
             DATA_BUFFER.put(data, 0, size);
             DATA_BUFFER.position(0).limit(size);
-            GlStateManager.glTexSubImage2D(3553, 0, 0, iteration, width, thisHeight, 32993, 33639, DATA_BUFFER);
+            GL11.glTexSubImage2D(3553, 0, 0, iteration, width, thisHeight, 32993, 33639, DATA_BUFFER);
         }
         return;
     }

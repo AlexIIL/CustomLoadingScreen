@@ -1,0 +1,5 @@
+Changes:
+
+* Now CLS creates an empty tips file ("config/customloadingscreen_tips.txt") if it doesn't already exist. 
+* Stopped a few rendering parts from sharing state with the main thread.
+* Removed the warning when CLS fails to find a RENDERING_PART type but finds an IMAGE instead.

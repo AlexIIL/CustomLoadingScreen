@@ -55,6 +55,10 @@ public class ConfigManager {
             types.put(clazz, this);
         }
 
+        public boolean hasDefault() {
+            return this == EType.RENDERING_PART;
+        }
+
         public JsonConfigurable<?, ?> getNotFound(String location) throws InvalidExpressionException {
             if (this == EType.RENDERING_PART) {
                 JsonRender ji = getAsImage(location);
@@ -63,6 +67,7 @@ public class ConfigManager {
                     jrp.setSource(
                         ("{#-'image':'" + location + "'#}").replace('\'', '"').replace('#', '\n').replace('-', '\t')
                     );
+                    jrp.setLocation(ji.resourceLocation);
                     return jrp;
                 }
             }
@@ -91,7 +96,7 @@ public class ConfigManager {
         GSON_DEFAULT = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    private static String getFirst(ResourceLocation identifier, boolean firstAttempt) {
+    private static String getFirst(ResourceLocation identifier, boolean firstAttempt, boolean hasDefaut) {
         if (identifier == null) {
             throw new NullPointerException("Identifier provided shouldn't have been null!");
         }
@@ -108,7 +113,9 @@ public class ConfigManager {
                     } catch (IOException io) {
                         // Ignore
                     }
-                    CLSLog.warn("Tried to get the resource but failed! (" + real + ") because " + e.getClass());
+                    if (!hasDefaut) {
+                        CLSLog.warn("Tried to get the resource but failed! (" + real + ") because " + e.getClass());
+                    }
                 }
                 return null;
             }
@@ -121,7 +128,7 @@ public class ConfigManager {
                 return null;
             }
         } catch (IOException e) {
-            if (firstAttempt) {
+            if (firstAttempt && !hasDefaut) {
                 CLSLog.warn("Tried to get the resource but failed! (" + identifier + ") because " + e.getClass());
             }
             return null;
@@ -159,20 +166,20 @@ public class ConfigManager {
         }
     }
 
-    private static String getTextResource(ResourceLocation identifier) {
+    private static String getTextResource(ResourceLocation identifier, boolean hasDefaut) {
         if (identifier == null) throw new NullPointerException("Identifier provided shouldn't have been null!");
         if (cache.containsKey(identifier)) {
             return cache.get(identifier);
         }
         if (failedCache.containsKey(identifier)) {
-            String attempt = getFirst(identifier, false);
+            String attempt = getFirst(identifier, false, hasDefaut);
             if (attempt != null) {
                 failedCache.remove(identifier);
                 cache.put(identifier, attempt);
             }
             return attempt;
         }
-        String actual = getFirst(identifier, true);
+        String actual = getFirst(identifier, true, hasDefaut);
         if (actual == null) failedCache.put(identifier, null);
         else cache.put(identifier, actual);
         return actual;
@@ -188,7 +195,7 @@ public class ConfigManager {
         }
         CLSLog.info("Getting " + location + " as " + type);
         ResourceLocation loc = getLocation(type, location);
-        String text = getTextResource(loc);
+        String text = getTextResource(loc, type.hasDefault());
         if (text == null) {
             JsonConfigurable<?, ?> failed = type.getNotFound(location);
             if (failed != null) {

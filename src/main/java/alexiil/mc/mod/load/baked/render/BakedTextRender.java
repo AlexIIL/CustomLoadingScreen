@@ -1,7 +1,8 @@
 package alexiil.mc.mod.load.baked.render;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 
@@ -57,12 +58,12 @@ public abstract class BakedTextRender extends BakedRenderPositioned {
     @Override
     public void render(MinecraftDisplayerRenderer renderer) {
         FontRenderer font = renderer.fontRenderer(fontTexture);
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(_x, _y, 0);
-        GlStateManager.scale(_scale, _scale, _scale);
+        GL11.glPushMatrix();
+        GL11.glTranslated(_x, _y, 0);
+        GL11.glScaled(_scale, _scale, _scale);
         font.drawString(_text, 0, 0, (int) _colour, false);
-        GlStateManager.popMatrix();
-        GlStateManager.color(1, 1, 1, 1);
+        GL11.glPopMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public abstract String getText();

@@ -12,7 +12,6 @@ import org.lwjgl.opengl.SharedDrawable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
@@ -68,11 +67,11 @@ public class MinecraftDisplayerRenderer {
         Resolution resolution = ClsManager.RESOLUTION;
 
         // Pre render stuffs
-        GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, resolution.getWidth(), resolution.getHeight(), 0.0D, -1, 1);
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-        GlStateManager.loadIdentity();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0D, resolution.getWidth(), resolution.getHeight(), 0.0D, -1, 1);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_FOG);
         GL11.glDisable(GL11.GL_DEPTH);

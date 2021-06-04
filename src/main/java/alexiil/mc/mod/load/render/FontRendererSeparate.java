@@ -11,8 +11,11 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.SimpleResource;
 import net.minecraft.client.settings.GameSettings;
@@ -27,6 +30,9 @@ public class FontRendererSeparate extends FontRenderer {
 
     private final Map<ResourceLocation, BufferedImage> textureData = new HashMap<>();
     private final Map<ResourceLocation, Integer> textureLocations = new HashMap<>();
+
+    private boolean __cls__replaced__underline;
+    private boolean __cls__replaced__strikethrough;
 
     public FontRendererSeparate(
         GameSettings settings, ResourceLocation location, TextureManager textureManagerIn, boolean unicode
@@ -105,5 +111,43 @@ public class FontRendererSeparate extends FontRenderer {
             GL11.glDeleteTextures(value.intValue());
         }
         textureLocations.clear();
+    }
+
+    @Override
+    protected void setColor(float r, float g, float b, float a) {
+        GL11.glColor4f(r, g, b, a);
+    }
+
+    @Override
+    protected void enableAlpha() {
+        GL11.glEnable(GL11.GL_ALPHA);
+    }
+
+    @Override
+    protected void doDraw(float width) {
+
+        if (__cls__replaced__strikethrough || __cls__replaced__underline) {
+            Tessellator tess = Tessellator.getInstance();
+            BufferBuilder bb = tess.getBuffer();
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            bb.begin(7, DefaultVertexFormats.POSITION);
+            if (__cls__replaced__strikethrough) {
+                int halfHeight = FONT_HEIGHT / 2;
+                bb.pos(posX, posY + halfHeight, 0).endVertex();
+                bb.pos(posX + width, posY + halfHeight, 0).endVertex();
+                bb.pos(posX + width, posY + halfHeight - 1, 0).endVertex();
+                bb.pos(posX, posY + halfHeight - 1, 0).endVertex();
+            }
+            if (__cls__replaced__underline) {
+                bb.pos(posX - 1, posY + FONT_HEIGHT, 0).endVertex();
+                bb.pos(posX + width, posY + FONT_HEIGHT, 0).endVertex();
+                bb.pos(posX + width, posY + FONT_HEIGHT - 1, 0).endVertex();
+                bb.pos(posX - 1, posY + FONT_HEIGHT - 1, 0).endVertex();
+            }
+            tess.draw();
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        }
+
+        posX += width;
     }
 }

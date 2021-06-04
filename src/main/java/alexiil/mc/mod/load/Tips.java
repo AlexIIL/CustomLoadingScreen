@@ -24,6 +24,14 @@ public class Tips {
 
     public static void load() {
         File f = new File("config/customloadingscreen_tips.txt");
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             load(parseTips(br));
         } catch (FileNotFoundException e) {

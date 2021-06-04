@@ -1,5 +1,7 @@
 package alexiil.mc.mod.load.coremod;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,10 +26,16 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.util.ResourceLocation;
 
 public class ClsTransformer implements IClassTransformer, Opcodes {
+
     public static final Logger LOG = LogManager.getLogger("cls.transform");
 
     private static final String OWNER_MAIN_SPLASH_RENDERER;
     private static final String OWNER_ASM_CALLBACKS;
+
+    private static final String MC_FONT_RENDERER = "net.minecraft.client.gui.FontRenderer";
+
+    private static String fontRendererUnderlineName = "ClsWentWrong_Underline";
+    private static String fontRendererStrikethroughName = "ClsWentWrong_Strikethrough";
 
     static {
         OWNER_MAIN_SPLASH_RENDERER = "alexiil/mc/mod/load/render/MainSplashRenderer";
@@ -47,6 +55,12 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
         }
         if (name.equals("alexiil.mc.mod.load.render.MainSplashRenderer")) {
             return transformMainSplashRenderer(basicClass);
+        }
+        if (name.equals("alexiil.mc.mod.load.render.FontRendererSeparate")) {
+            return transformFontRendererSeparate(basicClass);
+        }
+        if (transformedName.equals(MC_FONT_RENDERER)) {
+            return transformFontRenderer(basicClass);
         }
         return basicClass;
     }
@@ -235,6 +249,82 @@ public class ClsTransformer implements IClassTransformer, Opcodes {
 
         // Ensure our changes are obvious
         changeLineNumbers(classNode);
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        return cw.toByteArray();
+    }
+
+    private static byte[] transformFontRendererSeparate(byte[] before) {
+        LOG.info("Transforming CLS.FontRendererSeparate");
+        if (fontRendererStrikethroughName.contains("ClsWentWrong")) {
+            LOG.warn("Transformed before minecraft's FontRenderer!");
+            LOG.warn(" (force-loading FontRenderer)");
+            try {
+                Class<?> cls = Class.forName(MC_FONT_RENDERER);
+                if (cls == null) {
+                    throw new IllegalStateException(MC_FONT_RENDERER);
+                } else {
+                    LOG.info("Loaded " + cls);
+                }
+            } catch (ClassNotFoundException e) {
+                throw new Error(e);
+            }
+        }
+
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        for (MethodNode m : classNode.methods) {
+            ListIterator<AbstractInsnNode> iter = m.instructions.iterator();
+            while (iter.hasNext()) {
+                AbstractInsnNode i = iter.next();
+                if (i instanceof FieldInsnNode) {
+                    FieldInsnNode fn = (FieldInsnNode) i;
+                    if ("__cls__replaced__underline".equals(fn.name)) {
+                        fn.name = fontRendererUnderlineName;
+                    } else if ("__cls__replaced__strikethrough".equals(fn.name)) {
+                        fn.name = fontRendererStrikethroughName;
+                    }
+                }
+            }
+        }
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        classNode.accept(cw);
+        return cw.toByteArray();
+    }
+
+    private static byte[] transformFontRenderer(byte[] before) {
+        LOG.info("Transforming Minecraft.FontRenderer");
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(before);
+        reader.accept(classNode, 0);
+
+        List<FieldNode> fields = classNode.fields;
+        List<FieldNode> boolFields = new ArrayList<>();
+        for (FieldNode n : fields) {
+            if ("Z".equals(n.desc) && (n.access & Opcodes.ACC_STATIC) == 0) {
+                boolFields.add(n);
+            }
+        }
+
+        FieldNode fldUnderline = boolFields.get(5);
+        FieldNode fldStrike = boolFields.get(6);
+
+        fontRendererUnderlineName = fldUnderline.name;
+        fontRendererStrikethroughName = fldStrike.name;
+
+        if ((fldUnderline.access & ACC_PUBLIC) == 0) {
+            fldUnderline.access &= ~ACC_PRIVATE;
+            fldUnderline.access |= ACC_PROTECTED;
+        }
+
+        if ((fldStrike.access & ACC_PUBLIC) == 0) {
+            fldStrike.access &= ~ACC_PRIVATE;
+            fldStrike.access |= ACC_PROTECTED;
+        }
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         classNode.accept(cw);
