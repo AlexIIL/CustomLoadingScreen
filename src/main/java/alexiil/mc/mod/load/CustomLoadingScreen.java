@@ -28,14 +28,18 @@ public class CustomLoadingScreen {
 
     private static final Property PROP_FRAME;
     private static final Property PROP_USE_CUSTOM;
+    // private static final Property PROP_DARK_MODE;
     private static final Property PROP_CONFIG;
     private static final Property PROP_CONFIG_RANDOMS;
     private static final Property PROP_WAIT;
     private static final Property PROP_FPS_LIMIT;
+    private static final Property PROP_DEBUG_RESOURCE_LOADING;
 
     public static final boolean shouldWait;
     public static final boolean useFrame;
     public static final boolean useCustom;
+    public static final boolean darkMode;
+    public static final boolean debugResourceLoading;
     public static final String customConfigPath;
     public static final int fpsLimit;
 
@@ -61,6 +65,13 @@ public class CustomLoadingScreen {
         PROP_WAIT.setComment(
             "Sleep for a tiny amount of time each mod progress stage to make configs that rely on receiving all mod load stages work a bit better."
         );
+
+        // PROP_DARK_MODE = CONFIG.get("general", "dark_mode", false);
+        // PROP_DARK_MODE.setComment("Use dark-mode for loading screens rather than light.");
+        darkMode = false;// PROP_DARK_MODE.getBoolean();
+
+        PROP_DEBUG_RESOURCE_LOADING = CONFIG.get("debug", "resource_loading", false);
+        debugResourceLoading = PROP_DEBUG_RESOURCE_LOADING.getBoolean();
 
         PROP_FPS_LIMIT = CONFIG.get("general", "fps_limit", 75);
         PROP_FPS_LIMIT.setComment(

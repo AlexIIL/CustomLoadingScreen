@@ -57,6 +57,8 @@ public class ClsManager {
     private static IResourceManager resManager;
 
     static {
+        FUNC_CTX.putConstantBoolean("dark_mode", CustomLoadingScreen.darkMode);
+
         FUNC_CTX.put_l("forge_progress_bar_count", forgeProgressBarTitles::size);
         FUNC_CTX.put_l_o("forge_progress_bar_title", String.class, (index) -> {
             if (index < 0 || index >= forgeProgressBarTitles.size()) {

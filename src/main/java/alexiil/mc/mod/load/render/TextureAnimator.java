@@ -79,7 +79,7 @@ public class TextureAnimator {
             } else {
                 ids[frame] = GL11.glGenTextures();
                 uploadTextureImage(ids[frame], images[frame]);
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D,ids[frame]);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, ids[frame]);
             }
             lastUsed[frame] = now;
             uploadFramesAhead(frame, TEXTURE_UPLOAD_AHEAD);
@@ -129,7 +129,7 @@ public class TextureAnimator {
     public static boolean isAnimated(String resourceLocation) {
         ResourceLocation location = new ResourceLocation(resourceLocation);
         try {
-            final InputStream stream = TextureLoader.loadTexture(location);
+            final InputStream stream = TextureLoader.openResourceStream(location);
             if (stream == null) {
                 return false;
             }
@@ -139,12 +139,14 @@ public class TextureAnimator {
                         reader.setInput(imageStream);
                         boolean animated = reader.getNumImages(true) > 1;
                         reader.dispose();
+                        stream.close();
                         return animated;
                     } catch (IOException ignored) {} finally {
                         reader.dispose();
                     }
                 }
             }
+            stream.close();
         } catch (IOException ignored) {}
         return false;
     }
@@ -155,7 +157,7 @@ public class TextureAnimator {
             String resource = render.render.getLocation();
             if (resource != null) {
                 try {
-                    final InputStream stream = TextureLoader.loadTexture(new ResourceLocation(resource));
+                    final InputStream stream = TextureLoader.openResourceStream(new ResourceLocation(resource));
                     if (stream == null) {
                         continue;
                     }
@@ -183,6 +185,7 @@ public class TextureAnimator {
                                     frames = Arrays.copyOf(frames, read);
                                 }
                                 if (frames.length < 2) {
+                                    stream.close();
                                     continue;
                                 }
                                 CLSLog.info("Number of Frames = " + read);
@@ -196,6 +199,7 @@ public class TextureAnimator {
                             }
                         }
                     }
+                    stream.close();
                 } catch (IOException e) {
                     // TODO: do something about this!
                 }

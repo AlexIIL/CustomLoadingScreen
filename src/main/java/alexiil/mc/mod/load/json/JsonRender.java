@@ -23,8 +23,12 @@ public abstract class JsonRender extends JsonConfigurable<JsonRender, BakedRende
     }
 
     public JsonRender(JsonRender parent, JsonObject json, JsonDeserializationContext context) {
-        this.image = overrideObject(json, "image", context, String.class, parent == null ? null : parent.image, "missingno");
-        this.colour = overrideObject(json, "colour", context, String.class, parent == null ? null : parent.colour, "0xFFFFFFFF");
+        this.image
+            = overrideObject(json, "image", context, String.class, parent == null ? null : parent.image, "missingno");
+
+        this.colour = overrideObject(
+            json, "colour", context, String.class, parent == null ? null : parent.colour, "0xFFFFFFFF"
+        );
     }
 
     public List<BakedInsn> bakeInstructions(FunctionContext context) throws InvalidExpressionException {

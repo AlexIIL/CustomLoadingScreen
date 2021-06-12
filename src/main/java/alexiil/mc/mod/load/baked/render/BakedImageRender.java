@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.render.MinecraftDisplayerRenderer;
 import alexiil.mc.mod.load.render.TextureLoader;
+import alexiil.mc.mod.load.render.TextureLoader.PreScannedImageData;
 
 import buildcraft.lib.expression.node.value.NodeVariableDouble;
 
@@ -24,6 +25,8 @@ public class BakedImageRender extends BakedRenderPositioned {
     protected final ResourceLocation res;
     private final BakedArea pos, tex;
 
+    PreScannedImageData preScanned = null;
+
     public BakedImageRender(
         NodeVariableDouble varWidth, NodeVariableDouble varHeight, String res, BakedArea pos, BakedArea tex
     ) {
@@ -37,8 +40,7 @@ public class BakedImageRender extends BakedRenderPositioned {
     public void preLoad(MinecraftDisplayerRenderer renderer) {
         super.preLoad(renderer);
 
-        // TODO: Replace this with loading the texture data to bind on the correct thread.
-        // bindTexture(renderer);
+        preScanned = TextureLoader.preScan(res);
     }
 
     @Override
@@ -62,7 +64,11 @@ public class BakedImageRender extends BakedRenderPositioned {
     }
 
     public void bindTexture(MinecraftDisplayerRenderer renderer) {
-        TextureLoader.bindTexture(renderer.textureManager, res);
+        if (preScanned != null) {
+            preScanned.bind(renderer.textureManager);
+        } else {
+            TextureLoader.bindTexture(renderer.textureManager, res);
+        }
     }
 
     @Override

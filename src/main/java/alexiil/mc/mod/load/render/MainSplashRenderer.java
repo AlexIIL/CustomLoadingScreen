@@ -190,7 +190,11 @@ public class MainSplashRenderer {
         start = System.currentTimeMillis();
 
         while (!transitionOutDone) {
-            GL11.glClearColor(1, 1, 1, 1);
+            if (CustomLoadingScreen.darkMode) {
+                GL11.glClearColor(0, 0, 0, 1);
+            } else {
+                GL11.glClearColor(1, 1, 1, 1);
+            }
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             // matrix setup -- similar as SplashProgress
@@ -304,13 +308,15 @@ public class MainSplashRenderer {
             GL11.glScalef(2, 2, 1);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
 
+            int fontColour = CustomLoadingScreen.darkMode ? 0xFF_FF_FF_FF : 0;
+
             String s = ((diff / 100L) / 10.0) + "s";
-            fontRenderer.drawString(s, 0, -10, 0);
+            fontRenderer.drawString(s, 0, -10, fontColour);
 
             s = status + " - " + subStatus;
-            fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -40, 0);
+            fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -40, fontColour);
             String bar = getProgress(12, progress);
-            fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, -30, 0);
+            fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, -30, fontColour);
 
             Iterator<ProgressBar> i = ProgressManager.barIterator();
             while (i.hasNext()) {
@@ -318,10 +324,10 @@ public class MainSplashRenderer {
 
                 int startWidth = fontRenderer.getStringWidth(b.getTitle() + " ");
 
-                fontRenderer.drawString(b.getTitle() + " ", -startWidth, y, 0);
-                fontRenderer.drawString("- " + b.getMessage(), 0, y, 0);
+                fontRenderer.drawString(b.getTitle() + " ", -startWidth, y, fontColour);
+                fontRenderer.drawString("- " + b.getMessage(), 0, y, fontColour);
                 bar = getProgress(b);
-                fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, y + 14, 0);
+                fontRenderer.drawString(bar, -fontRenderer.getStringWidth(bar) / 2, y + 14, fontColour);
 
                 y += 30;
             }
@@ -342,7 +348,7 @@ public class MainSplashRenderer {
             int x = -w / 4;
             y = -h / 4;
             for (String s2 : list) {
-                fontRenderer.drawString(s2, x, y, 0);
+                fontRenderer.drawString(s2, x, y, fontColour);
                 y += 20;
             }
 

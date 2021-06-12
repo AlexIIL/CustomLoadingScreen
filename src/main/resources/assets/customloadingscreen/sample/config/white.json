@@ -1,11 +1,39 @@
 {
   "renders": [
-    "sample/mojang_splash",
+    {
+        "image": {
+            "parent": "sample/flat_background",
+            "colour": "dark_mode ? 0xFF_00_00_00 : 0xFF_FF_FF_FF"
+        }
+    },
+    {
+        "image": "sample/mojang_splash",
+        "should_render": "!dark_mode"
+    },
+    {
+        "image": "sample/mojang_splash_dark",
+        "should_render": "dark_mode"
+    },
     "sample/loading_bar_boss",
     "sample/loading_bar_boss_percentage",
-    "sample/text_status",
-    "sample/text_sub_status",
-    "sample/text_percentage"
+    {
+        "image": {
+            "parent": "sample/text_status",
+            "colour": "dark_mode ? 0xFF_FF_FF_FF : 0xFF_00_00_00"
+        }
+    },
+    {
+        "image": {
+            "parent": "sample/text_sub_status",
+            "colour": "dark_mode ? 0xFF_FF_FF_FF : 0xFF_00_00_00"
+        }
+    }, 
+    {
+        "image": {
+            "parent": "sample/text_percentage",
+            "colour": "dark_mode ? 0xFF_FF_FF_FF : 0xFF_00_00_00"
+        }
+    }
   ],
   "functions": [
   ],

@@ -2,6 +2,7 @@ package alexiil.mc.mod.load.json.subtypes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,13 +53,15 @@ public class JsonRenderSlideshow extends JsonRenderImage {
 
             ResourceLocation r = new ResourceLocation(l);
             try {
-                if (TextureLoader.loadTexture(r) == null) {
+                InputStream stream = TextureLoader.openResourceStream(r);
+                if (stream == null) {
                     if (i == 0) {
                         continue;
                     } else {
                         break;
                     }
                 }
+                stream.close();
             } catch (FileNotFoundException fnfe) {
                 if (i == 0) {
                     continue;
