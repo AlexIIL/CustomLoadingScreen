@@ -267,6 +267,9 @@ public class MainSplashRenderer {
             }
         }
         LongTermProgressTracker.save(SingleProgressBarTracker.getProgressSections());
+        if (enableCustom) {
+            ClsManager.finish();
+        }
         clearGL();
         invokeSplashAnimationFinish();
     }

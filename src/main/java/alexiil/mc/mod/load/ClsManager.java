@@ -191,6 +191,10 @@ public class ClsManager {
         return true;
     }
 
+    public static void finish() {
+        instance.close();
+    }
+
     public static class Resolution {
         private double width, height;
         private double scale = 1;

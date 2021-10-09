@@ -1,6 +1,12 @@
 package alexiil.mc.mod.load;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Random;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -56,6 +62,7 @@ public class CustomLoadingScreen {
             "Sets the config to use for the custom loading screen. Use 'builtin/random' for a random loading screen on each load."
                 + "\nAlternatively you can prefix this with 'config/' to load from the 'config/customloadingscreen/' directory."
                 + "\nOr you can use 'sample/slideshow' to display images from config/customloadingscreen/slideshow_#.png."
+                + "\nOr you can set this to 'config/example' to use the default example config."
         );
 
         String[] defaultRandoms = { "sample/default", "sample/white", "sample/scrolling", "sample_panorama_lower" };
@@ -106,6 +113,29 @@ public class CustomLoadingScreen {
         if (CONFIG.hasChanged()) {
             CONFIG.save();
         }
+
+        File clsRoot = new File("./config/customloadingscreen/");
+
+        if (!clsRoot.exists()) {
+            clsRoot.mkdir();
+        }
+
+        File clsExample = new File(clsRoot, "example.json");
+
+        if (!clsExample.exists()) {
+
+            try (OutputStream out = new FileOutputStream(clsExample)) {
+                BufferedOutputStream bos = new BufferedOutputStream(out);
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(bos));
+
+                writeExampleCfg(bw);
+
+                bw.flush();
+
+            } catch (IOException e) {
+                CLSLog.warn("Failed to write the example config file!", e);
+            }
+        }
     }
 
     public static void finish() {
@@ -130,5 +160,140 @@ public class CustomLoadingScreen {
         if (CONFIG.hasChanged()) {
             CONFIG.save();
         }
+    }
+
+    private static void ln(BufferedWriter bw, String str) throws IOException {
+        bw.write(str.replace('#', '"'));
+        bw.newLine();
+    }
+
+    private static void writeExampleCfg(BufferedWriter bw) throws IOException {
+        // Exploded copy of "sample/config/default.json"
+        ln(bw, "{");
+        ln(bw, "    #renders#: [");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/panorama#,");
+        ln(bw, "                #image#: #textures/gui/title/background/panorama_x.png#");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/image#,");
+        ln(bw, "                #image#: #customloadingscreen:textures/generic/darkened_blur_horizontal_strip.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #position#: {");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #0#,");
+        ln(bw, "                    #width#: #screen_width#,");
+        ln(bw, "                    #height#: #100#");
+        ln(bw, "                },");
+        ln(bw, "                #texture#: {");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #0#,");
+        ln(bw, "                    #width#: #1#,");
+        ln(bw, "                    #height#: #1#");
+        ln(bw, "                }");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#:#builtin/image#,");
+        ln(bw, "                #image#: #customloadingscreen:textures/progress_bars.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #position#:{");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#:#20#,");
+        ln(bw, "                    #width#:#182 * 2#,");
+        ln(bw, "                    #height#:#20#");
+        ln(bw, "                },");
+        ln(bw, "                #texture#:{");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #70 / 256.0#,");
+        ln(bw, "                    #width#: #182 / 256.0#,");
+        ln(bw, "                    #height#: #10 / 256.0#");
+        ln(bw, "                }");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/image#,");
+        ln(bw, "                #image#: #customloadingscreen:textures/progress_bars.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #position#:{");
+        ln(bw, "                    #x#:#percentage * 182 - 182#,");
+        ln(bw, "                    #y#:#20#,");
+        ln(bw, "                    #width#:#percentage * 182 * 2#,");
+        ln(bw, "                    #height#:#20#");
+        ln(bw, "                },");
+        ln(bw, "                #texture#:{");
+        ln(bw, "                    #x#:#0#,");
+        ln(bw, "                    #y#:#80 / 256.0#,");
+        ln(bw, "                    #width#: #percentage * 182 / 256.0#,");
+        ln(bw, "                    #height#:#10 / 256.0#");
+        ln(bw, "                }");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/text#,");
+        ln(bw, "                #image#: #textures/font/ascii.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #text#: #is_reloading ? status : (status  + ': ' + sub_status)#,");
+        ln(bw, "                #position#: {");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #-20#,");
+        ln(bw, "                    #width#: #0#,");
+        ln(bw, "                    #height#: #0#");
+        ln(bw, "                },");
+        ln(bw, "                #colour#:#0xFF_FF_FF_FF#");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/text#,");
+        ln(bw, "                #image#: #textures/font/ascii.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #text#: #is_reloading ? sub_status : ''#,");
+        ln(bw, "                #position#: {");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #0#,");
+        ln(bw, "                    #width#: #0#,");
+        ln(bw, "                    #height#: #0#");
+        ln(bw, "                },");
+        ln(bw, "                #colour#:#0xFF_FF_FF_FF#");
+        ln(bw, "            }");
+        ln(bw, "        },");
+        ln(bw, "        {");
+        ln(bw, "            #image#: {");
+        ln(bw, "                #parent#: #builtin/text#,");
+        ln(bw, "                #image#: #textures/font/ascii.png#,");
+        ln(bw, "                #position_type#: #CENTER#,");
+        ln(bw, "                #offset_pos#: #CENTER#,");
+        ln(bw, "                #text#: #(floor(percentage * 100)) + '%'#,");
+        ln(bw, "                #position#: {");
+        ln(bw, "                    #x#: #0#,");
+        ln(bw, "                    #y#: #-10#,");
+        ln(bw, "                    #width#: #0#,");
+        ln(bw, "                    #height#: #0#");
+        ln(bw, "                },");
+        ln(bw, "                #colour#:#0xFF_FF_FF_FF#");
+        ln(bw, "            }");
+        ln(bw, "        }");
+        ln(bw, "    ],");
+        ln(bw, "    #functions#:[");
+        ln(bw, "    ],");
+        ln(bw, "    #factories#:[");
+        ln(bw, "    ],");
+        ln(bw, "    #actions#:[");
+        ln(bw, "    ],");
+        ln(bw, "    #variables#:{");
+        ln(bw, "    }");
+        ln(bw, "}");
     }
 }

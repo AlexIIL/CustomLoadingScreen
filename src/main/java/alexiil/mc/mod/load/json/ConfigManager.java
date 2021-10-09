@@ -91,6 +91,7 @@ public class ConfigManager {
             .registerTypeAdapter(JsonVariable[].class, VariableArrayDeserialiser.VARIABLES)//
             .registerTypeAdapter(JsonConstant[].class, VariableArrayDeserialiser.CONSTANTS)//
             .registerTypeAdapter(JsonFactory.class, FactoryDeserialiser.INSTANCE)//
+            .registerTypeAdapter(Area.class, Area.DESERIALISER)//
             // .registerTypeAdapter(JsonAction.class, ActionDeserialiser.INSTANCE)//
             .create();
         GSON_DEFAULT = new GsonBuilder().setPrettyPrinting().create();

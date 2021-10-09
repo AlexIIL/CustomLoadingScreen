@@ -1,0 +1,7 @@
+Changes:
+
+* Added always-created "example.json" json config, always added to config/customloadingscreen if it's not present.
+    * You can use this by setting the "screen_config" setting to "config/example"
+* [#72] Theoretically fixed a crash while uploading textures.
+* CLS now de-allocates any RAM used for it's resources after minecraft has finished loading.
+* Added slightly better error messages when loading or baking "Area"s 

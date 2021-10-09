@@ -12,7 +12,6 @@ import org.lwjgl.opengl.SharedDrawable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
 import alexiil.mc.mod.load.ClsManager;
@@ -35,7 +34,7 @@ public class MinecraftDisplayerRenderer {
     private Minecraft mc;
     private final Map<String, FontRenderer> fontRenderers = Maps.newHashMap();
     private final FontRendererSeparate _font_render_instance;
-    public TextureManager textureManager;
+    public TextureManagerCLS textureManager;
     private boolean first = true;
     private SharedDrawable drawable;
 
@@ -43,7 +42,7 @@ public class MinecraftDisplayerRenderer {
         this.animator = new TextureAnimator(config);
         mc = Minecraft.getMinecraft();
 
-        textureManager = new TextureManager(mc.getResourceManager());
+        textureManager = new TextureManagerCLS(mc.getResourceManager());
         _font_render_instance = new FontRendererSeparate(mc.gameSettings, FONT_LOCATION, textureManager, false);
         mc.refreshResources();
         textureManager.onResourceManagerReload(mc.getResourceManager());
@@ -147,14 +146,14 @@ public class MinecraftDisplayerRenderer {
     }
 
     public void close() {
-        GL11.glEnable(GL11.GL_BLEND);
-        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
-        GL11.glEnable(GL11.GL_ALPHA);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-        GL11.glClearColor(1, 1, 1, 1);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        // GL11.glEnable(GL11.GL_BLEND);
+        // GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
+        // GL11.glEnable(GL11.GL_ALPHA);
+        // GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+        // GL11.glClearColor(1, 1, 1, 1);
+        // GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         _font_render_instance.destroy();
-        drawable.destroy();
         animator.close();
+        textureManager.deleteAll();
     }
 }

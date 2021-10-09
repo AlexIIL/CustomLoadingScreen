@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import net.minecraft.util.ResourceLocation;
 
@@ -154,12 +155,17 @@ public abstract class JsonConfigurable<C extends JsonConfigurable<C, B>, B exten
         return array;
     }
 
-    protected static Area consolidateArea(JsonObject obj, String memeber, JsonDeserializationContext ctx, Area parent) {
+    protected static Area consolidateArea(JsonObject obj, String member, JsonDeserializationContext ctx, Area parent) {
         Area in;
-        if (obj.has(memeber)) {
-            in = ctx.deserialize(obj.get(memeber), Area.class);
-            if (in == null) {
-                return parent;
+        if (obj.has(member)) {
+            JsonElement memberJson = obj.get(member);
+            try {
+                in = ctx.deserialize(memberJson, Area.class);
+                if (in == null) {
+                    return parent;
+                }
+            } catch (JsonParseException e) {
+                throw new JsonParseException("Failed to read '" + member + " json as an area\n" + memberJson, e);
             }
         } else {
             return parent;
