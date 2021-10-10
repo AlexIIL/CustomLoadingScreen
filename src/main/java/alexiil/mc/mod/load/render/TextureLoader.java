@@ -150,6 +150,14 @@ public final class TextureLoader {
             }
 
             Object value = map.get(location.getResourceDomain());
+
+            if (value == null) {
+                if (CustomLoadingScreen.debugResourceLoading) {
+                    CLSLog.info("[debug]   - Found no entry for the domain!");
+                }
+                return null;
+            }
+
             if (CustomLoadingScreen.debugResourceLoading) {
                 CLSLog.info("[debug]   - Looking at " + value);
             }
