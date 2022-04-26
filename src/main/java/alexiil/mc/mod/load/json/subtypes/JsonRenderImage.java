@@ -35,7 +35,7 @@ public class JsonRenderImage extends JsonRenderPositioned {
         NodeVariableDouble varWidth = context.putVariableDouble("elem_width");
         NodeVariableDouble varHeight = context.putVariableDouble("elem_height");
         INodeLong _colour = GenericExpressionCompiler.compileExpressionLong(colour, context);
-        BakedArea pos = position.bake(context);
+        BakedArea pos = (position == null ? new Area("0", "0", "screen_width", "screen_height") : position).bake(context);
         BakedArea tex;
         if (texture == null) {
             NodeConstantDouble zero = NodeConstantDouble.ZERO;
