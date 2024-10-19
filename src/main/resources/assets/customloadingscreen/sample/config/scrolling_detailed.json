@@ -21,7 +21,7 @@
                 "image": "textures/font/ascii.png",
                 "position_type": "TOP_LEFT",
                 "offset_pos": "TOP_LEFT",
-                "text": "'Memory Alotted     :'", 
+                "text": "'Memory Alotted   :'", 
                 "position": {
                     "x": 10, "y": 10
                 }
@@ -45,7 +45,7 @@
                 "image": "textures/font/ascii.png",
                 "position_type": "TOP_LEFT",
                 "offset_pos": "TOP_LEFT",
-                "text": "'Memory Utilized     :   -'",
+                "text": "'Memory Utilized   :   -'",
                 "position": {
                     "x": 10, "y": 24
                 }
@@ -81,7 +81,7 @@
                 "image": "textures/font/ascii.png",
                 "position_type": "TOP_LEFT",
                 "offset_pos": "TOP_LEFT",
-                "text": "'Memory Unutilized  :'", 
+                "text": "'Memory Free      :'", 
                 "position": {
                     "x": 10, "y": 38
                 }
