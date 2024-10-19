@@ -39,6 +39,7 @@ public class CustomLoadingScreen {
     private static final Property PROP_CONFIG_RANDOMS;
     private static final Property PROP_WAIT;
     private static final Property PROP_FPS_LIMIT;
+    private static final Property PROP_TEXTURE_CLEAR_INTERVAL;
     private static final Property PROP_DEBUG_RESOURCE_LOADING;
 
     public static final boolean shouldWait;
@@ -48,6 +49,7 @@ public class CustomLoadingScreen {
     public static final boolean debugResourceLoading;
     public static final String customConfigPath;
     public static final int fpsLimit;
+    public static final int textureClearInterval;
 
     private static FrameDisplayer displayer;
 
@@ -87,6 +89,15 @@ public class CustomLoadingScreen {
         PROP_FPS_LIMIT.setMinValue(2);
         PROP_FPS_LIMIT.setMaxValue(300);
         fpsLimit = Math.max(2, Math.min(300, PROP_FPS_LIMIT.getInt()));
+
+        PROP_TEXTURE_CLEAR_INTERVAL = CONFIG.get("performance", "texture_clear_interval", 10);
+        PROP_TEXTURE_CLEAR_INTERVAL.setMinValue(0);
+        PROP_TEXTURE_CLEAR_INTERVAL.setComment(
+            "The interval, in seconds, after which textures will be deleted to save memory, at the cost of additional disk reading if they are used later."
+                + "\nSet debug.resource_loading to true to log when this occurs."
+                + "\nSet to 0 to disable texture clearing."
+        );
+        textureClearInterval = Math.max(0, PROP_TEXTURE_CLEAR_INTERVAL.getInt(10));
 
         useCustom = PROP_USE_CUSTOM.getBoolean();
 

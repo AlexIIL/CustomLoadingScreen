@@ -52,8 +52,7 @@ public class JsonRenderSlideshow extends JsonRenderImage {
             String l = image.replace("#", Integer.toString(i));
 
             ResourceLocation r = new ResourceLocation(l);
-            try {
-                InputStream stream = TextureLoader.openResourceStream(r);
+            try (InputStream stream = TextureLoader.openResourceStream(r)) {
                 if (stream == null) {
                     if (i == 0) {
                         continue;
@@ -61,7 +60,6 @@ public class JsonRenderSlideshow extends JsonRenderImage {
                         break;
                     }
                 }
-                stream.close();
             } catch (FileNotFoundException fnfe) {
                 if (i == 0) {
                     continue;

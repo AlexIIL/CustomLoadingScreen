@@ -124,6 +124,8 @@ public class MinecraftDisplayerRenderer {
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
         GL11.glColor4f(1, 1, 1, 1);
 
+        textureManager.onFrame();
+
         if (GLContext.getCapabilities().GL_KHR_debug) {
             KHRDebug.glPopDebugGroup();
         }
