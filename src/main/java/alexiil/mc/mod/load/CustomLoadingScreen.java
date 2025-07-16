@@ -67,7 +67,7 @@ public class CustomLoadingScreen {
                 + "\nOr you can set this to 'config/example' to use the default example config."
         );
 
-        String[] defaultRandoms = { "sample/default", "sample/white", "sample/scrolling", "sample_panorama_lower" };
+        String[] defaultRandoms = { "sample/default", "sample/white", "sample/scrolling", "sample/panorama_lower" };
         PROP_CONFIG_RANDOMS = CONFIG.get("general", "random_configs", defaultRandoms);
 
         PROP_WAIT = CONFIG.get("general", "smooth_init", true);
